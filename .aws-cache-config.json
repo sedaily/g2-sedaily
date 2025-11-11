@@ -1,0 +1,26 @@
+{
+  "static": {
+    "path": "/_next/static/**",
+    "headers": {
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  "images": {
+    "path": "/images/**",
+    "headers": {
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  "icons": {
+    "path": "/icons/**", 
+    "headers": {
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  "pages": {
+    "path": "/**/*.html",
+    "headers": {
+      "Cache-Control": "public, max-age=3600, must-revalidate"
+    }
+  }
+}

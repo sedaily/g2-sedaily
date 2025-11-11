@@ -1,0 +1,16 @@
+{
+  "domain": "g2-clone.ai",
+  "certificate_arn": "arn:aws:acm:us-east-1:887078546492:certificate/007d551e-b0b6-4453-9076-b2b2090a2ff2",
+  "validation_record": {
+    "name": "_112ef19f11c0bbc63672bd904b6167c6.g2-clone.ai.",
+    "type": "CNAME",
+    "value": "_f32354074ccb9392e9338e18029c2c2e.jkddzztszm.acm-validations.aws."
+  },
+  "instructions": [
+    "1. DNS 제공업체에서 다음 CNAME 레코드를 추가하세요:",
+    "   Name: _112ef19f11c0bbc63672bd904b6167c6.g2-clone.ai",
+    "   Value: _f32354074ccb9392e9338e18029c2c2e.jkddzztszm.acm-validations.aws",
+    "2. SSL 인증서가 검증되면 CloudFront 배포를 업데이트합니다.",
+    "3. 마지막으로 g2-clone.ai를 CloudFront 도메인으로 CNAME 설정합니다."
+  ]
+}

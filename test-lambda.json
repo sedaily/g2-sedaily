@@ -1,0 +1,4 @@
+{
+  "httpMethod": "POST",
+  "body": "{\"question\":\"How is the economy?\",\"gameType\":\"BlackSwan\",\"questionText\":\"Test question\"}"
+}
