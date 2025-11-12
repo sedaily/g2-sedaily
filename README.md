@@ -137,6 +137,7 @@ pnpm build:export     # 정적 파일 생성 (out 폴더)
 - **S3 Bucket**: `g2-frontend-ver2` (정적 호스팅)
 - **CloudFront**: `E8HKFQFSQLNHZ` (CDN 배포)
 - **도메인**: `d37wz4zxwakwl0.cloudfront.net`
+- **커스텀 도메인**: `g2-clone.ai` (SSL 인증서: `9c87fd8a-3506-4a55-86dc-03bfeb6b22d8`)
 - **Lambda Function**: `sedaily-chatbot-dev-handler` (Python 3.11)
 - **Bedrock**: Claude 3 Sonnet (ap-northeast-2)
 - **BigKinds API**: 경제 뉴스 RAG 소스
