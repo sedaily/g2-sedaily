@@ -61,6 +61,21 @@ export const GAMES: GameMeta[] = [
     isNew: true,
     playUrl: "/games/g3/play", // Custom play URL for Signal Decoding
   },
+  {
+    id: "g4",
+    slug: "/games/g4",
+    title: "카드 매칭",
+    subtitle: "경제 용어 매칭 게임",
+    description: "Quizlet 스타일의 경제 용어와 정의를 매칭하는 카드 게임",
+    color: "#8B5CF6",
+    bgColor: "from-purple-600 to-indigo-700",
+    icon: "🃏",
+    status: "active",
+    image: "/images/g4-cards.webp",
+    solidBgColor: "#8B5CF6",
+    isNew: true,
+    playUrl: "/games/g4", // Direct URL for Card Matching
+  },
 ]
 
 export function getGameById(id: string): GameMeta | undefined {
