@@ -87,7 +87,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+            backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#102C55]/60 via-[#1E3A8A]/50 to-[#2B4B8A]/60" />
@@ -108,7 +108,7 @@ export default function DateQuizClient({ date }: Props) {
           <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+          backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
         }}
       />
         <div className="absolute inset-0 bg-gradient-to-b from-[#102C55]/60 via-[#1E3A8A]/50 to-[#2B4B8A]/60" />
@@ -129,7 +129,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+            backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#102C55]/60 via-[#1E3A8A]/50 to-[#2B4B8A]/60" />
@@ -149,7 +149,7 @@ export default function DateQuizClient({ date }: Props) {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+          backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-[#102C55]/60 via-[#1E3A8A]/50 to-[#2B4B8A]/60" />

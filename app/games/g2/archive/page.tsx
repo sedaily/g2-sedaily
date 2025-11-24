@@ -185,7 +185,7 @@ export default function G2ArchivePage() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g2-silhouettes-clean.png')",
+          backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')",
         }}
       />
   <div className="absolute inset-0 bg-linear-to-b from-[#EFEAE2]/90 to-[#E7DFD3]/90" />

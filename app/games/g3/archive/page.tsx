@@ -185,7 +185,7 @@ export default function G3ArchivePage() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g3-signal-waves.png')",
+          backgroundImage: "url('/backgrounds/g3-signal-waves.webp')",
         }}
       />
   <div className="absolute inset-0 bg-linear-to-b from-[#F0D9CC]/90 to-[#E9C3B0]/90" />

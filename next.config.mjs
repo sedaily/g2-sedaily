@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // CloudFront 정적 배포 설정
-  output: 'export', // 정적 export (S3/CloudFront용)
-  trailingSlash: true, // S3 경로 충돌 방지 (/games/ → /games/index.html)
-  distDir: 'out', // export 결과 폴더
+  // 동적 사이트 설정 (Lambda@Edge 또는 Vercel)
+  // output: 'export' 제거 - API Routes 활성화
+  trailingSlash: true,
+  
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   
   eslint: {
     ignoreDuringBuilds: true,
@@ -23,6 +24,15 @@ const nextConfig = {
   // 실험적 기능
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-select'], // 패키지 임포트 최적화
+  },
+  
+  // Webpack 설정: api_temp 폴더 제외
+  webpack: (config, { isServer }) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: ['**/node_modules', '**/app/api_temp/**'],
+    };
+    return config;
   },
 }
 

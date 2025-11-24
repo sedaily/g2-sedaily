@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-11-20T08:42:22.202Z",
+  "mode": "quick-deploy",
+  "steps": [
+    {
+      "step": "validation",
+      "status": "success"
+    },
+    {
+      "step": "pre-guard",
+      "status": "success"
+    }
+  ],
+  "status": "failed",
+  "error": "spawnSync /bin/sh ETIMEDOUT"
+}

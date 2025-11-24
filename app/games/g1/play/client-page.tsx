@@ -1,41 +1,45 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { UniversalQuizPlayer } from "@/components/games/UniversalQuizPlayer"
-import { getQuestionsForDate, getMostRecentDate, type Question } from "@/lib/games-data"
+import { SimpleQuizPlayer } from "@/components/games/SimpleQuizPlayer"
+import { type Question } from "@/lib/games-data"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
-import Image from "next/image"
+import { AlertCircle, RefreshCw } from "lucide-react"
+import { useRealtimeQuiz } from "@/hooks/useRealtimeQuiz"
+import { Button } from "@/components/ui/button"
+
+// 테스트 퀴즈 (하드코딩)
+const TEST_QUIZ: Question[] = [
+  {
+    id: "test-1",
+    questionType: "객관식",
+    question: "다음 중 블랙스완 이벤트의 특징이 아닌 것은?",
+    options: [
+      "예측 불가능하다",
+      "매우 큰 영향을 미친다",
+      "발생 후 설명 가능하다",
+      "자주 발생한다"
+    ],
+    answer: "자주 발생한다",
+    explanation: "블랙스완 이벤트는 극히 드물게 발생하는 예측 불가능한 사건입니다.",
+    newsLink: "https://www.sedaily.com",
+  },
+  {
+    id: "test-2",
+    questionType: "주관식",
+    question: "2008년 금융위기를 촉발한 주요 원인은?",
+    hint: "주택 관련 금융상품",
+    answer: "서브프라임 모기지",
+    explanation: "서브프라임 모기지 사태가 2008년 글로벌 금융위기의 주요 원인이었습니다.",
+    newsLink: "https://www.sedaily.com",
+  }
+]
 
 export default function G1TestClientPage() {
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [date, setDate] = useState<string | null>(null)
-  const [questions, setQuestions] = useState<Question[]>([])
-
-  useEffect(() => {
-    async function loadQuiz() {
-      try {
-        const recentDate = await getMostRecentDate("BlackSwan")
-        if (!recentDate) {
-          setError("사용 가능한 퀴즈가 없습니다.")
-          setLoading(false)
-          return
-        }
-        setDate(recentDate)
-        
-        const quizData = await getQuestionsForDate("BlackSwan", recentDate)
-        setQuestions(quizData)
-      } catch (err) {
-        console.error("[v0] Error loading test quiz:", err)
-        setError("퀴즈를 불러오는데 실패했습니다.")
-      } finally {
-        setLoading(false)
-      }
-    }
-    loadQuiz()
-  }, [])
+  const { quiz, loading, error, refresh } = useRealtimeQuiz('BlackSwan', 30000)
+  
+  const questions: Question[] = quiz?.data?.questions || TEST_QUIZ
+  const useTestQuiz = !quiz
 
   if (loading) {
     return (
@@ -43,7 +47,7 @@ export default function G1TestClientPage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+            backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
           }}
         />
         {/* Dark overlay for better text readability */}
@@ -57,13 +61,13 @@ export default function G1TestClientPage() {
     )
   }
 
-  if (error || !date) {
+  if (error) {
     return (
       <div className="min-h-screen relative">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+            backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
           }}
         />
         {/* Dark overlay for better text readability */}
@@ -85,7 +89,7 @@ export default function G1TestClientPage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+            backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
           }}
         />
         {/* Dark overlay for better text readability */}
@@ -102,42 +106,29 @@ export default function G1TestClientPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/backgrounds/g1-swan-water.png')",
-        }}
-      />
-      {/* Dark overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#102C55]/60 via-[#1E3A8A]/50 to-[#2B4B8A]/60" />
-
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        {/* Header with icon */}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto">
         <div className="mb-8 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="relative w-24 h-24 md:w-32 md:h-32">
-              <Image
-                src="/icons/swan-woodcut.webp"
-                alt="Black Swan"
-                fill
-                className="object-contain drop-shadow-lg"
-                priority
-              />
-            </div>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-4xl font-bold text-gray-900">블랙스완</h1>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={refresh}
+              className="gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              새로고침
+            </Button>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white font-serif">블랙스완</h1>
-          <p className="text-[#E0F2FE] text-base md:text-lg font-serif max-w-2xl mx-auto">
-            작은 사건이 시장 전반에 퍼지는 연쇄 반응을 추적하는 시뮬레이션
+          <p className="text-gray-600">
+            {useTestQuiz ? "테스트 모드" : "실시간 업데이트 (30초)"}
           </p>
         </div>
 
-        <UniversalQuizPlayer 
+        <SimpleQuizPlayer 
           questions={questions} 
-          date={date} 
-          gameType="BlackSwan" 
-          themeColor="#3B82F6" 
-          disableSaveProgress={true}
+          gameType="BlackSwan"
         />
       </div>
     </div>

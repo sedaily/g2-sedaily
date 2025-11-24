@@ -3,18 +3,33 @@ service: g2-chatbot-backend
 provider:
   name: aws
   runtime: python3.11
-  region: ap-northeast-2
+  region: us-east-1
   stage: dev
   environment:
     BIGKINDS_API_KEY: ${env:BIGKINDS_API_KEY}
+    AWS_REGION: us-east-1
   iamRoleStatements:
     - Effect: Allow
       Action:
         - logs:CreateLogGroup
         - logs:CreateLogStream
         - logs:PutLogEvents
+      Resource: 
+        - "arn:aws:logs:us-east-1:*:log-group:/aws/lambda/*"
+    - Effect: Allow
+      Action:
         - bedrock:InvokeModel
+      Resource:
+        - "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
+    - Effect: Allow
+      Action:
+        - cloudwatch:PutMetricData
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - secretsmanager:GetSecretValue
+      Resource:
+        - "arn:aws:secretsmanager:us-east-1:*:secret:g2/*"
 
 functions:
   enhanced-chatbot:
@@ -53,4 +68,11 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: false
+    dockerizePip: true
+    layer: true
+    slim: true
+    strip: false
+    pythonBin: python3.11
+    zip: true
+    useStaticCache: true
+    useDownloadCache: true

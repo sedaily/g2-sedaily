@@ -1,0 +1,2 @@
+# Prisoner's Dilemma Archive Index
+# This file prevents 404 errors for archive routes

@@ -1,0 +1,2 @@
+# BlackSwan Play Index
+# This file prevents 404 errors for play routes

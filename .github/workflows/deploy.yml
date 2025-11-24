@@ -1,47 +1,145 @@
-name: Deploy to CloudFront
+name: Deploy to AWS
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
+    - uses: actions/checkout@v4
+    
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
-        cache: 'pnpm'
-        
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v4
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
       with:
         version: 8
-        
+    
     - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-      
+      run: pnpm install
+    
+    - name: Pre-deployment validation
+      run: |
+        echo "🔍 Pre-deployment validation..."
+        aws --version
+        aws sts get-caller-identity
+        aws s3 ls s3://${{ secrets.S3_BUCKET_NAME }} --summarize
+    
+    - name: Create backup
+      run: |
+        echo "📦 Creating pre-deployment backup..."
+        node scripts/deploy-rollback.mjs backup
+      continue-on-error: true
+    
     - name: Build application
-      run: pnpm run build:export
-      
+      run: pnpm build:export
+      env:
+        NEXT_PUBLIC_CHATBOT_API_URL: ${{ secrets.NEXT_PUBLIC_CHATBOT_API_URL }}
+        NEXT_PUBLIC_QUIZ_API_URL: ${{ secrets.NEXT_PUBLIC_QUIZ_API_URL }}
+    
+    - name: Pre-deploy guard
+      run: |
+        echo "🛡️ Running pre-deploy guard..."
+        node scripts/deploy-guard.mjs pre
+    
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-        
-    - name: Deploy to S3
+    
+    - name: Deploy to S3 (with retry)
       run: |
-        aws s3 sync ./out s3://${{ secrets.S3_BUCKET_NAME }} --delete --cache-control "public,max-age=31536000,immutable"
-        
+        echo "📤 Deploying to S3 with retry logic..."
+        for i in {1..3}; do
+          echo "Attempt $i/3"
+          if aws s3 sync ./out s3://${{ secrets.S3_BUCKET_NAME }} --delete --exclude '*.txt' --cache-control 'max-age=300'; then
+            echo "✅ S3 sync successful"
+            break
+          else
+            echo "⚠️ S3 sync failed, retrying in 10s..."
+            sleep 10
+          fi
+          if [ $i -eq 3 ]; then
+            echo "❌ S3 sync failed after 3 attempts"
+            exit 1
+          fi
+        done
+    
+    - name: Upload critical files
+      run: |
+        echo "📋 Uploading critical files..."
+        aws s3 cp ./out/index.html s3://${{ secrets.S3_BUCKET_NAME }}/index.html --cache-control "max-age=300"
+        aws s3 cp ./out/404.html s3://${{ secrets.S3_BUCKET_NAME }}/404.html --cache-control "max-age=300" || aws s3 cp ./public/404.html s3://${{ secrets.S3_BUCKET_NAME }}/404.html --cache-control "max-age=300"
+    
     - name: Invalidate CloudFront
       run: |
+        echo "🔄 Invalidating CloudFront cache..."
         aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+    
+    - name: Post-deploy guard
+      run: |
+        echo "🛡️ Running post-deploy guard..."
+        node scripts/deploy-guard.mjs post
+      continue-on-error: true
+    
+    - name: Deployment verification
+      run: |
+        echo "🔍 Verifying deployment..."
+        sleep 30  # Wait for CloudFront propagation
+        
+        # Test main pages
+        echo "Testing homepage..."
+        curl -f -s -o /dev/null https://g2.sedaily.ai || echo "⚠️ Homepage test failed"
+        
+        echo "Testing games page..."
+        curl -f -s -o /dev/null https://g2.sedaily.ai/games || echo "⚠️ Games page test failed"
+        
+        echo "Testing 404 page..."
+        status=$(curl -s -o /dev/null -w "%{http_code}" https://g2.sedaily.ai/nonexistent)
+        if [ "$status" = "404" ]; then
+          echo "✅ 404 page working correctly"
+        else
+          echo "⚠️ 404 page returned status: $status"
+        fi
+    
+    - name: Send metrics to CloudWatch
+      run: |
+        echo "📊 Sending deployment metrics..."
+        aws cloudwatch put-metric-data \
+          --namespace "G2/Deployment" \
+          --metric-data MetricName=DeploymentSuccess,Value=1,Unit=Count
+      continue-on-error: true
+    
+    - name: Deployment Status
+      run: |
+        echo "🎉 Deployment completed successfully!"
+        echo "🌐 Site URL: https://g2.sedaily.ai"
+        echo "🔗 CloudFront: https://d1nbq51yydvkc9.cloudfront.net"
+        echo "📦 Build ID: $(cat ./out/_next/static/*/buildManifest.js | head -1 | grep -o '[a-zA-Z0-9_-]\{20,\}' | head -1 || echo 'Unknown')"
+        echo "⏰ Deployment time: $(date)"
+    
+    - name: Notify on failure
+      if: failure()
+      run: |
+        echo "❌ Deployment failed!"
+        echo "💡 Troubleshooting steps:"
+        echo "1. Check AWS credentials and permissions"
+        echo "2. Verify S3 bucket access"
+        echo "3. Check build output in previous steps"
+        echo "4. Run emergency recovery: pnpm guard:emergency"
+        
+        # Send failure metric
+        aws cloudwatch put-metric-data \
+          --namespace "G2/Deployment" \
+          --metric-data MetricName=DeploymentFailure,Value=1,Unit=Count || true

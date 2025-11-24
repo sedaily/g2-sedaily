@@ -4,10 +4,31 @@ import requests
 import os
 from datetime import datetime, timedelta
 import logging
+import backoff
+from typing import Dict, Any, Optional
+from bs4 import BeautifulSoup
+import re
 
 # 로깅 설정
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# 상수 정의
+AWS_REGION = 'us-east-1'
+BEDROCK_MODEL_ID = 'anthropic.claude-3-sonnet-20240229-v1:0'
+BIGKINDS_API_URL = 'https://www.bigkinds.or.kr/api/news/search.do'
+BIGKINDS_TIMEOUT = 10
+ARTICLE_FETCH_TIMEOUT = 10
+BIGKINDS_MAX_RETRIES = 2
+BIGKINDS_MAX_TIME = 20
+NEWS_SEARCH_DAYS = 30
+NEWS_RESULT_LIMIT = 3
+ARTICLE_CONTENT_LIMIT = 500
+NEWS_SNIPPET_LIMIT = 200
+MAX_KEYWORDS = 5
+CLAUDE_MAX_TOKENS = 1000
+CLAUDE_TEMPERATURE = 0.7
+CLAUDE_TOP_P = 0.9
 
 def lambda_handler(event, context):
     """
@@ -49,7 +70,8 @@ def lambda_handler(event, context):
                 })
             }
         
-        logger.info(f"RAG Query: {user_question[:50]}... (Game: {game_type})")
+        masked_question = mask_sensitive_data(user_question)
+        logger.info(f"RAG Query: {masked_question[:50]}... (Game: {game_type})")
         
         # RAG 지식 베이스 수집
         knowledge_base = build_rag_knowledge_base(
@@ -160,7 +182,7 @@ def fetch_bigkinds_knowledge(user_question, game_type):
             combined_content = ""
             for i, article in enumerate(articles, 1):
                 title = article.get('title', '')
-                content = article.get('content', '')[:200]
+                content = article.get('content', '')[:NEWS_SNIPPET_LIMIT]
                 provider = article.get('provider', '')
                 
                 combined_content += f"[뉴스 {i}] {provider}: {title}\n{content}...\n\n"
@@ -170,8 +192,14 @@ def fetch_bigkinds_knowledge(user_question, game_type):
                 'count': len(articles)
             }
     
+    except requests.Timeout:
+        logger.warning("BigKinds API timeout")
+    except requests.RequestException as e:
+        logger.error(f"BigKinds API request error: {str(e)}")
+    except KeyError as e:
+        logger.error(f"BigKinds API response parsing error: {str(e)}")
     except Exception as e:
-        logger.error(f"BigKinds knowledge fetch error: {str(e)}")
+        logger.error(f"BigKinds unexpected error: {str(e)}")
     
     return None
 
@@ -179,84 +207,135 @@ def fetch_quiz_article_knowledge(article_url):
     """
     퀴즈 관련 기사 내용 추출 (URL에서)
     """
+    fallback_content = {
+        'content': f"퀴즈 관련 기사: {article_url}",
+        'url': article_url
+    }
+    
     try:
-        # 실제 구현에서는 웹 스크래핑 또는 기사 API 사용
-        # 현재는 URL 정보만 반환
-        return {
-            'content': f"퀴즈 관련 기사: {article_url}\n(기사 내용 추출 기능 구현 예정)",
-            'url': article_url
-        }
+        response = requests.get(
+            article_url, 
+            timeout=ARTICLE_FETCH_TIMEOUT, 
+            headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        )
+        
+        if response.status_code != 200:
+            return fallback_content
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # 기사 본문 추출 (일반적인 뉴스 사이트 패턴)
+        selectors = ['article', '.article-body', '.news-content', '#articleBody', '.article_view']
+        article_body = next((soup.select_one(sel) for sel in selectors if soup.select_one(sel)), None)
+        
+        if article_body:
+            text = article_body.get_text(strip=True, separator=' ')
+            content = text[:ARTICLE_CONTENT_LIMIT] + ('...' if len(text) > ARTICLE_CONTENT_LIMIT else '')
+            return {
+                'content': f"퀴즈 관련 기사 내용:\n{content}",
+                'url': article_url
+            }
+        
+        return fallback_content
     
+    except requests.Timeout:
+        logger.warning(f"Quiz article fetch timeout: {article_url}")
+        return fallback_content
+    except requests.RequestException as e:
+        logger.warning(f"Quiz article fetch request error: {str(e)}")
+        return fallback_content
     except Exception as e:
-        logger.error(f"Quiz article fetch error: {str(e)}")
-    
-    return None
+        logger.error(f"Quiz article fetch unexpected error: {str(e)}")
+        return fallback_content
 
 def extract_search_keywords(user_question, game_type):
     """
-    사용자 질문에서 검색 키워드 추출
+    사용자 질문에서 검색 키워드 추출 (한국어 최적화)
     """
-    # 기본 키워드
-    base_keywords = []
+    # 한국어 명사 추출 (조사 제거)
+    cleaned = re.sub(r'[?!.,]', '', user_question)
+    words = cleaned.split()
     
-    # 사용자 질문에서 핵심 단어 추출
-    question_words = user_question.replace('?', '').replace('!', '').split()
-    meaningful_words = [word for word in question_words if len(word) > 2]
-    base_keywords.extend(meaningful_words[:3])
+    # 조사 제거 및 의미있는 단어 추출
+    base_keywords = [
+        re.sub(r'(이|가|을|를|은|는|에|의|도|만|부터|까지|에서|로|으로)$', '', word)
+        for word in words
+        if len(re.sub(r'(이|가|을|를|은|는|에|의|도|만|부터|까지|에서|로|으로)$', '', word)) >= 2
+    ][:3]
     
     # 게임별 관련 키워드 추가
     game_keywords = {
-        'BlackSwan': ['위기', '리스크', '예측', '충격'],
-        'PrisonersDilemma': ['경쟁', '협력', '전략', '딜레마'],
-        'SignalDecoding': ['지표', '신호', '분석', '데이터']
+        'BlackSwan': ['위기', '리스크'],
+        'PrisonersDilemma': ['경쟁', '협력'],
+        'SignalDecoding': ['지표', '신호']
     }
     
-    if game_type in game_keywords:
-        base_keywords.extend(game_keywords[game_type][:2])
+    base_keywords.extend(game_keywords.get(game_type, []))
+    base_keywords.append('경제')
     
-    # 경제 관련 키워드 추가
-    base_keywords.extend(['경제', '금융'])
-    
-    return ' '.join(base_keywords[:5])
+    return ' '.join(base_keywords[:MAX_KEYWORDS])
 
-def call_bigkinds_api(keywords, api_key):
+@backoff.on_exception(
+    backoff.expo,
+    (requests.RequestException, requests.Timeout),
+    max_tries=BIGKINDS_MAX_RETRIES,
+    max_time=BIGKINDS_MAX_TIME
+)
+def call_bigkinds_api(keywords: str, api_key: str) -> Optional[Dict[str, Any]]:
     """
-    BigKinds API 호출
+    BigKinds API 호출 (재시도 로직 포함)
     """
-    try:
-        url = "https://www.bigkinds.or.kr/api/news/search"
-        
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=30)
-        
-        params = {
-            'access_key': api_key,
-            'argument': {
-                'query': keywords,
-                'published_at': {
-                    'from': start_date.strftime('%Y-%m-%d'),
-                    'until': end_date.strftime('%Y-%m-%d')
-                },
-                'provider': ['서울경제', '한국경제', '매일경제', '연합뉴스'],
-                'category': ['경제', '사회', '정치'],
-                'sort': {'date': 'desc'},
-                'hilight': 200,
-                'return_from': 0,
-                'return_size': 3
-            }
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=NEWS_SEARCH_DAYS)
+    
+    # BigKinds API 실제 스펙에 맞춘 파라미터
+    payload = {
+        'access_key': api_key,
+        'argument': {
+            'query': keywords,
+            'published_at': {
+                'from': start_date.strftime('%Y-%m-%d'),
+                'until': end_date.strftime('%Y-%m-%d')
+            },
+            'provider': [],
+            'category': ['정치', '경제', '사회'],
+            'category_incident': [],
+            'byline': '',
+            'provider_subject': [],
+            'subject_info': [],
+            'subject_info1': [],
+            'subject_info2': [],
+            'subject_info3': [],
+            'subject_info4': [],
+            'sort': {'date': 'desc'},
+            'hilight': NEWS_SNIPPET_LIMIT,
+            'return_from': 0,
+            'return_size': NEWS_RESULT_LIMIT,
+            'fields': []
         }
-        
-        response = requests.post(url, json=params, timeout=15)
-        
-        if response.status_code == 200:
-            return response.json()
-        else:
-            logger.error(f"BigKinds API error: {response.status_code}")
-            return None
-            
-    except Exception as e:
-        logger.error(f"BigKinds API call failed: {str(e)}")
-        return None
+    }
+    
+    # 커스텀 메트릭 전송
+    send_cloudwatch_metric('BigKindsAPIAttempt', 1)
+    
+    headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0'
+    }
+    
+    response = requests.post(BIGKINDS_API_URL, json=payload, headers=headers, timeout=BIGKINDS_TIMEOUT)
+    
+    if response.status_code == 200:
+        data = response.json()
+        # API 응답 구조 확인
+        if data.get('return_object'):
+            send_cloudwatch_metric('BigKindsAPISuccess', 1)
+            logger.info(f"BigKinds API success: {len(data.get('return_object', {}).get('documents', []))} articles")
+            return data
+    
+    send_cloudwatch_metric('BigKindsAPIError', 1)
+    logger.warning(f"BigKinds API error: {response.status_code}")
+    raise requests.RequestException(f"API returned {response.status_code}")
 
 def generate_claude_rag_response(user_question, knowledge_base, game_type):
     """
@@ -266,7 +345,7 @@ def generate_claude_rag_response(user_question, knowledge_base, game_type):
         # Bedrock 클라이언트 초기화
         bedrock = boto3.client(
             service_name='bedrock-runtime',
-            region_name='us-east-1'
+            region_name=AWS_REGION
         )
         
         # 외부 지식이 있는지 확인
@@ -313,11 +392,9 @@ def generate_claude_rag_response(user_question, knowledge_base, game_type):
 위 질문에 대해 경제 전문가로서 전문적이고 통찰력 있는 답변을 해주세요."""
 
         # Claude 모델 호출
-        model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
-        
         request_body = {
             "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 1000,
+            "max_tokens": CLAUDE_MAX_TOKENS,
             "system": system_prompt,
             "messages": [
                 {
@@ -325,12 +402,12 @@ def generate_claude_rag_response(user_question, knowledge_base, game_type):
                     "content": user_prompt
                 }
             ],
-            "temperature": 0.7,
-            "top_p": 0.9
+            "temperature": CLAUDE_TEMPERATURE,
+            "top_p": CLAUDE_TOP_P
         }
         
         response = bedrock.invoke_model(
-            modelId=model_id,
+            modelId=BEDROCK_MODEL_ID,
             body=json.dumps(request_body)
         )
         
@@ -345,8 +422,14 @@ def generate_claude_rag_response(user_question, knowledge_base, game_type):
             logger.error("Empty response from Claude")
             return generate_fallback_response(user_question, game_type)
             
+    except boto3.exceptions.Boto3Error as e:
+        logger.error(f"Bedrock API error: {str(e)}")
+        return generate_fallback_response(user_question, game_type)
+    except json.JSONDecodeError as e:
+        logger.error(f"Claude response parsing error: {str(e)}")
+        return generate_fallback_response(user_question, game_type)
     except Exception as e:
-        logger.error(f"Claude error: {str(e)}")
+        logger.error(f"Claude unexpected error: {str(e)}")
         return generate_fallback_response(user_question, game_type)
 
 def build_rag_context(knowledge_base):
@@ -401,3 +484,37 @@ def generate_fallback_response(user_question, game_type):
     base_response += "\n\n더 구체적인 질문이 있으시면 언제든 말씀해 주세요."
     
     return base_response
+
+def send_cloudwatch_metric(metric_name: str, value: float, unit: str = 'Count') -> None:
+    """
+    CloudWatch 커스텀 메트릭 전송
+    """
+    try:
+        cloudwatch = boto3.client('cloudwatch', region_name=AWS_REGION)
+        cloudwatch.put_metric_data(
+            Namespace='G2/Chatbot',
+            MetricData=[
+                {
+                    'MetricName': metric_name,
+                    'Value': value,
+                    'Unit': unit,
+                    'Timestamp': datetime.now()
+                }
+            ]
+        )
+    except boto3.exceptions.Boto3Error as e:
+        logger.warning(f"Failed to send CloudWatch metric {metric_name}: {str(e)}")
+    except Exception as e:
+        logger.warning(f"Unexpected error sending metric {metric_name}: {str(e)}")
+
+def mask_sensitive_data(text: str) -> str:
+    """
+    로그에서 민감한 정보 마스킹
+    """
+    # API 키 마스킹 (8자 이상의 영숫자)
+    text = re.sub(r'([a-zA-Z0-9]{8})[a-zA-Z0-9]{16,}', r'\1****', text)
+    # 이메일 마스킹
+    text = re.sub(r'([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})', r'****@\2', text)
+    # 전화번호 마스킹
+    text = re.sub(r'\d{3}-\d{4}-\d{4}', '***-****-****', text)
+    return text

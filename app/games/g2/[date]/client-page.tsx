@@ -86,7 +86,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g2-silhouettes-clean.png')",
+            backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')",
           }}
         />
         <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
@@ -107,7 +107,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g2-silhouettes-clean.png')",
+            backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')",
           }}
         />
         <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
@@ -128,7 +128,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g2-silhouettes-clean.png')",
+            backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')",
           }}
         />
         <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
@@ -148,7 +148,7 @@ export default function DateQuizClient({ date }: Props) {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g2-silhouettes-clean.png')",
+          backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')",
         }}
       />
       <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />

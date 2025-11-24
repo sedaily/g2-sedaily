@@ -1,0 +1,36 @@
+{
+  "gameType": "BlackSwan",
+  "quizDate": "2025-01-17",
+  "data": {
+    "questions": [
+      {
+        "id": "20250117-BS-001",
+        "questionType": "객관식",
+        "question": "2008년 글로벌 금융위기의 주요 원인 중 하나로 여겨지는 '블랙스완' 이벤트는 무엇인가요?",
+        "options": [
+          "서브프라임 모기지 사태",
+          "유가 급등",
+          "환율 변동",
+          "인플레이션 상승"
+        ],
+        "answer": "1",
+        "explanation": "서브프라임 모기지 사태는 예측하기 어려웠던 대규모 금융위기를 촉발한 대표적인 블랙스완 이벤트입니다.",
+        "newsLink": "https://www.sedaily.com/NewsView/29OQZXZXZX",
+        "tags": "금융위기, 블랙스완, 서브프라임",
+        "relatedArticle": {
+          "title": "2008년 금융위기 재조명: 블랙스완의 교훈",
+          "excerpt": "예측 불가능했던 서브프라임 모기지 사태가 어떻게 글로벌 금융시스템을 마비시켰는지 분석해본다."
+        }
+      },
+      {
+        "id": "20250117-BS-002",
+        "questionType": "주관식",
+        "question": "나심 탈레브가 제시한 '블랙스완'의 세 가지 특징을 하나만 서술하시오.",
+        "answer": "예측 불가능성",
+        "explanation": "블랙스완의 특징: 1) 예측 불가능성 2) 극단적 영향력 3) 사후 설명 가능성",
+        "newsLink": "https://www.sedaily.com/NewsView/29OQZXZXZY",
+        "tags": "블랙스완, 나심탈레브, 리스크관리"
+      }
+    ]
+  }
+}

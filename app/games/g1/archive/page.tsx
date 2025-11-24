@@ -186,7 +186,7 @@ export default function G1ArchivePage() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g1-swan-water.png')",
+          backgroundImage: "url('/backgrounds/g1-swan-water.webp')",
         }}
       />
   <div className="absolute inset-0 bg-linear-to-b from-[#213B69]/85 via-[#1B3156]/85 to-[#182B49]/85" />

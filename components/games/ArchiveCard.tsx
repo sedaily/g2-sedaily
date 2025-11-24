@@ -4,12 +4,13 @@ import Image from "next/image"
 import Link from "next/link"
 
 interface ArchiveCardProps {
-  gameType: "g1" | "g2" | "g3"
+  gameType: "g1" | "g2" | "g3" | "quizlet"
   date: string // YYYY-MM-DD format
   questionCount: number
   isToday: boolean
   href: string
   tags?: string[] // 태그 배열 추가
+  setName?: string // Quizlet용 세트 이름
 }
 
 const GAME_CONFIG = {
@@ -55,9 +56,23 @@ const GAME_CONFIG = {
     shadow: "shadow-[0_8px_24px_rgba(0,0,0,0.12)]",
     hoverShadow: "hover:shadow-[0_10px_28px_rgba(0,0,0,0.16)]",
   },
+  quizlet: {
+    image: "/images/g4-cards.webp",
+    cardBg: "#8B5CF6",
+    listBg: "bg-[rgba(139,92,246,0.15)]",
+    textColor: "text-gray-900",
+    textSecondary: "text-gray-700",
+    badgeText: "!text-gray-900",
+    badgeBg: "!bg-purple-100",
+    badgeBorder: "!border-purple-300",
+    focusColor: "#8B5CF6",
+    borderOpacity: "border-purple-200",
+    shadow: "shadow-[0_8px_24px_rgba(139,92,246,0.12)]",
+    hoverShadow: "hover:shadow-[0_10px_28px_rgba(139,92,246,0.16)]",
+  },
 }
 
-export function ArchiveCard({ gameType, date, questionCount, isToday, href, tags = [] }: ArchiveCardProps) {
+export function ArchiveCard({ gameType, date, questionCount, isToday, href, tags = [], setName }: ArchiveCardProps) {
   const config = GAME_CONFIG[gameType]
 
   const dateObj = new Date(date + "T00:00:00")
@@ -116,7 +131,7 @@ export function ArchiveCard({ gameType, date, questionCount, isToday, href, tags
           <h3
             className={`text-[18px] md:text-[21px] font-title font-semibold ${config.textColor} mb-1 md:mb-2 leading-[1.35] tracking-[-0.01em]`}
           >
-            {dayOfWeek}, {formattedDate}
+            {gameType === 'quizlet' && setName ? setName : `${dayOfWeek}, ${formattedDate}`}
           </h3>
 
           <p className={`text-[12px] md:text-[13px] ${config.textSecondary} font-sans tracking-wide mb-2`}>

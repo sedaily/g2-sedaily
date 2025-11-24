@@ -14,33 +14,26 @@ export function GameCard({ game }: GameCardProps) {
 
   return (
     <article
-      className="game-card mx-auto max-w-[460px] w-full flex flex-col rounded-2xl border-2 border-black p-6 md:p-8 transition-all duration-200 hover:translate-y-[-4px] hover:rotate-[-1.5deg] hover:shadow-[0_8px_28px_rgba(0,0,0,0.12)] relative"
-      style={{ backgroundColor: game.solidBgColor }}
+      className="game-card mx-auto max-w-[460px] w-full flex flex-col rounded-2xl border border-gray-200 p-6 md:p-8 transition-all duration-300 hover:translate-y-[-8px] hover:shadow-2xl relative bg-white overflow-hidden"
     >
-      <div className="pointer-events-none absolute inset-2 rounded-2xl border border-black/70"></div>
+      <div className="absolute inset-0 opacity-5" style={{ backgroundColor: game.solidBgColor }}></div>
 
-      {game.isNew && (
-        <span className="absolute left-1/2 -translate-x-1/2 -top-3 md:-top-3.5 rounded-full border border-black bg-white px-3 py-1 md:px-4 md:py-1.5 text-[10px] md:text-xs font-semibold shadow-[2px_2px_0_#000] z-10 tracking-wide">
-          NEW
-        </span>
-      )}
-
-      <div className="aspect-[4/3] flex items-center justify-center mb-4">
+      <div className="aspect-[4/3] flex items-center justify-center mb-6 relative">
         <Image
           src={game.image || "/placeholder.svg"}
           alt={`${game.title} illustration`}
           width={400}
           height={300}
-          className="object-contain w-full h-full p-10 md:p-12"
+          className="object-contain w-full h-full p-4 md:p-6 relative z-10"
           loading="lazy"
         />
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 relative z-10">
         <h3
-          className="text-2xl md:text-3xl font-title text-center tracking-[-0.01em] leading-tight mb-2 md:mb-3"
-          style={{ color: "#0D2239" }}
+          className="text-2xl md:text-3xl font-bold text-center tracking-tight leading-tight mb-2"
+          style={{ color: game.solidBgColor }}
         >
           {game.title}
         </h3>
@@ -49,7 +42,8 @@ export function GameCard({ game }: GameCardProps) {
         <div className="flex flex-col gap-2">
           <Button
             asChild
-            className="w-full rounded-lg bg-black text-white py-3 font-semibold shadow-[3px_3px_0_#000] hover:shadow-[1px_1px_0_#000] hover:bg-gray-900 transition-all"
+            className="w-full rounded-lg text-white py-3 font-semibold hover:opacity-90 transition-all"
+            style={{ backgroundColor: game.solidBgColor }}
             aria-label={`Play ${game.title}`}
           >
             <Link href={playHref}>Play</Link>
@@ -57,7 +51,8 @@ export function GameCard({ game }: GameCardProps) {
           <Button
             asChild
             variant="outline"
-            className="w-full rounded-lg border-2 border-black bg-transparent py-3 font-medium hover:bg-black/5 transition-colors"
+            className="w-full rounded-lg py-3 font-medium hover:bg-gray-50 transition-colors"
+            style={{ borderColor: game.solidBgColor, color: game.solidBgColor }}
             aria-label={`View ${game.title} archive`}
           >
             <Link href={`${game.slug}/archive`}>Archive</Link>

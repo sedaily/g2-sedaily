@@ -112,6 +112,7 @@ export function AIChatbot({ gameType, questionIndex, questionText, isAnswered, q
       setMessages(prev => [...prev, aiMessage])
       
     } catch (error) {
+      console.error('[Chatbot] API Error:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: "죄송합니다. 현재 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
@@ -258,8 +259,7 @@ export function AIChatbot({ gameType, questionIndex, questionText, isAnswered, q
                 disabled={isLoading}
                 className={`flex-1 px-3 py-2 rounded-lg border text-sm ${theme.inputBg} ${theme.inkColor} focus:outline-none focus:ring-2 focus:ring-opacity-50`}
                 style={{ 
-                  focusRingColor: theme.accentColor,
-                  borderColor: theme.accentColor.replace('#', '') + '40'
+                  borderColor: theme.accentColor + '40'
                 }}
               />
               <Button

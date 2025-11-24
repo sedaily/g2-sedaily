@@ -1,35 +1,51 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { UniversalQuizPlayer } from "@/components/games/UniversalQuizPlayer"
-import { getQuestionsForDate, getMostRecentDate, type Question } from "@/lib/games-data"
+import { SimpleQuizPlayer } from "@/components/games/SimpleQuizPlayer"
+import { getQuestionsForDate, type Question } from "@/lib/games-data"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import Image from "next/image"
 
-export default function G2TestClientPage() {
+const TEST_QUIZ: Question[] = [
+  {
+    id: "test-1",
+    questionType: "객관식",
+    question: "죄수의 딜레마에서 최선의 결과는?",
+    options: ["둘 다 협력", "둘 다 배신", "한 명만 협력", "무작위 선택"],
+    answer: "둘 다 협력",
+    explanation: "상호 협력이 가장 좋은 결과를 가져옵니다.",
+    newsLink: "https://www.sedaily.com",
+  }
+]
+
+export default function G2PlayPage() {
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [date, setDate] = useState<string | null>(null)
   const [questions, setQuestions] = useState<Question[]>([])
+  const [useTestQuiz, setUseTestQuiz] = useState(false)
 
   useEffect(() => {
     async function loadQuiz() {
       try {
-        const recentDate = await getMostRecentDate("PrisonersDilemma")
-        if (!recentDate) {
-          setError("사용 가능한 퀴즈가 없습니다.")
-          setLoading(false)
-          return
-        }
-        setDate(recentDate)
+        const dates = await fetch(
+          `${process.env.NEXT_PUBLIC_QUIZ_API_URL?.replace('/all', '')}/meta/PrisonersDilemma`
+        ).then(r => r.json()).then(d => d.dates || [])
         
-        const quizData = await getQuestionsForDate("PrisonersDilemma", recentDate)
-        setQuestions(quizData)
+        if (dates.length > 0) {
+          const quizData = await getQuestionsForDate("PrisonersDilemma", dates[0])
+          if (quizData.length > 0) {
+            setQuestions(quizData)
+            setLoading(false)
+            return
+          }
+        }
+        
+        setQuestions(TEST_QUIZ)
+        setUseTestQuiz(true)
       } catch (err) {
-        console.error("[v0] Error loading test quiz:", err)
-        setError("퀴즈를 불러오는데 실패했습니다.")
+        console.error("Error loading quiz:", err)
+        setQuestions(TEST_QUIZ)
+        setUseTestQuiz(true)
       } finally {
         setLoading(false)
       }
@@ -39,19 +55,19 @@ export default function G2TestClientPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen g2-bg">
-        <div className="container mx-auto px-4 py-8 space-y-4">
-          <Skeleton className="h-8 w-64 bg-[#8B5E3C]/10" />
-          <Skeleton className="h-64 w-full bg-[#8B5E3C]/10" />
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4 space-y-4">
+          <Skeleton className="h-8 w-64 mx-auto" />
+          <Skeleton className="h-64 w-full" />
         </div>
       </div>
     )
   }
 
-  if (error || !date) {
+  if (error || questions.length === 0) {
     return (
-      <div className="min-h-screen g2-bg">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error || "퀴즈를 찾을 수 없습니다."}</AlertDescription>
@@ -61,68 +77,18 @@ export default function G2TestClientPage() {
     )
   }
 
-  if (questions.length === 0) {
-    return (
-      <div className="min-h-screen g2-bg">
-        <div className="container mx-auto px-4 py-8">
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>이 날짜에 대한 퀴즈가 없습니다.</AlertDescription>
-          </Alert>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen relative">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/backgrounds/g2-silhouettes-clean.png')",
-        }}
-      />
-      {/* Light overlay to maintain beige theme */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
-
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        {/* Subtle grid/lattice pattern overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.06] pointer-events-none"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.02) 40px, rgba(0,0,0,0.02) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.02) 40px, rgba(0,0,0,0.02) 41px)",
-          }}
-        />
-
-        <div className="container mx-auto px-4 py-8 relative z-10">
-          {/* Header with icon */}
-          <div className="mb-8 text-center">
-            <div className="flex justify-center mb-4">
-              <div className="relative w-24 h-24 md:w-32 md:h-32">
-                <Image
-                  src="/icons/scale-woodcut.webp"
-                  alt="Balance Scale"
-                  fill
-                  className="object-contain drop-shadow-lg"
-                  priority
-                />
-              </div>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[#44403C] font-serif">죄수의 딜레마</h1>
-            <p className="text-[#8B5E3C] text-base md:text-lg font-serif max-w-2xl mx-auto">
-              정책·경제 현안을 둘러싼 찬반 논리 분석
-            </p>
-          </div>
-
-          <UniversalQuizPlayer 
-            questions={questions} 
-            date={date} 
-            gameType="PrisonersDilemma" 
-            themeColor="#8B5E3C"
-            disableSaveProgress={true}
-          />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-bold mb-2 text-gray-900">죄수의 딜레마</h1>
+          <p className="text-gray-600">{useTestQuiz ? "테스트 모드" : "연습 모드"}</p>
         </div>
+
+        <SimpleQuizPlayer 
+          questions={questions} 
+          gameType="PrisonersDilemma"
+        />
       </div>
     </div>
   )

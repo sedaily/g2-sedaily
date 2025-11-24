@@ -19,7 +19,7 @@ export function PasswordModal({ isOpen, onAuthenticated }: PasswordModalProps) {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "sedaily2024!"
+    const correctPassword = process.env.ADMIN_PASSWORD || "sedaily2024!"
 
     if (password === correctPassword) {
       sessionStorage.setItem("admin_authenticated", "true")

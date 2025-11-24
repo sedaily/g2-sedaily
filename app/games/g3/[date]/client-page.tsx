@@ -86,7 +86,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g3-signal-waves.png')",
+            backgroundImage: "url('/backgrounds/g3-signal-waves.webp')",
           }}
         />
         <div className="absolute inset-0 bg-linear-to-b from-[#E89482]/70 via-[#F0D2C0]/65 to-[#F0D2C0]/70" />
@@ -107,7 +107,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g3-signal-waves.png')",
+            backgroundImage: "url('/backgrounds/g3-signal-waves.webp')",
           }}
         />
         <div className="absolute inset-0 bg-linear-to-b from-[#E89482]/70 via-[#F0D2C0]/65 to-[#F0D2C0]/70" />
@@ -128,7 +128,7 @@ export default function DateQuizClient({ date }: Props) {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('/backgrounds/g3-signal-waves.png')",
+            backgroundImage: "url('/backgrounds/g3-signal-waves.webp')",
           }}
         />
         <div className="absolute inset-0 bg-linear-to-b from-[#E89482]/70 via-[#F0D2C0]/65 to-[#F0D2C0]/70" />
@@ -148,7 +148,7 @@ export default function DateQuizClient({ date }: Props) {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/backgrounds/g3-signal-waves.png')",
+          backgroundImage: "url('/backgrounds/g3-signal-waves.webp')",
         }}
       />
       <div className="absolute inset-0 bg-linear-to-b from-[#E89482]/70 via-[#F0D2C0]/65 to-[#F0D2C0]/70" />

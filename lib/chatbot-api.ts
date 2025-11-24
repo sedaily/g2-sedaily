@@ -17,7 +17,7 @@ export type ChatbotResponse = {
   error?: string
 }
 
-const API_ENDPOINT = process.env.NEXT_PUBLIC_CHATBOT_API_URL || 'https://vylrpmvwg7.execute-api.ap-northeast-2.amazonaws.com/dev/chat'
+const API_ENDPOINT = process.env.NEXT_PUBLIC_CHATBOT_API_URL || 'https://api.g2.sedaily.ai/dev/chat'
 
 export async function sendChatbotMessage(request: ChatbotRequest): Promise<ChatbotResponse> {
   try {

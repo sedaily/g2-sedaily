@@ -22,14 +22,14 @@ export const GAMES: GameMeta[] = [
     title: "블랙 스완",
     subtitle: "",
     description: "",
-    color: "#2A50FF",
-    bgColor: "from-blue-600 to-blue-700",
+    color: "#3B82F6",
+    bgColor: "from-blue-500 to-blue-600",
     icon: "🦢",
     status: "active",
-    image: "/images/g1-woodcut.webp",
-    solidBgColor: "#6CAEFF",
+    image: "/images/g1-new.webp",
+    solidBgColor: "#3B82F6",
     isNew: true,
-    playUrl: "/games/g1/play", // Custom play URL for Black Swan
+    playUrl: "/games/g1/play",
   },
   {
     id: "g2",
@@ -37,14 +37,14 @@ export const GAMES: GameMeta[] = [
     title: "죄수의 딜레마",
     subtitle: "",
     description: "",
-    color: "#E7D9C3",
-    bgColor: "from-stone-300 to-stone-400",
+    color: "#10B981",
+    bgColor: "from-emerald-500 to-emerald-600",
     icon: "⛓️",
     status: "active",
-    image: "/images/g2-woodcut.webp",
-    solidBgColor: "#E7D9C3",
+    image: "/images/g2-new.webp",
+    solidBgColor: "#10B981",
     isNew: true,
-    playUrl: "/games/g2/play", // Custom play URL for Prisoners Dilemma
+    playUrl: "/games/g2/play",
   },
   {
     id: "g3",
@@ -52,29 +52,29 @@ export const GAMES: GameMeta[] = [
     title: "시그널 디코딩",
     subtitle: "",
     description: "",
-    color: "#E56F5E",
-    bgColor: "from-orange-400 to-orange-500",
+    color: "#F59E0B",
+    bgColor: "from-amber-500 to-amber-600",
     icon: "🔍",
     status: "active",
-    image: "/images/g3-woodcut.webp",
-    solidBgColor: "#E56F5E",
+    image: "/images/g3-new.webp",
+    solidBgColor: "#F59E0B",
     isNew: true,
-    playUrl: "/games/g3/play", // Custom play URL for Signal Decoding
+    playUrl: "/games/g3/play",
   },
   {
-    id: "g4",
-    slug: "/games/g4",
+    id: "quizlet",
+    slug: "/games/quizlet",
     title: "카드 매칭",
     subtitle: "경제 용어 매칭 게임",
     description: "Quizlet 스타일의 경제 용어와 정의를 매칭하는 카드 게임",
-    color: "#8B5CF6",
-    bgColor: "from-purple-600 to-indigo-700",
+    color: "#EC4899",
+    bgColor: "from-pink-500 to-pink-600",
     icon: "🃏",
     status: "active",
-    image: "/images/g4-cards.webp",
-    solidBgColor: "#8B5CF6",
+    image: "/images/quizlet-new.webp",
+    solidBgColor: "#EC4899",
     isNew: true,
-    playUrl: "/games/g4", // Direct URL for Card Matching
+    playUrl: "/games/quizlet",
   },
 ]
 
@@ -117,14 +117,10 @@ export const GAME_TYPE_MAP: Record<string, GameType> = {
   g3: "SignalDecoding",
 }
 
-// Map game types to game IDs - Currently unused
-// export const GAME_ID_MAP: Record<GameType, string> = {
-//   BlackSwan: "g1",
-//   PrisonersDilemma: "g2",
-//   SignalDecoding: "g3",
-// }
 
-import { fetchQuizData, type QuizDataStructure } from "./quiz-api-client"
+
+import { fetchQuizData, fetchQuizDataByDate, fetchAvailableDates, type QuizDataStructure } from "./quiz-api-client"
+import { getCachedQuizData, setCachedQuizData, getCachedDates, setCachedDates } from "./quiz-cache"
 
 // 캐시된 퀴즈 데이터
 let cachedTypedQuizData: QuizDataStructure | null = null
@@ -161,19 +157,28 @@ async function loadQuizData(): Promise<QuizDataStructure> {
 }
 
 /**
- * Get questions for a specific game and date
+ * Get questions for a specific game and date (최적화된 버전)
+ * 다층 캐싱: localStorage → 날짜별 API → 전체 API
  */
 export async function getQuestionsForDate(gameType: GameType, date: string): Promise<Question[]> {
   try {
-    const data = await loadQuizData()
-    console.log(`[v0] Getting questions for ${gameType} on ${date}`)
-
-    if (!data || !data[gameType]) {
-      console.error(`[v0] No data found for game type: ${gameType}`)
-      return []
+    console.log(`[v0] Getting questions for ${gameType} on ${date} (multi-layer cache)`)
+    
+    // 1단계: 클라이언트 캐시 확인
+    const cachedData = getCachedQuizData(gameType, date)
+    if (cachedData && cachedData.length > 0) {
+      console.log(`[v0] Using client cache for ${gameType} on ${date}`)
+      return cachedData
     }
-
-    const questions = data[gameType]?.[date] || []
+    
+    // 2단계: 날짜별 API 요청
+    const questions = await fetchQuizDataByDate(gameType, date)
+    
+    // 성공시 클라이언트 캐시에 저장
+    if (questions.length > 0) {
+      setCachedQuizData(gameType, date, questions)
+    }
+    
     console.log(`[v0] Found ${questions.length} questions for ${gameType} on ${date}`)
     return questions
   } catch (error) {
@@ -183,22 +188,30 @@ export async function getQuestionsForDate(gameType: GameType, date: string): Pro
 }
 
 /**
- * Get all available dates for a specific game type
+ * Get all available dates for a specific game type (최적화된 버전)
+ * 다층 캐싱: localStorage → 메타 API → 전체 API
  */
 export async function getAvailableDates(gameType: GameType): Promise<string[]> {
   try {
-    const data = await loadQuizData()
-    console.log(`[v0] Getting available dates for ${gameType}`)
-
-    if (!data || !data[gameType]) {
-      console.error(`[v0] No data found for game type: ${gameType}`)
-      return []
+    console.log(`[v0] Getting available dates for ${gameType} (multi-layer cache)`)
+    
+    // 1단계: 클라이언트 캐시 확인
+    const cachedDates = getCachedDates(gameType)
+    if (cachedDates && cachedDates.length > 0) {
+      console.log(`[v0] Using client cache for ${gameType} dates`)
+      return cachedDates
     }
-
-    const dates = Object.keys(data[gameType] || {})
-    console.log(`[v0] Found ${dates.length} dates for ${gameType}:`, dates)
-    // Sort dates in descending order (newest first)
-    return dates.sort((a, b) => b.localeCompare(a))
+    
+    // 2단계: 메타데이터 API 요청
+    const dates = await fetchAvailableDates(gameType)
+    
+    // 성공시 클라이언트 캐시에 저장
+    if (dates.length > 0) {
+      setCachedDates(gameType, dates)
+    }
+    
+    console.log(`[v0] Found ${dates.length} dates for ${gameType}`)
+    return dates
   } catch (error) {
     console.error(`[v0] Error loading dates for ${gameType}:`, error)
     return []

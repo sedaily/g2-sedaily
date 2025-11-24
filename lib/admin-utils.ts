@@ -126,8 +126,8 @@ export async function saveToLambda(
   apiUrl: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // 로컬 테스트 모드 (placeholder URL 체크)
-    const isLocalTest = apiUrl.includes("your-api-gateway-url") || !apiUrl
+    // 내부 API 사용
+    const useInternalAPI = true
 
     // 게임 타입별로 그룹화
     const questionsByTheme: Record<string, QuizQuestion[]> = {
@@ -159,14 +159,10 @@ export async function saveToLambda(
         },
       }
 
-      console.log(`[Admin] ${isLocalTest ? "(로컬 테스트)" : "Saving"} ${theme}:`, payload)
+      console.log(`[Admin] Saving ${theme}:`, payload)
 
-      // 로컬 테스트 모드일 때는 실제 fetch 건너뛰기
-      if (isLocalTest) {
-        continue
-      }
-
-      const promise = fetch(apiUrl, {
+      // 내부 API 사용
+      const promise = fetch('/api/admin/quiz', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,12 +171,6 @@ export async function saveToLambda(
       })
 
       savePromises.push(promise)
-    }
-
-    // 로컬 테스트 모드일 때는 바로 성공 반환
-    if (isLocalTest) {
-      console.log("[Admin] ✅ 로컬 테스트 모드: 데이터 검증 완료 (실제 저장 안 됨)")
-      return { success: true }
     }
 
     // 모든 저장 요청 병렬 실행
@@ -194,6 +184,24 @@ export async function saveToLambda(
       }
     }
 
+    // 저장 성공 후 캐시 무효화
+    if (typeof window !== 'undefined') {
+      // 동적 import로 캐시 무효화 함수 호출
+      import('./quiz-api-client').then(({ clearQuizDataCache, clearDateCache }) => {
+        // 전체 캐시 초기화
+        clearQuizDataCache()
+        
+        // 저장된 각 게임 타입별 날짜 캐시도 개별 초기화
+        for (const [theme, themeQuestions] of Object.entries(questionsByTheme)) {
+          if (themeQuestions.length > 0) {
+            clearDateCache(theme, quizDate)
+          }
+        }
+        
+        console.log('[Admin] All quiz caches cleared after save')
+      })
+    }
+    
     return { success: true }
   } catch (err) {
     const message = err instanceof Error ? err.message : "저장 중 오류가 발생했습니다"

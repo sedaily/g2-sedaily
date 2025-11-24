@@ -21,8 +21,8 @@ export default function GamesPage() {
             <span className="absolute inset-2 -z-10 rounded-lg bg-[rgba(250,248,240,0.36)] blur-[1px]" />
             <div className="relative w-full h-full rounded-xl overflow-hidden p-2">
               <Image
-                src="/games/hero-main.png"
-                alt="Seoul Economic News Games - Three interlocking gears representing Black Swan, Prisoner's Dilemma, and Signal Decoding"
+                src="/images/new-hero-main.webp"
+                alt="Seoul Economic News Games"
                 fill
                 className="object-contain mx-auto opacity-95 brightness-95 contrast-95 drop-shadow-[0_2px_4px_rgba(0,0,0,0.04)]"
                 priority

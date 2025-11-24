@@ -22,18 +22,19 @@ export default function G1ClientPage() {
         setLoading(true)
         setError(null)
 
-        const today = getTodayKST()
-        const date = toYYMMDD(today)
-        setDateStr(date)
-
-        // 더미데이터 사용 (API 호출 대신)
-        const yy = date.substring(0, 2)
-        const mm = date.substring(2, 4)
-        const dd = date.substring(4, 6)
-        const formattedDate = `20${yy}-${mm}-${dd}`
+        // 사용 가능한 가장 최근 날짜 찾기
+        const { getMostRecentDate } = await import("@/lib/games-data")
+        const mostRecentDate = await getMostRecentDate("BlackSwan")
+        
+        if (!mostRecentDate) {
+          throw new Error("No quiz data available")
+        }
+        
+        const formattedDate = mostRecentDate
+        setDateStr(formattedDate.replace(/-/g, '').slice(2)) // yyyy-mm-dd -> yymmdd
         
         if (process.env.NODE_ENV === 'development') {
-          console.log("[v0] Loading dummy quiz data for date:", formattedDate)
+          console.log("[v0] Loading quiz data for most recent date:", formattedDate)
         }
         const questions = await getQuestionsForDate("BlackSwan", formattedDate)
         

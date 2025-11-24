@@ -1,11 +1,4 @@
 User-agent: *
 Allow: /
 
-# 게임 페이지들
-Allow: /games/
-Allow: /games/g1/
-Allow: /games/g2/
-Allow: /games/g3/
-
-# Sitemap
-Sitemap: https://gi.sedaily.ai/sitemap.xml
+Sitemap: https://g2.sedaily.ai/sitemap.xml
