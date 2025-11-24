@@ -5,12 +5,13 @@
 
 import type { Question } from "./games-data"
 
-// AWS Lambda API 엔드포인트 (관리자 페이지와 동일)
+// CloudFront + API Gateway 사용
 // ========================================
-// AWS API Gateway (CORS 활성화됨)
+// CloudFront가 /api/quiz/* 요청을 API Gateway로 라우팅
 // ========================================
-// 환경 변수에서 가져오거나 기본값 사용
-const API_ENDPOINT = process.env.NEXT_PUBLIC_QUIZ_API_URL || "https://api.g2.sedaily.ai/dev/quizzes/all"
+const API_ENDPOINT = typeof window === 'undefined' 
+  ? null // 빌드 타임에는 API 호출 안함
+  : '/api/quiz/quizzes/all' // CloudFront → API Gateway
 
 export interface QuizDataStructure {
   BlackSwan?: Record<string, Question[]>
@@ -70,8 +71,18 @@ export async function fetchQuizData(): Promise<QuizDataStructure> {
     return cachedQuizData
   }
 
+  // 빌드 타임에는 빈 데이터 반환
+  if (!API_ENDPOINT) {
+    console.log("[v0] Build time: returning empty structure")
+    return {
+      BlackSwan: {},
+      PrisonersDilemma: {},
+      SignalDecoding: {},
+    }
+  }
+
   try {
-    console.log("[v0] Fetching quiz data from AWS Lambda API...")
+    console.log("[v0] Fetching quiz data from internal API...")
     console.log("[v0] API Endpoint:", API_ENDPOINT)
     
     const response = await fetch(API_ENDPOINT, {
@@ -149,7 +160,7 @@ export async function fetchQuizDataByDate(
 
   try {
     // 날짜별 API 엔드포인트 구성
-    const dateApiUrl = `${API_ENDPOINT.replace('/all', '')}/${gameType}/${date}`
+    const dateApiUrl = `/api/quiz/quizzes/${gameType}/${date}`
     console.log(`[v0] Fetching ${gameType} data for ${date} from:`, dateApiUrl)
     
     const response = await fetch(dateApiUrl, {
@@ -215,7 +226,7 @@ export async function fetchAvailableDates(
 ): Promise<string[]> {
   try {
     // 메타데이터 API 엔드포인트
-    const metaApiUrl = `${API_ENDPOINT.replace('/all', '')}/meta/${gameType}`
+    const metaApiUrl = `/api/quiz/quizzes/meta/${gameType}`
     console.log(`[v0] Fetching available dates for ${gameType} from:`, metaApiUrl)
     
     const response = await fetch(metaApiUrl, {
@@ -299,7 +310,7 @@ export interface QuizletSet {
  */
 export async function getQuizletSets(): Promise<QuizletSet[]> {
   try {
-    const quizletApiUrl = `${API_ENDPOINT.replace('/all', '')}/quizlet/sets`
+    const quizletApiUrl = `/api/quiz/quizlet/sets`
     console.log('[v0] Fetching Quizlet sets from:', quizletApiUrl)
     
     const response = await fetch(quizletApiUrl, {

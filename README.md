@@ -7,9 +7,9 @@
 [![AWS](https://img.shields.io/badge/AWS-Lambda%20%2B%20CloudFront-orange)](https://aws.amazon.com/)
 
 **🌐 Live Demo:** https://g2.sedaily.ai  
-**📊 최근 업데이트:** 2025-01-24  
-**🚀 버전:** v2.5.0  
-**⚡ 타입:** 동적 사이트 (API Routes)
+**📊 최근 업데이트:** 2025-11-24  
+**🚀 버전:** v2.6.0  
+**⚡ 타입:** 하이브리드 (정적 + REST API)
 
 ## 🎮 게임 종류
 
@@ -22,9 +22,8 @@
 
 ### Frontend (Next.js 15.2.4)
 - **App Router**: 최신 Next.js 라우팅 시스템
-- **API Routes**: 서버리스 API 엔드포인트
-- **실시간 업데이트**: 30초 폴링 시스템
-- **배포**: Vercel / AWS Amplify
+- **정적 생성**: SSG (Static Site Generation)
+- **배포**: CloudFront + S3
 
 ### Backend (Lambda - Python 3.11)
 - **Function**: `sedaily-chatbot-dev-handler`
@@ -47,11 +46,11 @@
 - DynamoDB
 
 ### Infrastructure
-- **동적 사이트**: Vercel / AWS Amplify
-- **API**: Next.js API Routes
+- **CDN**: CloudFront (E8HKFQFSQLNHZ)
+- **Storage**: S3 (g2-frontend-ver2)
+- **API**: API Gateway + Lambda
 - **데이터베이스**: DynamoDB
 - **모니터링**: CloudWatch + SNS
-- **실시간 업데이트**: 30초 폴링
 
 ## 📁 프로젝트 구조
 
@@ -113,13 +112,11 @@ ls -la .deploy-logs/             # 배포 로그
 ```
 
 ### AWS 인프라
-- **호스팅**: Vercel / AWS Amplify
-- **Lambda Chatbot**: `sedaily-chatbot-dev-handler`
-- **Lambda Auto-Deploy**: `g2-auto-deploy-trigger`
-- **DynamoDB**: `sedaily-quiz-data` (Streams 활성화)
-- **CloudFront**: `E8HKFQFSQLNHZ` (캐시 무효화용)
-- **SNS Topic**: `g2-notifications`
-- **CloudWatch**: Dashboard + Alarms
+- **CloudFront**: `E8HKFQFSQLNHZ` (3 Origins)
+- **S3**: `g2-frontend-ver2` (정적 파일)
+- **API Gateway**: Quiz API (8p2pmss2i7), Chatbot API
+- **Lambda**: `sedaily-chatbot-dev-handler`, `sedaily-quiz-handler`
+- **DynamoDB**: `sedaily-quiz-data`
 - **Region**: us-east-1
 
 ## 🎯 주요 기능
@@ -204,14 +201,13 @@ AWS_REGION=us-east-1
 - ✅ 이미지 최적화 (90% 감소)
 - ✅ 다층 캐싱 시스템
 
-**동적 사이트 전환 v2.5.0 (2025-01-24)**
-- ✅ API Routes 활성화 (Next.js)
-- ✅ 실시간 데이터 업데이트 (30초 폴링)
-- ✅ 관리자 ↔ 사용자 실시간 소통
-- ✅ AWS SDK 통합 (DynamoDB, CloudFront, CloudWatch)
-- ✅ Vercel/Amplify 배포 지원
-- ✅ 원클릭 캐시 무효화
-- ✅ 실시간 메트릭 대시보드
+**하이브리드 아키텍처 v2.6.0 (2025-11-24)**
+- ✅ CloudFront + API Gateway 통합
+- ✅ 3개 Origins (S3, Quiz API, Chatbot API)
+- ✅ REST API 라우팅 (/api/quiz/*, /api/admin/*, /api/chat/*)
+- ✅ 정적 사이트 + 동적 API
+- ✅ 기존 인프라 활용 (S3, CloudFront)
+- ✅ 자동 배포 스크립트
 
 **AWS 고급 기능 통합 v2.4.0 (2025-01-24)**
 - ✅ DynamoDB Streams + Lambda 자동 배포 트리거
@@ -269,10 +265,10 @@ AWS_REGION=us-east-1
 
 **📞 Contact & Info**
 - Repository: sedaily/g2-clone
-- Platform: AWS Lambda + CloudFront + DynamoDB
+- Platform: CloudFront + S3 + API Gateway + Lambda
 - AI: Claude 3 Sonnet (AWS Bedrock) + BigKinds API
 - Region: us-east-1
-- Last Updated: 2025-01-24
-- Version: v2.5.0
-- Type: 동적 사이트 (API Routes)
+- Last Updated: 2025-11-24
+- Version: v2.6.0
+- Type: 하이브리드 (정적 + REST API)
 - Status: 운영 중 ✅

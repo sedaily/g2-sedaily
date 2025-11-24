@@ -161,8 +161,8 @@ export async function saveToLambda(
 
       console.log(`[Admin] Saving ${theme}:`, payload)
 
-      // 내부 API 사용
-      const promise = fetch('/api/admin/quiz', {
+      // CloudFront → API Gateway
+      const promise = fetch('/api/admin/quizzes', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

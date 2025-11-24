@@ -2,272 +2,256 @@
 
 ## Directory Organization
 
-### `/app` - Next.js 15 App Router
-Next.js 15의 App Router 기반 페이지 및 API 라우트
-- **`/admin/quiz`**: 관리자 패널 (퀴즈 관리, 배포 관리, 캐시 관리)
-- **`/api`**: 서버리스 API Routes
-  - `/api/admin`: 관리자 API (DynamoDB, CloudFront, CloudWatch)
-  - `/api/chat`: AI 챗봇 프록시 API
-  - `/api/quiz`: 퀴즈 데이터 API (날짜별, 전체 조회)
-- **`/games`**: 게임 페이지
-  - `/games/g1`: BlackSwan 게임
-  - `/games/g2`: Prisoner's Dilemma 게임
-  - `/games/g3`: Signal Decoding 게임
-  - `/games/quizlet`: Card Matching 게임
-- **`/test-chatbot`**: 챗봇 테스트 페이지
-- **Root files**: layout.tsx, page.tsx, globals.css, error.tsx, loading.tsx, not-found.tsx
+```
+g2-clone/
+├── app/                    # Next.js 15 App Router (pages & API routes)
+├── components/             # React components (UI, games, admin, navigation)
+├── hooks/                  # Custom React hooks
+├── lib/                    # Utility libraries and API clients
+├── backend/                # Python Lambda functions (chatbot, auto-deploy)
+├── scripts/                # Deployment automation and monitoring
+├── types/                  # TypeScript type definitions
+├── public/                 # Static assets (images, icons, backgrounds)
+├── docs/                   # Project documentation
+├── aws/                    # AWS Lambda utilities (unified quiz handler)
+├── .deploy-logs/           # Deployment history logs
+├── .amazonq/rules/         # Amazon Q rules and memory bank
+└── .next/                  # Next.js build output (generated)
+```
 
-### `/components` - React 컴포넌트
-재사용 가능한 UI 컴포넌트 라이브러리
-- **`/admin`**: 관리자 전용 컴포넌트
-  - CacheManager.tsx: localStorage 캐시 관리
-  - DateSetList.tsx: 날짜별 퀴즈 목록
-  - DeployManager.tsx: CloudFront 캐시 무효화, 메트릭 조회
-  - PasswordModal.tsx: 관리자 인증
-  - QuizEditor.tsx: 퀴즈 생성/수정
-  - QuizletUploader.tsx: CSV 업로드
-  - QuizPreview.tsx: 퀴즈 미리보기
-  - ReviewList.tsx: 퀴즈 리뷰 목록
-- **`/games`**: 게임 관련 컴포넌트
-  - AIChatbot.tsx: RAG 기반 AI 챗봇 UI
-  - BlackSwanQuizPlayer.tsx: BlackSwan 게임 플레이어
-  - CardMatchingGame.tsx: 카드 매칭 게임 로직
-  - GameCard.tsx: 게임 카드 UI
-  - GameHubGrid.tsx: 게임 허브 그리드
-  - QuizPlayer.tsx: 범용 퀴즈 플레이어
-  - UniversalQuizPlayer.tsx: 통합 퀴즈 플레이어
-  - QuizCompletion.tsx: 퀴즈 완료 화면
-  - QuizIntroScreen.tsx: 퀴즈 시작 화면
-  - QuizQuestion.tsx: 퀴즈 문제 UI
-  - QuizSettingsPanel.tsx: 퀴즈 설정 패널
-  - ProgressRippleIndicator.tsx: 진행 상태 표시
-- **`/navigation`**: 네비게이션 컴포넌트
-  - Footer.tsx: 푸터
-  - SedailyHeader.tsx: 헤더
-- **`/ui`**: Radix UI 기반 재사용 컴포넌트
-  - 30+ UI 컴포넌트 (button, dialog, select, sidebar, toast 등)
+## Core Directories
+
+### `/app` - Next.js App Router
+**Purpose**: Main application pages and API routes using Next.js 15 App Router pattern
+
+**Structure**:
+- `app/page.tsx` - Homepage with game hub grid
+- `app/layout.tsx` - Root layout with theme provider and global styles
+- `app/games/` - Game-specific pages (g1, g2, g3, g4, quizlet)
+- `app/admin/quiz/` - Admin panel for quiz management
+- `app/api/` - Server-side API routes
+  - `app/api/quiz/` - Quiz data endpoints (fetch, update)
+  - `app/api/chat/` - AI chatbot proxy endpoint
+  - `app/api/admin/` - Admin operations (cache invalidation, metrics)
+- `app/test-chatbot/` - Chatbot testing interface
+- `app/globals.css` - Global Tailwind CSS styles
+- `app/error.tsx`, `app/loading.tsx`, `app/not-found.tsx` - Error boundaries and loading states
+
+**Key Pattern**: Uses Next.js 15 App Router with server components, API routes, and dynamic routing
+
+### `/components` - React Components
+**Purpose**: Reusable UI components organized by feature domain
+
+**Structure**:
+- `components/ui/` - Base UI components (Radix UI + Tailwind)
+  - Buttons, inputs, dialogs, cards, tooltips, etc.
+  - `sidebar.tsx` - Sidebar navigation component
+  - `use-mobile.tsx`, `use-toast.ts` - Custom hooks for UI
+- `components/games/` - Game-specific components
+  - `BlackSwanQuizPlayer.tsx` - BlackSwan game player
+  - `QuizPlayer.tsx`, `SimpleQuizPlayer.tsx`, `UniversalQuizPlayer.tsx` - Quiz rendering engines
+  - `AIChatbot.tsx` - AI chatbot interface
+  - `CardMatchingGame.tsx`, `QuizletMatchGame.tsx` - Card matching games
+  - `GameCard.tsx`, `GameHubGrid.tsx` - Game selection UI
+  - `NewsHeaderBlock.tsx`, `BlackSwanLakeHeader.tsx` - Game headers
+  - `QuizCompletion.tsx`, `QuizIntroScreen.tsx` - Quiz flow screens
+  - `ProgressRippleIndicator.tsx` - Loading indicators
+- `components/admin/` - Admin panel components
+  - `QuizEditor.tsx` - Quiz creation/editing interface
+  - `QuizletUploader.tsx` - CSV upload for Quizlet cards
+  - `DeployManager.tsx` - Deployment and cache management
+  - `RealtimeStatus.tsx` - Real-time metrics dashboard
+  - `CacheManager.tsx` - Cache control interface
+  - `DateSetList.tsx`, `ReviewList.tsx` - Quiz listing components
+  - `PasswordModal.tsx` - Admin authentication
+- `components/navigation/` - Site navigation
+  - `SedailyHeader.tsx` - Main site header
+  - `Footer.tsx` - Site footer
+- `components/theme-provider.tsx` - Dark/light theme context
+
+**Key Pattern**: Component composition with separation of concerns (UI, games, admin, navigation)
 
 ### `/hooks` - Custom React Hooks
-재사용 가능한 React 훅
-- **useQuizKeyboard.ts**: 키보드 단축키 (1-4번 답변 선택, Enter 제출)
-- **useQuizState.ts**: 퀴즈 상태 관리 (진행, 점수, localStorage 저장)
-- **useRealtimeQuiz.ts**: 실시간 퀴즈 데이터 폴링 (30초 간격)
-- **use-mobile.ts**: 모바일 감지
-- **use-toast.ts**: Toast 알림
+**Purpose**: Reusable stateful logic for React components
+
+**Files**:
+- `useQuizState.ts` - Quiz state management (answers, progress, completion)
+- `useQuizKeyboard.ts` - Keyboard navigation for quizzes
+- `useRealtimeQuiz.ts` - Real-time quiz data fetching with 30s polling
+- `use-mobile.ts` - Mobile device detection
+- `use-toast.ts` - Toast notification management
+
+**Key Pattern**: Custom hooks encapsulate complex state logic and side effects
 
 ### `/lib` - Utility Libraries
-핵심 비즈니스 로직 및 유틸리티
-- **admin-utils.ts**: 관리자 유틸리티 (AWS SDK 래퍼)
-- **bigkinds.ts**: BigKinds API 클라이언트
-- **cache-manager.ts**: 캐시 관리 로직
-- **chatbot-api.ts**: 챗봇 API 클라이언트
-- **date-utils.ts**: 날짜 유틸리티
-- **games-data.ts**: 게임 메타데이터
-- **image-loader.js**: 커스텀 이미지 로더
-- **quiz-api-client.ts**: 퀴즈 API 클라이언트
-- **quiz-api.ts**: 퀴즈 API 로직
-- **quiz-cache.ts**: 퀴즈 캐싱 로직
-- **quiz-storage.ts**: localStorage 관리
-- **quiz-themes.ts**: 게임별 테마 설정
-- **utils.ts**: 범용 유틸리티 (cn, clsx)
+**Purpose**: Shared utilities, API clients, and helper functions
 
-### `/backend` - AWS Lambda Backend
-Python 기반 서버리스 백엔드
-- **`/lambda`**: Lambda 함수 소스
-  - enhanced-chatbot-handler.py: RAG 챗봇 핸들러 (Claude 3 Sonnet + BigKinds)
-  - auto-deploy-trigger.py: DynamoDB Streams 트리거 자동 배포
-  - requirements.txt: Python 의존성
-  - requirements-auto-deploy.txt: 자동 배포 의존성
-- **serverless.yml**: Serverless Framework 설정
-- **IMPROVEMENTS_APPLIED.md**: 백엔드 개선 이력
+**Files**:
+- `quiz-api.ts` - DynamoDB quiz data fetching (server-side)
+- `quiz-api-client.ts` - Client-side quiz API wrapper
+- `chatbot-api.ts` - Lambda chatbot API client
+- `quiz-storage.ts` - localStorage quiz progress management
+- `quiz-cache.ts` - Multi-layer caching logic
+- `cache-manager.ts` - Cache invalidation utilities
+- `admin-utils.ts` - Admin panel helper functions
+- `date-utils.ts` - Date formatting and manipulation
+- `quiz-themes.ts` - Game-specific theme configurations
+- `games-data.ts` - Static game metadata
+- `bigkinds.ts` - BigKinds API integration
+- `utils.ts` - General utility functions (cn, etc.)
+- `image-loader.js` - Custom Next.js image loader
 
-### `/aws` - AWS 통합 Lambda
-통합 퀴즈 API Lambda 함수
-- **`/unified-quiz-lambda`**: 퀴즈 CRUD API
-  - quiz-handler.py: DynamoDB 퀴즈 CRUD 핸들러
-  - requirements.txt: Python 의존성
-  - deploy.sh: 배포 스크립트
-  - test-api.sh: API 테스트 스크립트
-  - test-data.json: 테스트 데이터
+**Key Pattern**: Separation of client/server logic, API abstraction, and utility functions
 
-### `/scripts` - Deployment & Automation
-배포 자동화 및 모니터링 스크립트
-- **config.mjs**: 통합 설정 (AWS 리소스 ID, 경로)
-- **utils.mjs**: 공통 유틸리티 함수
-- **ultimate-deploy.mjs**: 전체 배포 (Frontend + Backend)
-- **quick-deploy.mjs**: 빠른 Frontend 배포
-- **deploy-backend.mjs**: Backend Lambda 배포
-- **deploy-guard.mjs**: 배포 검증 (404 방지)
-- **monitoring-dashboard.mjs**: 성능 모니터링 대시보드
-- **auto-redeploy.mjs**: 자동 재배포 시스템
-- **aws-setup.mjs**: AWS 인프라 설정 (CloudWatch, SNS)
-- **notification.mjs**: Slack/Discord 알림
-- **deploy-monitor.mjs**: 배포 모니터링
+### `/backend` - Python Lambda Functions
+**Purpose**: AWS Lambda serverless backend functions
 
-### `/docs` - Documentation
-프로젝트 문서
-- **404_PREVENTION.md**: 404 에러 방지 가이드
-- **ADMIN_DEPLOY.md**: 관리자 페이지 통합 가이드
-- **ADMIN_USAGE.md**: 관리자 사용 가이드
-- **AWS_OPTIMIZATION.md**: AWS 최적화 가이드
-- **BACKEND_ARCHITECTURE.md**: 백엔드 아키텍처
-- **DEPLOYMENT_ARCHITECTURE.md**: 배포 아키텍처
-- **DEPLOYMENT.md**: 배포 가이드
-- **DYNAMIC_DEPLOYMENT.md**: 동적 배포 가이드
-- **MONITORING.md**: 모니터링 가이드
-- **TROUBLESHOOTING.md**: 트러블슈팅 가이드
+**Structure**:
+- `backend/lambda/enhanced-chatbot-handler.py` - Main AI chatbot Lambda (Claude 3 Sonnet + RAG)
+- `backend/lambda/auto-deploy-trigger.py` - DynamoDB Streams trigger for auto-deployment
+- `backend/lambda/requirements.txt` - Python dependencies for chatbot
+- `backend/lambda/requirements-auto-deploy.txt` - Python dependencies for auto-deploy
+- `backend/serverless.yml` - Serverless Framework configuration
+- `backend/package.json` - Node.js dependencies for Serverless Framework
 
-### `/types` - TypeScript Types
-TypeScript 타입 정의
-- **quiz.ts**: 퀴즈 관련 타입 (Quiz, QuizSet, QuizletCard)
-- **shims-recharts-vaul.d.ts**: 외부 라이브러리 타입 선언
+**Key Pattern**: Python 3.11 Lambda functions with Serverless Framework deployment
+
+### `/scripts` - Deployment & Monitoring
+**Purpose**: Automation scripts for deployment, monitoring, and AWS management
+
+**Files**:
+- `ultimate-deploy.mjs` - Full deployment pipeline (frontend + backend)
+- `quick-deploy.mjs` - Fast frontend-only deployment
+- `deploy-backend.mjs` - Backend Lambda deployment
+- `deploy-guard.mjs` - Pre-deployment validation (404 prevention)
+- `monitoring-dashboard.mjs` - Performance monitoring CLI/HTML dashboard
+- `auto-redeploy.mjs` - Automatic redeployment on DynamoDB changes
+- `aws-setup.mjs` - AWS infrastructure setup (CloudWatch, SNS, alarms)
+- `notification.mjs` - Slack/Discord notification integration
+- `update-cloudfront.mjs` - CloudFront cache invalidation
+- `config.mjs` - Centralized configuration
+- `utils.mjs` - Shared utility functions
+- `verify-env.mjs` - Environment variable validation
+
+**Key Pattern**: Node.js ESM scripts with AWS SDK v3 integration
+
+### `/types` - TypeScript Definitions
+**Purpose**: Shared TypeScript type definitions
+
+**Files**:
+- `quiz.ts` - Quiz data structures (Quiz, Question, Answer, QuizSet)
+- `shims-recharts-vaul.d.ts` - Type shims for third-party libraries
+
+**Key Pattern**: Centralized type definitions for type safety across the project
 
 ### `/public` - Static Assets
-정적 파일 (이미지, 아이콘, 문서)
-- **`/backgrounds`**: 게임 배경 이미지 (WebP 최적화)
-- **`/games`**: 게임 히어로 이미지
-- **`/icons`**: 게임 아이콘 (woodcut 스타일)
-- **`/images`**: 게임 썸네일 및 로고 (WebP 최적화)
-- **404.html**: 커스텀 404 페이지
-- **robots.txt**: SEO 설정
-- **sitemap.xml**: 사이트맵
-- **sample-quizlet.csv**: Quizlet CSV 샘플
+**Purpose**: Static files served directly by Next.js/CDN
 
-### `/.deploy-logs` - Deployment Logs
-배포 로그 (JSON 형식, 타임스탬프별)
+**Structure**:
+- `public/images/` - Game thumbnails and logos (WebP optimized)
+- `public/backgrounds/` - Game background images (WebP optimized)
+- `public/icons/` - Game icons (woodcut style, WebP)
+- `public/games/` - Hero images
+- `public/404.html`, `public/robots.txt`, `public/sitemap.xml` - SEO and error pages
+- `public/sample-quizlet.csv` - Example CSV for Quizlet upload
 
-### `/.github` - GitHub Configuration
-- **`/workflows`**: GitHub Actions (deploy.yml)
-- **ISSUE_TEMPLATE**: 이슈 템플릿
-- **PULL_REQUEST_TEMPLATE.md**: PR 템플릿
+**Key Pattern**: WebP image format for 90% size reduction, organized by asset type
 
-## Core Components & Relationships
+### `/docs` - Documentation
+**Purpose**: Comprehensive project documentation
 
-### Frontend Architecture
-```
-app/layout.tsx (Root Layout)
-├── app/page.tsx (Home - GameHubGrid)
-├── app/games/page.tsx (Games Hub)
-│   ├── app/games/g1/page.tsx (BlackSwan)
-│   │   └── components/games/BlackSwanQuizPlayer.tsx
-│   ├── app/games/g2/page.tsx (Prisoner's Dilemma)
-│   │   └── components/games/UniversalQuizPlayer.tsx
-│   ├── app/games/g3/page.tsx (Signal Decoding)
-│   │   └── components/games/UniversalQuizPlayer.tsx
-│   └── app/games/quizlet/page.tsx (Card Matching)
-│       └── components/games/QuizletMatchGame.tsx
-├── app/admin/quiz/page.tsx (Admin Panel)
-│   ├── components/admin/QuizEditor.tsx
-│   ├── components/admin/DeployManager.tsx
-│   └── components/admin/CacheManager.tsx
-└── app/test-chatbot/page.tsx (Chatbot Test)
-    └── components/games/AIChatbot.tsx
-```
+**Files**:
+- `DEPLOYMENT.md` - Deployment guide
+- `DEPLOYMENT_ARCHITECTURE.md` - Architecture overview
+- `BACKEND_ARCHITECTURE.md` - Backend Lambda architecture
+- `404_PREVENTION.md` - 404 error prevention strategies
+- `MONITORING.md` - Monitoring and automation guide
+- `ADMIN_DEPLOY.md` - Admin panel deployment integration
+- `ADMIN_USAGE.md` - Admin panel usage guide
+- `AWS_OPTIMIZATION.md` - AWS infrastructure optimization
+- `DYNAMIC_DEPLOYMENT.md` - Dynamic site deployment guide
+- `TROUBLESHOOTING.md` - Common issues and solutions
 
-### API Architecture
-```
-app/api/
-├── chat/route.ts (Chatbot Proxy)
-│   └── backend/lambda/enhanced-chatbot-handler.py
-├── quiz/
-│   ├── route.ts (All Quizzes)
-│   ├── [date]/route.ts (Date-specific Quiz)
-│   └── aws/unified-quiz-lambda/quiz-handler.py
-└── admin/
-    ├── cache/route.ts (Cache Invalidation)
-    ├── metrics/route.ts (CloudWatch Metrics)
-    └── lib/admin-utils.ts (AWS SDK)
-```
-
-### Data Flow
-```
-User Request
-  ↓
-Next.js API Route (app/api)
-  ↓
-AWS Lambda (backend/lambda or aws/unified-quiz-lambda)
-  ↓
-DynamoDB (sedaily-quiz-data)
-  ↓
-DynamoDB Streams
-  ↓
-Auto-Deploy Lambda (backend/lambda/auto-deploy-trigger.py)
-  ↓
-CloudFront Invalidation
-  ↓
-SNS Notification (Slack/Discord)
-```
-
-### Caching Strategy
-```
-Level 1: localStorage (Client-side)
-  ↓ (miss)
-Level 2: Next.js API Route Cache (Server-side)
-  ↓ (miss)
-Level 3: DynamoDB Query (Database)
-```
+**Key Pattern**: Markdown documentation for each major system component
 
 ## Architectural Patterns
 
-### 1. App Router Pattern (Next.js 15)
-- 파일 시스템 기반 라우팅
-- Server Components 기본, Client Components 명시적 선언
-- API Routes를 통한 서버리스 API
+### 1. Next.js App Router Pattern
+- **Server Components**: Default for data fetching and rendering
+- **Client Components**: Interactive UI with `"use client"` directive
+- **API Routes**: Server-side endpoints in `app/api/`
+- **Dynamic Routing**: `[date]` folders for date-based quiz pages
+- **Layouts**: Nested layouts with `layout.tsx` files
 
 ### 2. Component Composition
-- Atomic Design 원칙 (ui → games → admin)
-- Radix UI 기반 접근성 우선 컴포넌트
-- Compound Component Pattern (QuizPlayer + QuizQuestion)
+- **Atomic Design**: Base UI components (`components/ui/`) composed into features
+- **Feature Components**: Game-specific components in `components/games/`
+- **Container/Presenter**: Hooks manage state, components render UI
+- **Radix UI Primitives**: Accessible, unstyled components styled with Tailwind
 
-### 3. Custom Hooks Pattern
-- 비즈니스 로직 분리 (useQuizState, useRealtimeQuiz)
-- 재사용 가능한 상태 관리
-- localStorage 통합
+### 3. State Management
+- **React Hooks**: useState, useEffect for local state
+- **Custom Hooks**: Encapsulate complex logic (quiz state, keyboard, real-time)
+- **localStorage**: Client-side persistence for quiz progress
+- **Server State**: API routes fetch from DynamoDB, cached in memory
 
-### 4. RAG (Retrieval-Augmented Generation)
-- 3단계 지식 통합 (BigKinds + 퀴즈 컨텍스트 + 기사 URL)
-- Intelligent Fallback (API 실패 시 순수 Claude)
-- 게임별 전문화된 프롬프트
+### 4. API Architecture
+- **Next.js API Routes**: Server-side endpoints for quiz data and admin operations
+- **Lambda Functions**: Python backend for AI chatbot and auto-deployment
+- **DynamoDB**: NoSQL database for quiz data storage
+- **BigKinds API**: External news API for RAG context
+- **AWS Bedrock**: Claude 3 Sonnet for AI responses
 
-### 5. Serverless Architecture
-- AWS Lambda (Python 3.11)
-- DynamoDB (NoSQL)
-- CloudFront (CDN)
-- API Gateway (REST API)
+### 5. Deployment Pipeline
+- **Frontend**: Vercel or AWS Amplify (automatic Git deployments)
+- **Backend**: Serverless Framework → AWS Lambda (us-east-1)
+- **CDN**: CloudFront for static asset delivery
+- **Monitoring**: CloudWatch + SNS for alerts
+- **Automation**: DynamoDB Streams trigger auto-redeployment
 
-### 6. Event-Driven Architecture
-- DynamoDB Streams → Lambda Trigger
-- CloudWatch Events → SNS → Slack/Discord
-- 30초 폴링 (Client-side)
+## Key Relationships
 
-### 7. Infrastructure as Code
-- Serverless Framework (serverless.yml)
-- AWS SDK (JavaScript/Python)
-- 배포 스크립트 자동화 (scripts/)
+### Frontend ↔ Backend
+- Frontend calls Next.js API routes (`/api/quiz`, `/api/chat`)
+- API routes proxy to Lambda functions or query DynamoDB directly
+- Real-time updates via 30-second polling in admin panel
 
-## Key Design Decisions
+### Admin ↔ User
+- Admin creates/edits quizzes → DynamoDB
+- DynamoDB Streams trigger Lambda → CloudFront invalidation
+- Users fetch latest quizzes via API routes (30s cache)
 
-### 1. 동적 사이트 전환 (v2.5.0)
-- **이유**: 관리자-사용자 실시간 소통 필요
-- **방법**: output: 'export' 제거, API Routes 활성화
-- **트레이드오프**: 정적 사이트 대비 복잡도 증가, Vercel/Amplify 의존
+### AI Chatbot Flow
+1. User sends message → Next.js API route (`/api/chat`)
+2. API route forwards to Lambda chatbot
+3. Lambda fetches BigKinds news + quiz context
+4. Lambda calls Claude 3 Sonnet (Bedrock) with RAG context
+5. Response returned to user via API route
 
-### 2. 30초 폴링 (vs WebSocket)
-- **이유**: 구현 단순성, 서버리스 친화적
-- **방법**: useRealtimeQuiz 훅 + setInterval
-- **트레이드오프**: 실시간성 약간 낮음, 서버 부하 낮음
+### Deployment Flow
+1. Developer runs `pnpm deploy` or pushes to Git
+2. Scripts validate build (deploy-guard)
+3. Frontend deploys to Vercel/Amplify
+4. Backend deploys to Lambda via Serverless Framework
+5. CloudFront cache invalidated
+6. Monitoring dashboard tracks metrics
 
-### 3. DynamoDB Streams 자동 배포
-- **이유**: 수동 배포 제거, 즉각적 반영
-- **방법**: Streams → Lambda → CloudFront Invalidation
-- **트레이드오프**: 복잡도 증가, 안정성 향상
+## Configuration Files
 
-### 4. 3단계 캐싱
-- **이유**: 성능 최적화, API 호출 최소화
-- **방법**: localStorage → API Cache → DynamoDB
-- **트레이드오프**: 캐시 무효화 복잡도
+- `next.config.mjs` - Next.js configuration (dynamic site, image optimization)
+- `tsconfig.json` - TypeScript compiler options
+- `tailwind.config.ts` - Tailwind CSS configuration
+- `components.json` - Shadcn UI component configuration
+- `vercel.json` - Vercel deployment settings
+- `amplify.yml` - AWS Amplify build settings
+- `serverless.yml` - Serverless Framework Lambda configuration
+- `.env`, `.env.local` - Environment variables (API keys, URLs)
+- `package.json` - Node.js dependencies and scripts
+- `pnpm-lock.yaml` - Dependency lock file (pnpm)
 
-### 5. WebP 이미지 최적화
-- **이유**: 90% 용량 감소
-- **방법**: PNG → WebP 변환
-- **트레이드오프**: 구형 브라우저 호환성 (fallback 필요)
+## Build Output
+
+- `.next/` - Next.js build cache and server bundles
+- `.deploy-logs/` - JSON logs of deployment history
+- `.vercel/` - Vercel deployment metadata
+- `backend/.serverless/` - Serverless Framework deployment artifacts

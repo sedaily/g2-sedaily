@@ -1,0 +1,30 @@
+# 빌드 제외
+.next/
+out/
+node_modules/
+
+# 로그
+.deploy-logs/
+*.log
+
+# 환경 변수
+.env.local
+.env*.local
+
+# 테스트
+*.test.ts
+*.test.tsx
+__tests__/
+
+# 문서 (선택)
+docs/
+*.md
+!README.md
+
+# 스크립트 (배포 후 불필요)
+scripts/deploy-*.mjs
+scripts/quick-deploy.mjs
+scripts/ultimate-deploy.mjs
+
+# AWS 설정
+.aws/

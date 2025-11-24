@@ -1,6 +1,6 @@
 {
   "name": "g2-clone",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -26,7 +26,8 @@
     "aws:dashboard": "node scripts/aws-setup.mjs dashboard",
     "verify:build": "ls -la out/ && echo '=== Critical Files ===' && ls -la out/index.html out/404.html out/admin/quiz/index.html 2>/dev/null || echo 'Some files missing'",
     "cloudfront:invalidate": "aws cloudfront create-invalidation --distribution-id E8HKFQFSQLNHZ --paths '/*'",
-    "aws:status": "aws sts get-caller-identity && aws s3 ls s3://g2-frontend-ver2 --summarize"
+    "aws:status": "aws sts get-caller-identity && aws s3 ls s3://g2-frontend-ver2 --summarize",
+    "verify:env": "node scripts/verify-env.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-cloudfront": "^3.937.0",
