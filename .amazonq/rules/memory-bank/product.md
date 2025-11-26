@@ -1,68 +1,95 @@
-# Product Overview
+# Product Overview - 서울경제 뉴스게임 플랫폼
 
-## Project Purpose
-서울경제 뉴스게임 플랫폼 - 경제 뉴스를 기반으로 한 인터랙티브 퀴즈 게임 플랫폼으로, 사용자가 경제 개념을 게임을 통해 학습할 수 있도록 설계되었습니다.
+## Purpose
+Interactive quiz game platform that transforms economic news into engaging educational games. Helps users learn about economics, finance, and current events through gamified experiences.
 
 ## Value Proposition
-- **교육적 게임화**: 복잡한 경제 개념을 게임 형식으로 쉽게 학습
-- **실시간 뉴스 연동**: BigKinds API를 통한 최신 경제 뉴스 기반 퀴즈
-- **AI 기반 학습 지원**: Claude 3 Sonnet을 활용한 RAG 챗봇으로 맥락 있는 설명 제공
-- **다양한 게임 형식**: 4가지 게임 타입으로 다각도 학습 경험
+- **Educational**: Learn complex economic concepts through interactive gameplay
+- **Current**: Quiz content based on real-time economic news from BigKinds API
+- **Engaging**: Multiple game formats (BlackSwan, Prisoner's Dilemma, Signal Decoding, Card Matching)
+- **AI-Powered**: RAG-based chatbot provides contextual explanations using Claude 3 Sonnet
+- **Accessible**: Static site deployment ensures fast loading and high availability
 
 ## Key Features
 
-### 1. 게임 타입 (4종)
-- **BlackSwan (g1)**: 경제 이벤트 예측 게임 - 블랙스완 이벤트 시나리오 분석
-- **Prisoner's Dilemma (g2)**: 경제 딜레마 상황 게임 - 게임 이론 기반 의사결정
-- **Signal Decoding (g3)**: 경제 신호 해석 게임 - 경제 지표 및 신호 분석
-- **Card Matching (quizlet)**: 경제 용어 매칭 게임 - 플래시카드 방식 학습
+### 4 Game Types
+1. **BlackSwan (g1)**: Economic event prediction game - identify unexpected market events
+2. **Prisoner's Dilemma (g2)**: Economic dilemma scenarios - strategic decision making
+3. **Signal Decoding (g3)**: Economic signal interpretation - decode market indicators
+4. **Card Matching (quizlet)**: Economic term matching - vocabulary building
 
-### 2. 동적 퀴즈 시스템
-- **실시간 퀴즈 관리**: API Gateway + Lambda를 통한 동적 CRUD
-- **Archive 시스템**: 과거 퀴즈 날짜별 조회 및 재플레이
-- **관리자 패널**: 퀴즈 생성/수정/삭제 웹 인터페이스
-- **캐시 최적화**: no-store 정책으로 실시간 데이터 반영
+### Dynamic Quiz System
+- Admin panel for creating/editing/deleting quizzes
+- Multiple questions per date support
+- Both multiple-choice and short-answer formats
+- Related news article integration
+- Tag-based categorization
 
-### 3. RAG 기반 AI 챗봇
-- **컨텍스트 인식**: 현재 플레이 중인 퀴즈와 관련 뉴스 기사 참조
-- **BigKinds 연동**: 최근 30일 경제 뉴스 자동 검색
-- **게임별 전문화**: 각 게임 타입에 맞춘 응답 생성
-- **Claude 3 Sonnet**: AWS Bedrock을 통한 고품질 AI 응답
+### AI Chatbot (RAG-based)
+- Context-aware responses using quiz content and related articles
+- BigKinds API integration for latest economic news (30-day window)
+- Game-specific system prompts for specialized responses
+- 250-350 character concise answers
+- Intelligent fallback mechanisms
 
-### 4. 관리자 기능
-- **퀴즈 에디터**: 객관식/주관식 문제 생성 UI
-- **Quizlet 업로더**: CSV 파일 업로드로 대량 카드 생성
-- **캐시 관리**: 브라우저 캐시 및 CloudFront 무효화
-- **배포 가이드**: CLI 명령어 기반 배포 안내
+### Archive System
+- Browse past quizzes by date
+- Dynamic loading from DynamoDB via Lambda API
+- Multi-layer caching (memory, localStorage, API)
+- Automatic cache invalidation on content updates
+
+### Admin Panel
+- Password-protected access (sessionStorage-based)
+- Quiz management (create, edit, delete)
+- Quizlet CSV upload for card matching games
+- Cache management tools
+- Preview functionality before publishing
 
 ## Target Users
 
-### 1차 사용자 (일반 사용자)
-- 경제 뉴스에 관심 있는 일반인
-- 경제 개념을 학습하고자 하는 학생
-- 게임 형식의 학습을 선호하는 사용자
+### Primary Users
+- **Students**: Learning economics and finance concepts
+- **Professionals**: Staying updated on economic news
+- **General Public**: Interested in economic literacy
 
-### 2차 사용자 (관리자)
-- 서울경제 콘텐츠 편집자
-- 퀴즈 제작 담당자
-- 플랫폼 운영 관리자
+### Admin Users
+- **Content Creators**: Seoul Economic Daily staff
+- **Editors**: Managing quiz content and quality
+- **Administrators**: System maintenance and monitoring
 
 ## Use Cases
 
-### 사용자 워크플로우
-1. **게임 선택**: 메인 페이지에서 4가지 게임 중 선택
-2. **퀴즈 플레이**: 오늘의 퀴즈 또는 Archive에서 과거 퀴즈 선택
-3. **AI 챗봇 활용**: 문제 풀이 중 궁금한 점 실시간 질문
-4. **결과 확인**: 점수 및 정답 해설 확인
+### Learning Path
+1. User visits game hub → selects game type
+2. Views archive → picks date/topic of interest
+3. Plays quiz → receives immediate feedback
+4. Uses AI chatbot → gets detailed explanations
+5. Reviews completion screen → sees performance summary
 
-### 관리자 워크플로우
-1. **퀴즈 생성**: 관리자 페이지에서 문제 작성
-2. **API 저장**: Lambda를 통해 DynamoDB에 저장
-3. **실시간 반영**: 사용자 페이지에 즉시 표시
-4. **관리**: 필요시 퀴즈 삭제 또는 수정
+### Content Management
+1. Admin logs in → accesses admin panel
+2. Creates new quiz → adds multiple questions
+3. Previews content → verifies accuracy
+4. Publishes → automatically invalidates cache
+5. Monitors → checks user engagement
+
+### Daily Engagement
+1. New quiz published daily based on economic news
+2. Users return for fresh content
+3. Archive grows as knowledge repository
+4. Social sharing drives new user acquisition
 
 ## Technical Highlights
-- **하이브리드 아키텍처**: 정적 사이트 (SSG) + 동적 API (Lambda)
-- **글로벌 배포**: CloudFront CDN을 통한 빠른 로딩
-- **서버리스**: AWS Lambda로 인프라 관리 최소화
-- **타입 안전성**: TypeScript 5 + React 19로 안정적인 코드베이스
+- **Hybrid Architecture**: Static frontend + dynamic API backend
+- **Performance**: Multi-layer caching, CDN delivery via CloudFront
+- **Scalability**: Serverless Lambda functions, DynamoDB auto-scaling
+- **SEO-Friendly**: Static HTML generation for all pages
+- **Keyboard Shortcuts**: A/B/C/D keys for quick answer selection
+- **Responsive Design**: Mobile-first approach with adaptive layouts
+
+## Success Metrics
+- Daily active users and quiz completion rates
+- Average time spent per quiz session
+- AI chatbot interaction frequency
+- Archive browsing patterns
+- Content creation velocity (admin side)

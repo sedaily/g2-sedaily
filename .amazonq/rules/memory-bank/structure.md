@@ -1,179 +1,238 @@
-# Project Structure
+# Project Structure - 서울경제 뉴스게임 플랫폼
 
 ## Directory Organization
 
 ### Frontend (Next.js App Router)
 ```
 app/
-├── admin/quiz/          # 관리자 퀴즈 관리 페이지
-├── api/                 # API 라우트 (정적 빌드에서 제외)
-│   ├── admin/          # 관리자 API 엔드포인트
-│   ├── chat/           # 챗봇 API 프록시
-│   └── quiz/           # 퀴즈 API 프록시
-├── games/              # 게임 페이지
-│   ├── g1/            # BlackSwan 게임
-│   ├── g2/            # Prisoner's Dilemma 게임
-│   ├── g3/            # Signal Decoding 게임
-│   ├── g4/            # 예비 게임 슬롯
-│   └── quizlet/       # Card Matching 게임
-├── test-chatbot/       # 챗봇 테스트 페이지
-├── layout.tsx          # 루트 레이아웃
-├── page.tsx            # 메인 랜딩 페이지
-└── globals.css         # 전역 스타일
+├── layout.tsx              # Root layout with header/footer
+├── page.tsx                # Home page (redirects to /games)
+├── globals.css             # Global styles and Tailwind imports
+├── games/
+│   ├── page.tsx            # Game hub with 4 game cards
+│   ├── g1/                 # BlackSwan game
+│   │   ├── page.tsx        # Redirects to /play
+│   │   ├── play/page.tsx   # Quiz player (query param routing)
+│   │   └── archive/page.tsx # Past quizzes list
+│   ├── g2/                 # Prisoner's Dilemma game
+│   ├── g3/                 # Signal Decoding game
+│   ├── g4/                 # Reserved for future game
+│   └── quizlet/
+│       └── page.tsx        # Card matching game
+├── admin/
+│   └── quiz/page.tsx       # Admin panel (password-protected)
+└── test-chatbot/
+    └── page.tsx            # Chatbot testing interface
 ```
 
 ### Components
 ```
 components/
-├── admin/              # 관리자 전용 컴포넌트
-│   ├── QuizEditor.tsx      # 퀴즈 작성 에디터
-│   ├── QuizList.tsx        # 퀴즈 목록 및 삭제
-│   ├── QuizletUploader.tsx # CSV 업로드
-│   ├── CacheManager.tsx    # 캐시 관리
-│   └── DeployManager.tsx   # 배포 가이드
-├── games/              # 게임 관련 컴포넌트
-│   ├── QuizPlayer.tsx          # 범용 퀴즈 플레이어
-│   ├── BlackSwanQuizPlayer.tsx # g1 전용 플레이어
-│   ├── QuizletMatchGame.tsx    # Quizlet 게임 로직
-│   ├── AIChatbot.tsx           # AI 챗봇 UI
-│   ├── ArchiveCard.tsx         # Archive 날짜 카드
-│   └── GameCard.tsx            # 게임 선택 카드
-├── navigation/         # 네비게이션 컴포넌트
-│   ├── SedailyHeader.tsx   # 헤더
-│   └── Footer.tsx          # 푸터
-└── ui/                 # Radix UI 기반 재사용 컴포넌트
-    ├── button.tsx
-    ├── dialog.tsx
-    ├── sidebar.tsx
-    └── [30+ UI components]
+├── games/
+│   ├── UniversalQuizPlayer.tsx  # Main quiz player (keyboard shortcuts)
+│   ├── QuizQuestion.tsx         # Individual question renderer
+│   ├── QuizCompletion.tsx       # Completion screen with stats
+│   ├── AIChatbot.tsx            # RAG-based AI assistant
+│   ├── ArchiveCard.tsx          # Date card for archive page
+│   ├── GameCard.tsx             # Game hub card component
+│   └── QuizletMatchGame.tsx     # Card matching game logic
+├── admin/
+│   ├── QuizEditor.tsx           # Multi-question editor (v2.10.0+)
+│   ├── QuizPreview.tsx          # Preview before publishing
+│   ├── QuizList.tsx             # Edit/delete existing quizzes
+│   ├── QuizletUploader.tsx      # CSV upload for card games
+│   ├── CacheManager.tsx         # Cache invalidation tools
+│   └── PasswordModal.tsx        # Admin authentication
+├── navigation/
+│   ├── SedailyHeader.tsx        # Top navigation bar
+│   └── Footer.tsx               # Site footer
+└── ui/                          # Radix UI components (shadcn/ui)
+    ├── button.tsx, card.tsx, dialog.tsx, etc.
+    └── sidebar.tsx              # Admin sidebar navigation
+```
+
+### Library Functions
+```
+lib/
+├── games-data.ts           # Game metadata and configuration
+├── quiz-api-client.ts      # Lambda API client with caching
+├── quiz-cache.ts           # localStorage cache management
+├── admin-utils.ts          # Admin operations (save, validate)
+├── chatbot-api.ts          # AI chatbot API client
+├── quiz-themes.ts          # Game-specific theme styles
+├── date-utils.ts           # Date formatting utilities
+└── utils.ts                # General utilities (cn, etc.)
 ```
 
 ### Backend (AWS Lambda)
 ```
-backend/lambda/
-├── enhanced-chatbot-handler.py  # RAG 챗봇 Lambda (Python 3.11)
-├── auto-deploy-trigger.py       # 자동 배포 트리거
-├── requirements.txt             # Python 의존성
-└── requirements-auto-deploy.txt
-
 aws/quiz-lambda/
-├── handler.py           # 퀴즈 CRUD Lambda (Python 3.11)
-├── deploy.sh           # Lambda 배포 스크립트
-├── setup-api-gateway.sh # API Gateway 설정
-└── trust-policy.json   # IAM 정책
-```
+├── handler.py              # Quiz API Lambda (Python 3.11)
+├── deploy.sh               # Deployment script
+└── setup-api-gateway.sh    # API Gateway configuration
 
-### Library & Utilities
-```
-lib/
-├── quiz-api-client.ts   # Lambda API 클라이언트 (no-store 캐시)
-├── chatbot-api.ts       # 챗봇 API 클라이언트
-├── admin-utils.ts       # 관리자 유틸리티
-├── bigkinds.ts          # BigKinds API 연동
-├── games-data.ts        # 게임 메타데이터
-├── quiz-themes.ts       # 게임별 테마 설정
-└── utils.ts             # 공통 유틸리티
-
-hooks/
-├── useQuizState.ts      # 퀴즈 상태 관리
-├── useQuizKeyboard.ts   # 키보드 단축키
-└── useRealtimeQuiz.ts   # 실시간 퀴즈 로딩
-
-types/
-├── quiz.ts              # 퀴즈 타입 정의
-└── shims-recharts-vaul.d.ts
+backend/lambda/
+├── enhanced-chatbot-handler.py  # RAG chatbot Lambda
+└── requirements.txt        # Python dependencies
 ```
 
 ### Configuration & Scripts
 ```
 scripts/
-├── deploy.sh            # 프론트엔드 배포 (S3 + CloudFront)
-├── build-export.mjs     # 정적 빌드 스크립트
-├── config.mjs           # 배포 설정
-└── utils.mjs            # 배포 유틸리티
+├── deploy.sh               # Frontend deployment (S3 + CloudFront)
+├── build-export.mjs        # Custom build script
+└── config.mjs              # Deployment configuration
 
-docs/
-├── DEPLOYMENT.md                # 배포 가이드
-├── DYNAMIC_QUIZ_SETUP.md        # 동적 퀴즈 설정
-├── BACKEND_ARCHITECTURE.md      # 백엔드 아키텍처
-├── DEPLOYMENT_ARCHITECTURE.md   # 배포 아키텍처
-└── TROUBLESHOOTING.md           # 트러블슈팅
+Root Config Files:
+├── next.config.mjs         # Next.js configuration (output: 'export')
+├── tailwind.config.ts      # Tailwind CSS 4 configuration
+├── tsconfig.json           # TypeScript configuration
+├── package.json            # Dependencies and scripts
+└── .env.local              # Environment variables (API URLs)
 ```
 
 ## Core Components Relationships
 
-### 1. 퀴즈 플레이 플로우
+### Quiz Flow Architecture
 ```
-User → GameCard → QuizPlayer → quiz-api-client → API Gateway → Lambda → DynamoDB
-                              ↓
-                         AIChatbot → chatbot-api → Lambda → Bedrock + BigKinds
+User → Archive Page → QuizList Component
+                    ↓
+              fetchAvailableDates()
+                    ↓
+              Lambda API (GET /quiz/{gameType}/dates)
+                    ↓
+              DynamoDB Query
+                    ↓
+              Date Cards Rendered
+                    ↓
+User Clicks Date → /games/g2/play?date=20251126
+                    ↓
+              normalizeDate() → "2025-11-26"
+                    ↓
+              getQuestionsForDate()
+                    ↓
+              Multi-layer Cache Check
+                    ↓
+              Lambda API (GET /quiz/{gameType}/{date})
+                    ↓
+              UniversalQuizPlayer Renders
+                    ↓
+              User Answers → AI Chatbot Available
 ```
 
-### 2. 관리자 퀴즈 생성 플로우
+### Admin Flow Architecture
 ```
-Admin → QuizEditor → admin-utils → API Gateway → Lambda → DynamoDB
+Admin → /admin/quiz → PasswordModal
+                    ↓
+              QuizEditor (Multiple Questions)
+                    ↓
+              validateQuestion() for each
+                    ↓
+              saveToLambda(questions[], date)
+                    ↓
+              Lambda API (POST /quiz)
+                    ↓
+              DynamoDB PutItem
+                    ↓
+              Auto Cache Invalidation
+                    ↓
+              Success Confirmation
 ```
 
-### 3. Archive 조회 플로우
+### AI Chatbot Architecture
 ```
-User → Archive Page → quiz-api-client.getDates() → Lambda → DynamoDB
-                   ↓
-              ArchiveCard → quiz-api-client.getQuiz() → Lambda → DynamoDB
+User Question → AIChatbot Component
+                    ↓
+              sendChatbotMessage({
+                question,
+                gameType,
+                questionText,
+                quizArticleUrl
+              })
+                    ↓
+              Lambda (enhanced-chatbot-handler.py)
+                    ↓
+              RAG Knowledge Base:
+              - BigKinds API (30-day news)
+              - Quiz article URL
+              - Current question context
+                    ↓
+              Claude 3 Sonnet (Bedrock)
+                    ↓
+              250-350 char response
+                    ↓
+              Display to User
 ```
 
 ## Architectural Patterns
 
-### 1. 하이브리드 렌더링
-- **정적 페이지**: 게임 UI, 레이아웃, 네비게이션 (SSG)
-- **동적 데이터**: 퀴즈 콘텐츠, 챗봇 응답 (API)
-- **이점**: 빠른 로딩 + 실시간 업데이트
+### Hybrid Static-Dynamic Pattern
+- **Static Pages**: All UI pages pre-rendered at build time
+- **Dynamic Data**: Quiz content loaded via API at runtime
+- **Query Param Routing**: `/play?date=X` instead of `/[date]` for static compatibility
+- **Benefit**: Fast page loads + fresh content without rebuilds
 
-### 2. 서버리스 아키텍처
-- **Frontend**: S3 + CloudFront (정적 호스팅)
-- **Backend**: Lambda + API Gateway (서버리스 API)
-- **Database**: DynamoDB (NoSQL)
-- **AI**: AWS Bedrock (Claude 3 Sonnet)
+### Multi-Layer Caching Strategy
+1. **Memory Cache**: 5-minute in-memory cache for quiz data
+2. **Date Cache**: 10-minute Map-based cache per game/date
+3. **localStorage**: 15-minute browser storage cache
+4. **API**: Lambda with DynamoDB as source of truth
+5. **Auto-Invalidation**: Clears all layers on content updates
 
-### 3. 컴포넌트 계층 구조
+### Component Composition Pattern
+- **UniversalQuizPlayer**: Orchestrates quiz flow
+  - Uses QuizQuestion for rendering
+  - Uses QuizCompletion for results
+  - Integrates AIChatbot for help
+- **Separation of Concerns**: Display vs. Logic vs. Data
+- **Reusability**: Same player for all 3 quiz games (g1, g2, g3)
+
+### Data Transformation Pattern
+```typescript
+// Frontend Format (QuizQuestion)
+{
+  id, date, theme, questionType,
+  question_text, choices, correct_index,
+  explanation, related_article
+}
+
+// Lambda Format (LambdaQuestion)
+{
+  id, questionType, question,
+  options, answer, explanation,
+  newsLink, tags, relatedArticle
+}
+
+// Conversion handled by admin-utils.ts
 ```
-Layout (app/layout.tsx)
-├── Navigation (SedailyHeader, Footer)
-├── Page (app/games/[gameType]/page.tsx)
-│   ├── Game Components (QuizPlayer, BlackSwanQuizPlayer)
-│   │   ├── UI Components (Button, Dialog, Card)
-│   │   └── Hooks (useQuizState, useQuizKeyboard)
-│   └── AIChatbot
-└── Theme Provider
-```
 
-### 4. 상태 관리 패턴
-- **로컬 상태**: React useState (UI 상태)
-- **커스텀 훅**: useQuizState (퀴즈 로직)
-- **API 상태**: fetch + no-store 캐시 (실시간 데이터)
-- **테마**: next-themes (다크모드)
-
-### 5. 타입 안전성
-- **TypeScript 5**: 전체 코드베이스 타입 정의
-- **types/quiz.ts**: 퀴즈 데이터 구조 중앙 관리
-- **API 응답**: 타입 가드로 런타임 검증
+### Theme System Pattern
+- **Game-Specific Themes**: Each game has unique color palette
+- **Centralized Configuration**: quiz-themes.ts exports THEME_STYLES
+- **Consistent Application**: Used across QuizPlayer, ArchiveCard, GameCard
+- **Newspaper Aesthetic**: Vintage typography, muted colors, hairline borders
 
 ## Key Design Decisions
 
-### 1. 정적 빌드 + 동적 API
-- 게임 UI는 변경 빈도가 낮아 정적 생성
-- 퀴즈 데이터는 자주 변경되어 API로 분리
-- CloudFront 캐싱으로 글로벌 성능 최적화
+### Why Query Params Instead of Dynamic Routes?
+- Next.js `output: 'export'` doesn't support `[date]` dynamic segments
+- Query params (`?date=X`) work with static generation
+- Single `/play` page handles all dates via useSearchParams()
 
-### 2. Lambda 함수 분리
-- **quiz-lambda**: 퀴즈 CRUD (us-east-1)
-- **chatbot-lambda**: AI 챗봇 (ap-northeast-2)
-- 각 기능별 독립적 배포 및 스케일링
+### Why Multi-Layer Caching?
+- Reduces Lambda invocations (cost savings)
+- Improves user experience (faster loads)
+- Balances freshness vs. performance
+- Auto-invalidation ensures consistency
 
-### 3. no-store 캐시 정책
-- Archive 페이지에서 최신 퀴즈 즉시 반영
-- force-cache 문제 해결 (v2.8.1)
+### Why Separate Lambda Functions?
+- **Quiz API**: Simple CRUD operations, fast responses
+- **Chatbot**: Complex RAG logic, longer execution time
+- **Isolation**: Failures don't cascade
+- **Scaling**: Independent concurrency limits
 
-### 4. Radix UI 기반 컴포넌트
-- 접근성 (a11y) 기본 지원
-- 커스터마이징 용이
-- Tailwind CSS와 완벽 통합
+### Why Static Export?
+- **Performance**: Pre-rendered HTML served from CDN
+- **Cost**: No server costs, only S3 + CloudFront
+- **Reliability**: No server downtime
+- **SEO**: Fully crawlable static pages

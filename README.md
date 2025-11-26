@@ -4,8 +4,8 @@
 
 **🌐 Live:** https://g2.sedaily.ai  
 **📊 업데이트:** 2025-11-26  
-**🚀 버전:** v2.8.1  
-**⚡ 타입:** 정적 사이트 + 동적 API
+**🚀 버전:** v2.10.1  
+**⚡ 타입:** 정적 사이트 + 동적 API (Query Param 라우팅)
 
 ## 🎮 게임 종류
 
@@ -48,12 +48,14 @@ pnpm dev
 
 ### 배포
 ```bash
-# Frontend
-./scripts/deploy.sh
+# Frontend (권장)
+bash scripts/deploy.sh
 
 # Backend (Quiz API)
 cd aws/quiz-lambda
-./deploy.sh
+bash deploy.sh
+
+# 주의: pnpm build:export는 사용하지 마세요 (에러 발생)
 ```
 
 ## 🎯 주요 기능
@@ -90,6 +92,28 @@ NEXT_PUBLIC_QUIZ_SAVE_URL=https://...
 - [백엔드 아키텍처](docs/BACKEND_ARCHITECTURE.md)
 
 ## 📊 최근 업데이트
+
+**v2.10.1 (2025-11-26) - 퀴즈 수정 기능**
+- ✅ 기존 퀴즈 불러오기 및 수정
+- ✅ 수정 모드 UI (배지 표시)
+- ✅ 모든 기존 값 유지 (문제, 선택지, 정답, 해설)
+- ✅ "퀴즈 수정" 탭 이름 변경
+
+**v2.10.0 (2025-11-26) - 여러 문제 추가 기능**
+- ✅ 한 날짜에 여러 문제 추가 가능
+- ✅ 문제 간 이동 (이전/다음 버튼)
+- ✅ 문제 삭제 기능 (2개 이상일 때)
+- ✅ 일괄 저장 및 검증
+- ✅ 배포 스크립트 간소화 (deploy.sh 권장)
+
+**v2.9.0 (2025-11-26) - CRITICAL FIX**
+- ✅ 동적 라우트 제거 (`/games/g2/[date]` → `/games/g2/play?date=`)
+- ✅ 정적 빌드 호환성 문제 해결 (output: 'export')
+- ✅ UniversalQuizPlayer 개선 (키보드 단축키 A,B,C,D, 완료 화면)
+- ✅ 모든 게임 (g1, g2, g3) 라우팅 통일
+- ✅ 자동 캐시 초기화 (퀴즈 저장/삭제 시)
+- ✅ Vercel 의존성 제거 (@vercel/analytics)
+- ✅ 배포 관리 페이지 제거 (UI 간소화)
 
 **v2.8.1 (2025-11-26)**
 - ✅ Archive 페이지 캐시 문제 해결 (force-cache → no-store)

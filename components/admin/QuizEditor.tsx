@@ -149,11 +149,11 @@ export function QuizEditor({ question, validationErrors, onUpdate }: QuizEditorP
             <Label htmlFor="answer">정답 *</Label>
             <Input
               id="answer"
-              value={question.correct_index !== null ? question.choices[0] || "" : ""}
+              value={question.choices[0] || ""}
               onChange={(e) => {
                 onUpdate({
                   choices: [e.target.value],
-                  correct_index: 0,
+                  correct_index: null,
                 })
               }}
               placeholder="정답을 입력하세요"

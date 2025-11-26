@@ -4,13 +4,18 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trash2, RefreshCw } from "lucide-react"
+import { Trash2, RefreshCw, Edit } from "lucide-react"
 import { fetchAvailableDates, fetchQuizDataByDate } from "@/lib/quiz-api-client"
 import type { Question } from "@/lib/games-data"
+import type { QuizQuestion } from "@/types/quiz"
 
 type GameType = "BlackSwan" | "PrisonersDilemma" | "SignalDecoding"
 
-export function QuizList() {
+type QuizListProps = {
+  onEdit?: (questions: QuizQuestion[], date: string) => void
+}
+
+export function QuizList({ onEdit }: QuizListProps) {
   const [gameType, setGameType] = useState<GameType>("BlackSwan")
   const [dates, setDates] = useState<string[]>([])
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -56,6 +61,43 @@ export function QuizList() {
     }
   }
 
+  const handleEdit = () => {
+    if (!selectedDate || !onEdit) return
+
+    // Lambda Question을 QuizQuestion 형식으로 변환
+    const convertedQuestions: QuizQuestion[] = questions.map((q) => {
+      const isMultipleChoice = q.questionType === "객관식"
+      
+      return {
+        id: q.id,
+        date: selectedDate,
+        theme: gameType,
+        questionType: q.questionType,
+        question_text: q.question,
+        choices: isMultipleChoice 
+          ? q.options || []
+          : [q.answer], // 주관식은 answer를 choices[0]에 저장
+        correct_index: isMultipleChoice 
+          ? (q.answer ? parseInt(q.answer) - 1 : null) // "1" -> 0, "2" -> 1
+          : null,
+        explanation: q.explanation,
+        related_article: q.relatedArticle ? {
+          title: q.relatedArticle.title,
+          snippet: q.relatedArticle.excerpt,
+          url: q.newsLink
+        } : {
+          title: "",
+          snippet: "",
+          url: q.newsLink
+        },
+        creator: "",
+        tags: q.tags || ""
+      }
+    })
+
+    onEdit(convertedQuestions, selectedDate)
+  }
+
   const handleDelete = async () => {
     if (!selectedDate || !confirm(`${selectedDate} 퀴즈를 삭제하시겠습니까?`)) return
 
@@ -67,6 +109,12 @@ export function QuizList() {
       )
 
       if (response.ok) {
+        // 캐시 자동 초기화
+        const { clearQuizDataCache, clearDateCache } = await import("@/lib/quiz-api-client")
+        clearQuizDataCache()
+        clearDateCache(gameType, selectedDate)
+        console.log('[Admin] Quiz cache cleared after deletion')
+        
         alert("삭제 완료!")
         setSelectedDate(null)
         setQuestions([])
@@ -84,7 +132,10 @@ export function QuizList() {
   return (
     <div className="space-y-6">
       <Card className="p-6">
-        <h2 className="text-xl font-bold mb-4">퀴즈 삭제</h2>
+        <h2 className="text-xl font-bold mb-4">퀴즈 수정</h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          저장된 퀴즈를 조회하고 수정 또는 삭제할 수 있습니다.
+        </p>
 
         <div className="space-y-4">
           <div className="flex gap-2">
@@ -137,10 +188,22 @@ export function QuizList() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Badge variant="outline">{questions.length}개 문제</Badge>
-                <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {deleting ? "삭제 중..." : "삭제"}
-                </Button>
+                <div className="flex gap-2">
+                  {onEdit && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleEdit()}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      수정
+                    </Button>
+                  )}
+                  <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    {deleting ? "삭제 중..." : "삭제"}
+                  </Button>
+                </div>
               </div>
 
               <div className="max-h-60 overflow-y-auto space-y-2">

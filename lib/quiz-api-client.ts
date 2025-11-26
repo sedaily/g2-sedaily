@@ -293,6 +293,14 @@ export function clearQuizDataCache(): void {
   cachedQuizData = null
   cacheTimestamp = null
   dateCache.clear()
+  
+  // localStorage 캐시도 초기화
+  if (typeof window !== 'undefined') {
+    import('./quiz-cache').then(({ clearAllQuizCache }) => {
+      clearAllQuizCache()
+    })
+  }
+  
   console.log("[v0] All quiz data cache cleared")
 }
 
@@ -302,6 +310,14 @@ export function clearQuizDataCache(): void {
 export function clearDateCache(gameType: string, date: string): void {
   const cacheKey: DateCacheKey = `${gameType}-${date}`
   dateCache.delete(cacheKey)
+  
+  // localStorage 캐시도 초기화
+  if (typeof window !== 'undefined') {
+    import('./quiz-cache').then(({ clearGameCache }) => {
+      clearGameCache(gameType)
+    })
+  }
+  
   console.log(`[v0] Cache cleared for ${gameType} ${date}`)
 }
 

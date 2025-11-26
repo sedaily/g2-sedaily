@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { Question } from "@/lib/games-data"
 import { useQuizState } from "@/hooks/useQuizState"
+import { useQuizKeyboard } from "@/hooks/useQuizKeyboard"
 import { getThemeStyles, ACCENT_COLORS, type GameType } from "@/lib/quiz-themes"
 import { QuizQuestion } from "./QuizQuestion"
 import { QuizCompletion } from "./QuizCompletion"
@@ -43,6 +44,14 @@ export function UniversalQuizPlayer({
   const themeStyles = getThemeStyles(gameType)
   const accent = ACCENT_COLORS[gameType]
 
+  // 키보드 단축키
+  useQuizKeyboard({
+    questions,
+    questionStates,
+    answeredCount,
+    onMultipleChoiceAnswer: handleMultipleChoiceAnswer,
+  })
+
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1)
@@ -58,8 +67,11 @@ export function UniversalQuizPlayer({
   if (questionStates.length === 0) {
     return (
       <div className="max-w-3xl mx-auto">
-        <div className={`${themeStyles.paperBg} border ${themeStyles.hairline} p-8 text-center rounded-2xl shadow-sm`}>
-          <p className={`${themeStyles.inkColor}`}>퀴즈를 불러오는 중...</p>
+        <div className={`${themeStyles.paperBg} border ${themeStyles.hairline} p-12 text-center rounded-2xl shadow-sm`}>
+          <div className="flex flex-col items-center gap-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: accent.hex }} />
+            <p className={`text-lg ${themeStyles.inkColor}`}>퀴즈를 불러오는 중...</p>
+          </div>
         </div>
       </div>
     )
@@ -129,8 +141,8 @@ export function UniversalQuizPlayer({
         )}
       </div>
 
-      {/* 완료 화면 - 마지막 문제를 답변했을 때 표시 */}
-      {currentQuestionIndex === questions.length - 1 && currentState?.isAnswered && (
+      {/* 완료 화면 - 모든 문제를 답변했을 때 표시 */}
+      {isComplete && (
         <QuizCompletion
           score={score}
           totalQuestions={questions.length}

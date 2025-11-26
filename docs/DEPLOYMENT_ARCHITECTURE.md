@@ -7,7 +7,7 @@
 **배포 방식**: 정적 사이트 생성 (Static Site Generation)  
 **인프라**: AWS S3 + CloudFront + Lambda  
 **자동화**: GitHub Actions + 커스텀 스크립트  
-**마지막 업데이트**: 2025-11-24
+**마지막 업데이트**: 2025-11-26
 
 ---
 
@@ -332,5 +332,5 @@ aws cloudfront create-invalidation \
 
 ---
 
-*마지막 업데이트: 2025-11-24*  
-*문서 버전: 2.3*
+*마지막 업데이트: 2025-11-26*  
+*문서 버전: 2.10.1*

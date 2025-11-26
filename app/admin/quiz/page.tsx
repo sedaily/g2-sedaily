@@ -4,16 +4,16 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Save } from "lucide-react"
+import { CalendarIcon, Save, Plus } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { PasswordModal } from "@/components/admin/PasswordModal"
+import { Badge } from "@/components/ui/badge"
 import { QuizEditor } from "@/components/admin/QuizEditor"
 import { CacheManager } from "@/components/admin/CacheManager"
 import { QuizPreview } from "@/components/admin/QuizPreview"
 import { QuizletUploader } from "@/components/admin/QuizletUploader"
 import { QuizList } from "@/components/admin/QuizList"
-import { DeployManager } from "@/components/admin/DeployManager"
 
 import type { QuizQuestion } from "@/types/quiz"
 import { validateQuestion, saveToLambda } from "@/lib/admin-utils"
@@ -23,13 +23,15 @@ export default function AdminQuizPage() {
   const [showPasswordDialog, setShowPasswordDialog] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
-  const [question, setQuestion] = useState<QuizQuestion | null>(null)
+  const [questions, setQuestions] = useState<QuizQuestion[]>([])
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [saveMessage, setSaveMessage] = useState("")
   const [quizletSaveStatus, setQuizletSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
   const [quizletValidationErrors, setQuizletValidationErrors] = useState<string[]>([])
-  const [activeTab, setActiveTab] = useState<"quiz" | "quizlet" | "delete" | "cache" | "deploy">("quiz")
+  const [activeTab, setActiveTab] = useState<"quiz" | "quizlet" | "manage" | "cache">("quiz")
+  const [isEditMode, setIsEditMode] = useState(false)
 
   useEffect(() => {
     const auth = sessionStorage.getItem("admin_authenticated")
@@ -40,13 +42,13 @@ export default function AdminQuizPage() {
   }, [])
 
   useEffect(() => {
-    if (isAuthenticated) {
-      initializeQuestion()
+    if (isAuthenticated && !isEditMode) {
+      initializeQuestions()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, isAuthenticated])
+  }, [selectedDate, isAuthenticated, isEditMode])
 
-  const initializeQuestion = () => {
+  const initializeQuestions = () => {
     const newQuestion: QuizQuestion = {
       id: `${format(selectedDate, "yyyyMMdd")}-BS-${Date.now()}`,
       date: format(selectedDate, "yyyy-MM-dd"),
@@ -58,26 +60,56 @@ export default function AdminQuizPage() {
       creator: "",
       tags: "",
     }
-    setQuestion(newQuestion)
+    setQuestions([newQuestion])
+    setCurrentQuestionIndex(0)
     setValidationErrors([])
     setSaveStatus("idle")
   }
 
+  const addNewQuestion = () => {
+    const newQuestion: QuizQuestion = {
+      id: `${format(selectedDate, "yyyyMMdd")}-${questions[0]?.theme || "BS"}-${Date.now()}`,
+      date: format(selectedDate, "yyyy-MM-dd"),
+      theme: questions[0]?.theme || "BlackSwan",
+      questionType: "객관식",
+      question_text: "",
+      choices: ["", ""],
+      correct_index: null,
+      creator: "",
+      tags: "",
+    }
+    setQuestions([...questions, newQuestion])
+    setCurrentQuestionIndex(questions.length)
+  }
+
+  const removeQuestion = (index: number) => {
+    if (questions.length <= 1) return
+    const newQuestions = questions.filter((_, i) => i !== index)
+    setQuestions(newQuestions)
+    setCurrentQuestionIndex(Math.min(currentQuestionIndex, newQuestions.length - 1))
+  }
+
   const updateQuestion = (updates: Partial<QuizQuestion>) => {
-    if (!question) return
-    setQuestion({
-      ...question,
+    const newQuestions = [...questions]
+    newQuestions[currentQuestionIndex] = {
+      ...newQuestions[currentQuestionIndex],
       ...updates,
-    })
+    }
+    setQuestions(newQuestions)
     setSaveStatus("idle")
   }
 
   const handleSave = async () => {
-    if (!question) return
+    const allErrors: string[] = []
+    for (let i = 0; i < questions.length; i++) {
+      const result = validateQuestion(questions[i])
+      if (result.status === "missing") {
+        allErrors.push(`문제 ${i + 1}: ${result.issues.join(", ")}`)
+      }
+    }
 
-    const result = validateQuestion(question)
-    if (result.status === "missing") {
-      setValidationErrors(result.issues)
+    if (allErrors.length > 0) {
+      setValidationErrors(allErrors)
       setSaveStatus("error")
       return
     }
@@ -88,34 +120,31 @@ export default function AdminQuizPage() {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_QUIZ_SAVE_URL || ""
 
-      const saveResult = await saveToLambda([question], format(selectedDate, "yyyy-MM-dd"), apiUrl)
+      const saveResult = await saveToLambda(questions, format(selectedDate, "yyyy-MM-dd"), apiUrl)
 
       if (saveResult.success) {
         setSaveStatus("saved")
-        setSaveMessage("문제가 성공적으로 추가되었습니다!")
+        setSaveMessage(`${questions.length}개 문제가 성공적으로 저장되었습니다!`)
         
-        // Archive에 자동 저장
         try {
           const { saveToArchive } = await import('../../../lib/quiz-api-client')
           await saveToArchive(
-            question.theme as 'BlackSwan' | 'PrisonersDilemma' | 'SignalDecoding',
+            questions[0].theme as 'BlackSwan' | 'PrisonersDilemma' | 'SignalDecoding',
             format(selectedDate, "yyyy-MM-dd"),
-            [question]
+            questions
           )
           console.log('[Admin] Quiz saved to archive successfully')
         } catch (archiveError) {
           console.warn('[Admin] Failed to save to archive:', archiveError)
-          // Archive 저장 실패는 전체 저장을 실패로 처리하지 않음
         }
         
         setTimeout(() => {
           setSaveStatus("idle")
           setSaveMessage("")
-          // 저장 후 새 문제로 초기화 (같은 날짜, 같은 테마 유지)
-          const currentTheme = question.theme
-          initializeQuestion()
-          // 테마 유지
-          setQuestion((prev) => (prev ? { ...prev, theme: currentTheme } : null))
+          setIsEditMode(false)
+          const currentTheme = questions[0].theme
+          initializeQuestions()
+          setQuestions((prev) => [{ ...prev[0], theme: currentTheme }])
         }, 2000)
       } else {
         throw new Error(saveResult.error || "저장 실패")
@@ -199,7 +228,9 @@ export default function AdminQuizPage() {
     return <PasswordModal isOpen={showPasswordDialog} onAuthenticated={() => setIsAuthenticated(true)} />
   }
 
-  if (!question) {
+  const currentQuestion = questions[currentQuestionIndex]
+
+  if (!currentQuestion) {
     return null
   }
 
@@ -209,6 +240,18 @@ export default function AdminQuizPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">관리자 패널</h1>
+            {activeTab === "quiz" && (
+              <>
+                <span className="text-sm text-muted-foreground">
+                  문제 {currentQuestionIndex + 1} / {questions.length}
+                </span>
+                {isEditMode && (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    수정 모드
+                  </Badge>
+                )}
+              </>
+            )}
 
             <div className="flex gap-2">
               <Button 
@@ -226,11 +269,11 @@ export default function AdminQuizPage() {
                 Quizlet 관리
               </Button>
               <Button 
-                variant={activeTab === "delete" ? "default" : "outline"}
-                onClick={() => setActiveTab("delete")}
+                variant={activeTab === "manage" ? "default" : "outline"}
+                onClick={() => setActiveTab("manage")}
                 size="sm"
               >
-                퀴즈 삭제
+                퀴즈 수정
               </Button>
               <Button 
                 variant={activeTab === "cache" ? "default" : "outline"}
@@ -238,13 +281,6 @@ export default function AdminQuizPage() {
                 size="sm"
               >
                 캐시 관리
-              </Button>
-              <Button 
-                variant={activeTab === "deploy" ? "default" : "outline"}
-                onClick={() => setActiveTab("deploy")}
-                size="sm"
-              >
-                배포 관리
               </Button>
             </div>
             <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -269,6 +305,55 @@ export default function AdminQuizPage() {
             </Popover>
           </div>
           <div className="flex items-center gap-2">
+            {activeTab === "quiz" && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+                  disabled={currentQuestionIndex === 0}
+                >
+                  이전
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentQuestionIndex(Math.min(questions.length - 1, currentQuestionIndex + 1))}
+                  disabled={currentQuestionIndex === questions.length - 1}
+                >
+                  다음
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={addNewQuestion}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  문제 추가
+                </Button>
+                {isEditMode && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsEditMode(false)
+                      initializeQuestions()
+                    }}
+                  >
+                    새 문제 작성
+                  </Button>
+                )}
+                {questions.length > 1 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeQuestion(currentQuestionIndex)}
+                  >
+                    삭제
+                  </Button>
+                )}
+              </>
+            )}
             {saveStatus === "saved" && (
               <div className="flex items-center gap-2 text-green-600 font-medium animate-in fade-in duration-300">
                 <svg
@@ -296,10 +381,10 @@ export default function AdminQuizPage() {
         {activeTab === "quiz" ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <QuizEditor question={question} validationErrors={validationErrors} onUpdate={updateQuestion} />
+              <QuizEditor question={currentQuestion} validationErrors={validationErrors} onUpdate={updateQuestion} />
             </div>
             <div>
-              <QuizPreview question={question} />
+              <QuizPreview question={currentQuestion} />
             </div>
           </div>
         ) : activeTab === "quizlet" ? (
@@ -308,12 +393,18 @@ export default function AdminQuizPage() {
             saveStatus={quizletSaveStatus}
             validationErrors={quizletValidationErrors}
           />
-        ) : activeTab === "delete" ? (
-          <QuizList />
-        ) : activeTab === "cache" ? (
-          <CacheManager />
+        ) : activeTab === "manage" ? (
+          <QuizList 
+            onEdit={(loadedQuestions, date) => {
+              setQuestions(loadedQuestions)
+              setSelectedDate(new Date(date))
+              setCurrentQuestionIndex(0)
+              setIsEditMode(true)
+              setActiveTab("quiz")
+            }}
+          />
         ) : (
-          <DeployManager />
+          <CacheManager />
         )}
       </div>
     </div>

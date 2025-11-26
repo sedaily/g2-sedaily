@@ -1,428 +1,467 @@
-# Development Guidelines
+# Development Guidelines - 서울경제 뉴스게임 플랫폼
 
 ## Code Quality Standards
 
-### 1. TypeScript Strict Mode
-- **Strict type checking enabled**: `"strict": true` in tsconfig.json
-- **No implicit any**: All variables and parameters must have explicit types
-- **Type definitions**: Use `interface` for object shapes, `type` for unions/intersections
-- **Example pattern**:
-```typescript
-interface QuizItem {
-  question: string
-  answer: string
-  options?: string[]
-  explanation?: string
-  hint?: string[]
-  newsLink?: string
-}
-```
+### TypeScript/JavaScript Conventions
+- **Strict Mode**: All TypeScript files use strict type checking
+- **Type Safety**: Explicit type annotations for function parameters and return values
+- **Interface Definitions**: Prefer `interface` over `type` for object shapes
+- **Null Safety**: Use optional chaining (`?.`) and nullish coalescing (`??`)
+- **Const Assertions**: Use `as const` for literal types and readonly arrays
 
-### 2. React Component Patterns
-- **Functional components only**: No class components
-- **TypeScript props interfaces**: Always define props with `interface` or `type`
-- **Props destructuring**: Destructure props in function parameters
-- **Example**:
+### File Organization
+- **Client Components**: Mark with `"use client"` directive at top of file
+- **Import Order**: 
+  1. React/Next.js imports
+  2. Third-party libraries (UI components, utilities)
+  3. Local components (`@/components`)
+  4. Local utilities (`@/lib`, `@/hooks`)
+  5. Types (`@/types`)
+  6. Assets/styles
+- **Named Exports**: Prefer named exports over default exports for utilities
+- **Default Exports**: Use for page components and main component files
+
+### Naming Conventions
+- **Components**: PascalCase (e.g., `QuizEditor`, `UniversalQuizPlayer`)
+- **Files**: Match component name (e.g., `QuizEditor.tsx`)
+- **Hooks**: camelCase with `use` prefix (e.g., `useQuizKeyboard`)
+- **Utilities**: camelCase (e.g., `validateQuestion`, `saveToLambda`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `SIDEBAR_WIDTH`, `CACHE_DURATION`)
+- **Types/Interfaces**: PascalCase (e.g., `QuizQuestion`, `GameCard`)
+- **Props Interfaces**: ComponentName + `Props` (e.g., `BlackSwanQuizPlayerProps`)
+
+### Code Formatting
+- **Indentation**: 2 spaces (enforced by ESLint)
+- **Quotes**: Double quotes for strings, single quotes for JSX attributes
+- **Semicolons**: Required at end of statements
+- **Line Length**: Soft limit of 120 characters
+- **Trailing Commas**: Required in multiline objects/arrays
+- **Arrow Functions**: Prefer arrow functions for callbacks and inline functions
+
+## React Patterns
+
+### Component Structure
 ```typescript
-interface BlackSwanQuizPlayerProps {
+// 1. Imports
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+
+// 2. Type definitions
+interface ComponentProps {
   items?: QuizItem[]
   date: string
 }
 
-export function BlackSwanQuizPlayer({ items, date }: BlackSwanQuizPlayerProps) {
-  // Component logic
+// 3. Component function
+export function ComponentName({ items, date }: ComponentProps) {
+  // 4. State declarations
+  const [currentIndex, setCurrentIndex] = useState(0)
+  
+  // 5. Effects
+  useEffect(() => {
+    // Effect logic
+  }, [date])
+  
+  // 6. Event handlers
+  const handleClick = () => {
+    // Handler logic
+  }
+  
+  // 7. Render logic
+  if (!items) {
+    return <div>Loading...</div>
+  }
+  
+  // 8. JSX return
+  return (
+    <div>
+      {/* Component content */}
+    </div>
+  )
 }
 ```
 
-### 3. File Naming Conventions
-- **Components**: PascalCase with `.tsx` extension (e.g., `BlackSwanQuizPlayer.tsx`)
-- **Utilities**: camelCase with `.ts` extension (e.g., `quiz-api-client.ts`)
-- **Python files**: snake_case with `.py` extension (e.g., `enhanced-chatbot-handler.py`)
-- **Config files**: kebab-case (e.g., `next.config.mjs`)
+### State Management
+- **useState**: For local component state
+- **Multiple States**: Separate useState calls for different concerns
+- **State Updates**: Use functional updates when depending on previous state
+  ```typescript
+  setScore((prev) => prev + 1)
+  setQuestions([...questions, newQuestion])
+  ```
+- **Derived State**: Calculate from existing state instead of storing separately
+  ```typescript
+  const progress = ((currentIndex + 1) / items.length) * 100
+  const isCorrect = selectedAnswer === currentQuestion?.answer
+  ```
 
-### 4. Import Organization
-- **Order**: React imports → Third-party → Local components → UI components → Utils → Types
-- **Path aliases**: Use `@/` prefix for absolute imports
-- **Example**:
-```typescript
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import type { QuizItem } from "@/lib/quiz-api"
-```
+### Effect Patterns
+- **Cleanup**: Always return cleanup function for subscriptions
+  ```typescript
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => { /* ... */ }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [toggleSidebar])
+  ```
+- **Dependencies**: Include all used variables in dependency array
+- **Conditional Effects**: Use early returns or conditional logic inside effect
+- **Reset on Prop Change**: Common pattern for resetting state when props change
+  ```typescript
+  useEffect(() => {
+    setCurrentIndex(0)
+    setIsAnswered(false)
+    // Reset all state
+  }, [date])
+  ```
 
-### 5. CSS and Styling
-- **Tailwind CSS utility classes**: Primary styling method
-- **Class composition**: Use `cn()` utility for conditional classes
-- **Korean text class**: Apply `korean-text` or `korean-heading` for Korean content
-- **Example**:
-```typescript
-className={cn(
-  'w-full p-4 rounded-xl text-left transition-all korean-text',
-  isAnswered && 'cursor-not-allowed',
-  showCorrect && 'bg-green-100 border-2 border-green-400'
-)}
-```
-
-## Semantic Patterns
-
-### 1. State Management Pattern
-- **useState for local state**: UI state, form inputs, toggles
-- **Custom hooks for complex logic**: Extract reusable state logic
-- **State initialization**: Always provide default values
-- **Example**:
-```typescript
-const [currentIndex, setCurrentIndex] = useState(0)
-const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
-const [isAnswered, setIsAnswered] = useState(false)
-```
-
-### 2. Effect Hooks Pattern
-- **Cleanup functions**: Always return cleanup for subscriptions/timers
-- **Dependency arrays**: Explicitly list all dependencies
-- **Example**:
-```typescript
-useEffect(() => {
-  let interval: NodeJS.Timeout
-  if (gameStarted && !gameCompleted) {
-    interval = setInterval(() => {
-      setElapsedTime(Date.now() - startTime)
-    }, 100)
+### Event Handlers
+- **Naming**: Prefix with `handle` (e.g., `handleClick`, `handleSubmit`)
+- **Inline vs Named**: Use named handlers for complex logic, inline for simple cases
+- **Prevent Default**: Call `e.preventDefault()` when needed
+- **Type Safety**: Use proper event types (`React.MouseEvent`, `React.KeyboardEvent`)
+  ```typescript
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleTextSubmit()
+    }
   }
-  return () => clearInterval(interval)
-}, [gameStarted, gameCompleted, startTime])
-```
+  ```
 
-### 3. Animation Pattern (Framer Motion)
-- **AnimatePresence for conditional rendering**: Wrap exit animations
-- **Motion components**: Use `motion.div`, `motion.button` for animations
-- **Transition timing**: Consistent duration (0.3s standard)
-- **Example**:
-```typescript
-<AnimatePresence mode="wait">
+### Conditional Rendering
+- **Early Returns**: Return early for loading/error states
+  ```typescript
+  if (!items || items.length === 0) {
+    return <EmptyState />
+  }
+  ```
+- **Ternary Operators**: For simple conditions
+  ```typescript
+  {isAnswered ? <NextButton /> : <SubmitButton />}
+  ```
+- **Logical AND**: For conditional rendering without else
+  ```typescript
+  {isAnswered && currentQuestion?.explanation && <Explanation />}
+  ```
+
+## UI Component Patterns
+
+### Radix UI Integration
+- **Composition**: Build complex components from Radix primitives
+- **Accessibility**: Radix handles ARIA attributes automatically
+- **Styling**: Use Tailwind classes with `cn()` utility for conditional styles
+- **Variants**: Use `class-variance-authority` (cva) for component variants
+  ```typescript
+  const buttonVariants = cva(
+    "base-classes",
+    {
+      variants: {
+        variant: {
+          default: "default-classes",
+          outline: "outline-classes"
+        }
+      }
+    }
+  )
+  ```
+
+### Tailwind CSS Patterns
+- **Utility-First**: Prefer utility classes over custom CSS
+- **Responsive Design**: Mobile-first with breakpoint prefixes (`md:`, `lg:`)
+- **Custom Colors**: Use theme colors from `quiz-themes.ts`
+  ```typescript
+  className="bg-[#EDEDE9] text-[#0F2233]"
+  ```
+- **Conditional Classes**: Use `cn()` utility for dynamic classes
+  ```typescript
+  className={cn(
+    "base-classes",
+    isActive && "active-classes",
+    variant === "outline" && "outline-classes"
+  )}
+  ```
+
+### Animation Patterns
+- **Framer Motion**: Use for complex animations
+  ```typescript
   <motion.div
-    key={currentIndex}
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
     exit={{ opacity: 0, x: -20 }}
-    transition={{ duration: 0.3 }}
-  >
-    {/* Content */}
-  </motion.div>
-</AnimatePresence>
-```
+  />
+  ```
+- **AnimatePresence**: Wrap components that mount/unmount
+- **Tailwind Animations**: Use for simple transitions
+  ```typescript
+  className="transition-all duration-300 hover:scale-105"
+  ```
 
-### 4. API Client Pattern
-- **Fetch with error handling**: Always wrap in try-catch
-- **Cache control**: Use `cache: "no-store"` for dynamic data
-- **Type-safe responses**: Parse and validate API responses
-- **Example**:
-```typescript
-export async function fetchQuizDataByDate(gameType: string, date: string) {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}/${gameType}/${date}`,
-      { cache: "no-store" }
-    )
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    return await response.json()
-  } catch (error) {
-    console.error('API error:', error)
-    return null
-  }
-}
-```
+## Python Backend Patterns
 
-### 5. Python Lambda Pattern
-- **Docstrings**: Every function has descriptive docstring
-- **Type hints**: Use `typing` module for type annotations
-- **Error handling**: Specific exception types with logging
-- **Constants at top**: Define all constants in UPPER_CASE
-- **Example**:
+### Lambda Handler Structure
 ```python
 def lambda_handler(event, context):
     """
-    RAG 기반 Claude 챗봇 Lambda 핸들러
-    메인: Claude 순수 응답 / RAG: BigKinds + 퀴즈 기사 + 퀴즈 문제
+    Docstring describing handler purpose
     """
+    # 1. CORS headers
     headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
     }
     
+    # 2. OPTIONS handling
+    if event['httpMethod'] == 'OPTIONS':
+        return {'statusCode': 200, 'headers': headers, 'body': ''}
+    
+    # 3. Request parsing
     try:
         body = json.loads(event['body'])
-        # Handler logic
+        # Extract parameters
     except Exception as e:
-        logger.error(f"Error: {str(e)}")
-        return {'statusCode': 500, 'headers': headers}
+        return error_response(headers, str(e))
+    
+    # 4. Business logic
+    result = process_request(body)
+    
+    # 5. Response
+    return {
+        'statusCode': 200,
+        'headers': headers,
+        'body': json.dumps(result)
+    }
 ```
 
-## Architectural Patterns
+### Error Handling
+- **Try-Except Blocks**: Wrap all external calls
+- **Specific Exceptions**: Catch specific exception types first
+- **Logging**: Use `logger.error()` for errors, `logger.info()` for success
+- **Fallback Responses**: Provide meaningful fallback when external services fail
+  ```python
+  try:
+      response = requests.get(url, timeout=10)
+  except requests.Timeout:
+      logger.warning("Request timeout")
+      return fallback_response()
+  except requests.RequestException as e:
+      logger.error(f"Request error: {str(e)}")
+      return error_response()
+  ```
 
-### 1. Component Composition
-- **Small, focused components**: Single responsibility principle
-- **Prop drilling avoidance**: Use composition over deep prop passing
-- **Reusable UI components**: Extract to `components/ui/`
-- **Game-specific components**: Keep in `components/games/`
+### Constants and Configuration
+- **Module-Level Constants**: Define at top of file in UPPER_SNAKE_CASE
+  ```python
+  AWS_REGION = 'us-east-1'
+  BEDROCK_MODEL_ID = 'anthropic.claude-3-sonnet-20240229-v1:0'
+  BIGKINDS_TIMEOUT = 10
+  ```
+- **Environment Variables**: Use `os.environ.get()` with defaults
+- **Type Hints**: Use for function parameters and return values
+  ```python
+  def fetch_data(url: str, timeout: int = 10) -> Optional[Dict[str, Any]]:
+  ```
 
-### 2. Conditional Rendering Pattern
-- **Early returns**: Handle loading/error states first
-- **Ternary for simple conditions**: Use for inline conditional rendering
-- **Logical AND for optional rendering**: `{condition && <Component />}`
-- **Example**:
-```typescript
-if (!items || items.length === 0) {
-  return <EmptyState />
-}
+### Retry Logic
+- **Backoff Decorator**: Use `@backoff.on_exception` for retries
+  ```python
+  @backoff.on_exception(
+      backoff.expo,
+      (requests.RequestException, requests.Timeout),
+      max_tries=3,
+      max_time=20
+  )
+  def call_external_api(params: dict) -> dict:
+  ```
 
-if (isComplete) {
-  return <CompletionScreen />
-}
+### Data Sanitization
+- **Masking**: Remove sensitive data from logs
+  ```python
+  def mask_sensitive_data(text: str) -> str:
+      text = re.sub(r'([a-zA-Z0-9]{8})[a-zA-Z0-9]{16,}', r'\1****', text)
+      return text
+  ```
 
-return <GameBoard />
-```
+## API Integration Patterns
 
-### 3. Event Handler Pattern
-- **Inline arrow functions for simple handlers**: `onClick={() => setState(value)}`
-- **Named functions for complex logic**: Define handler functions separately
-- **Prevent default when needed**: `e.preventDefault()` for forms
-- **Example**:
-```typescript
-const handleSelectAnswer = (option: string) => {
-  if (isAnswered) return
+### Fetch API Usage
+- **Environment Variables**: Use `process.env.NEXT_PUBLIC_*` for API URLs
+- **Error Handling**: Always check `response.ok` before parsing
+  ```typescript
+  const response = await fetch(apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
   
-  setSelectedAnswer(option)
-  setIsAnswered(true)
-  
-  const correct = option === currentQuestion?.answer
-  if (correct) {
-    setScore((prev) => prev + 1)
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`)
   }
-}
-```
+  
+  const result = await response.json()
+  ```
+- **Try-Catch**: Wrap all fetch calls in try-catch blocks
+- **Loading States**: Track loading state for UI feedback
 
-### 4. Data Transformation Pattern
-- **Map for transformations**: Transform arrays with `.map()`
-- **Filter for subsets**: Filter arrays with `.filter()`
-- **Reduce for aggregation**: Aggregate data with `.reduce()`
-- **Example**:
-```typescript
-const formattedTerms = data.terms.map((term: any, index: number) => ({
-  id: index + 1,
-  term: term.term,
-  definition: term.definition,
-  explanation: term.explanation
-}))
-```
+### Caching Strategy
+- **Multi-Layer**: Memory → localStorage → API
+- **Cache Keys**: Use consistent naming pattern
+  ```typescript
+  const key = `quiz_${gameType}_${date}`
+  ```
+- **Expiration**: Check timestamp before using cached data
+  ```typescript
+  if (Date.now() - timestamp < CACHE_DURATION) {
+    return cachedData
+  }
+  ```
+- **Invalidation**: Clear cache after mutations
+  ```typescript
+  clearQuizDataCache()
+  clearDateCache(gameType, date)
+  ```
 
-### 5. Error Boundary Pattern
-- **Try-catch for async operations**: Wrap API calls and async logic
-- **Fallback UI**: Provide user-friendly error messages
-- **Logging**: Always log errors for debugging
-- **Example**:
-```typescript
-try {
-  const data = await fetchQuizData()
-  setQuizData(data)
-} catch (error) {
-  console.error('Failed to load quiz:', error)
-  setError('퀴즈를 불러올 수 없습니다.')
-}
-```
+## State Management Patterns
 
-## Internal API Usage
+### Local Storage
+- **JSON Serialization**: Always stringify/parse objects
+  ```typescript
+  localStorage.setItem(key, JSON.stringify({ data, timestamp }))
+  const cached = JSON.parse(localStorage.getItem(key) || '{}')
+  ```
+- **Error Handling**: Wrap in try-catch for quota exceeded errors
+- **Type Safety**: Define interfaces for stored data
 
-### 1. Quiz API Client
-```typescript
-// lib/quiz-api-client.ts
-import { fetchQuizDataByDate, getAvailableDates } from '@/lib/quiz-api-client'
+### Session Storage
+- **Authentication**: Store auth state in sessionStorage
+  ```typescript
+  sessionStorage.setItem("admin_authenticated", "true")
+  const auth = sessionStorage.getItem("admin_authenticated")
+  ```
+- **Temporary Data**: Use for data that shouldn't persist across sessions
 
-// Get quiz for specific date
-const quiz = await fetchQuizDataByDate('PrisonersDilemma', '2025-11-26')
+## Testing and Validation
 
-// Get available dates
-const dates = await getAvailableDates('PrisonersDilemma')
-```
+### Input Validation
+- **Required Fields**: Check for presence before processing
+  ```typescript
+  if (!user_question) {
+    return error_response('질문이 필요합니다.')
+  }
+  ```
+- **Type Checking**: Validate data types match expected format
+- **Validation Functions**: Create reusable validation utilities
+  ```typescript
+  export function validateQuestion(question: QuizQuestion): ValidationResult {
+    const issues: string[] = []
+    if (!question.question_text.trim()) issues.push("문제 내용")
+    if (!question.choices || question.choices.length < 2) issues.push("선택지")
+    return { status: issues.length > 0 ? "missing" : "valid", issues }
+  }
+  ```
 
-### 2. Admin Utils
-```typescript
-// lib/admin-utils.ts
-import { saveQuizData, deleteQuizData } from '@/lib/admin-utils'
+### Error Messages
+- **User-Friendly**: Provide clear, actionable error messages in Korean
+- **Developer Logs**: Include technical details in console/logs
+- **Status Indicators**: Use visual feedback (colors, icons) for errors
 
-// Save quiz
-await saveQuizData(gameType, date, questions)
+## Performance Optimization
 
-// Delete quiz
-await deleteQuizData(gameType, date)
-```
+### Code Splitting
+- **Dynamic Imports**: Use for heavy components
+  ```typescript
+  const { saveToArchive } = await import('../../../lib/quiz-api-client')
+  ```
+- **Lazy Loading**: Load components only when needed
 
-### 3. Quiz Storage (LocalStorage)
-```typescript
-// lib/quiz-storage.ts
-import { saveQuizProgress, getQuizProgress } from '@/lib/quiz-storage'
+### Memoization
+- **useMemo**: For expensive calculations
+  ```typescript
+  const width = React.useMemo(() => {
+    return `${Math.floor(Math.random() * 40) + 50}%`
+  }, [])
+  ```
+- **useCallback**: For stable function references
+  ```typescript
+  const toggleSidebar = React.useCallback(() => {
+    return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
+  }, [isMobile, setOpen, setOpenMobile])
+  ```
 
-// Save progress
-saveQuizProgress(date, score)
+### Debouncing
+- **User Input**: Debounce API calls for search/filter inputs
+- **Resize Events**: Debounce window resize handlers
 
-// Get progress
-const progress = getQuizProgress(date)
-```
+## Security Best Practices
 
-### 4. Chatbot API
-```typescript
-// lib/chatbot-api.ts
-import { sendChatMessage } from '@/lib/chatbot-api'
+### Authentication
+- **Password Protection**: Use sessionStorage for admin auth
+- **Environment Variables**: Never commit API keys to repository
+- **CORS**: Configure proper CORS headers on Lambda
 
-const response = await sendChatMessage({
-  question: userQuestion,
-  gameType: 'BlackSwan',
-  questionText: currentQuestion.question,
-  quizArticleUrl: currentQuestion.newsLink
-})
-```
+### Data Sanitization
+- **User Input**: Sanitize before storing or displaying
+- **SQL Injection**: Use parameterized queries (DynamoDB SDK handles this)
+- **XSS Prevention**: React escapes by default, avoid `dangerouslySetInnerHTML`
 
-## Code Idioms
+### Sensitive Data
+- **Logging**: Mask sensitive data in logs
+- **Error Messages**: Don't expose internal details to users
+- **API Keys**: Use environment variables, never hardcode
 
-### 1. Optional Chaining
-```typescript
-// Safe property access
-const title = currentQuestion?.question
-const options = currentQuestion?.options ?? []
-```
+## Documentation Standards
 
-### 2. Nullish Coalescing
-```typescript
-// Default values
-const apiUrl = process.env.NEXT_PUBLIC_QUIZ_API_URL ?? 'fallback-url'
-const count = data?.count ?? 0
-```
+### Code Comments
+- **When to Comment**: Explain "why", not "what"
+- **Complex Logic**: Add comments for non-obvious algorithms
+- **TODOs**: Use `// TODO:` for future improvements
+- **Docstrings**: Use for Python functions
+  ```python
+  def function_name(param: str) -> dict:
+      """
+      Brief description of function purpose.
+      
+      Args:
+          param: Description of parameter
+          
+      Returns:
+          Description of return value
+      """
+  ```
 
-### 3. Array Destructuring
-```typescript
-// Extract array elements
-const [first, second] = selectedPair
-const [firstName, ...rest] = names
-```
+### Type Documentation
+- **JSDoc**: Use for complex types and utilities
+  ```typescript
+  /**
+   * Validates a quiz question for completeness
+   * @param question - The quiz question to validate
+   * @returns Validation result with status and issues
+   */
+  export function validateQuestion(question: QuizQuestion): ValidationResult
+  ```
 
-### 4. Object Destructuring
-```typescript
-// Extract object properties
-const { question, answer, options } = currentQuestion
-const { gameType, date, ...rest } = quizData
-```
+## Common Patterns Summary
 
-### 5. Spread Operator
-```typescript
-// Array/object copying and merging
-const newCards = [...cards, newCard]
-const updatedState = { ...state, isAnswered: true }
-```
+### Frequently Used Idioms
+1. **Optional Chaining**: `currentQuestion?.explanation`
+2. **Nullish Coalescing**: `apiUrl || ""`
+3. **Array Spread**: `[...questions, newQuestion]`
+4. **Object Spread**: `{ ...prev, isSelected: true }`
+5. **Functional Updates**: `setScore((prev) => prev + 1)`
+6. **Early Returns**: `if (!items) return <EmptyState />`
+7. **Conditional Classes**: `cn("base", condition && "extra")`
+8. **Template Literals**: `` `quiz_${gameType}_${date}` ``
 
-### 6. Template Literals
-```typescript
-// String interpolation
-const message = `Quiz for ${gameType} on ${date}`
-const apiUrl = `${baseUrl}/${gameType}/${date}`
-```
+### Design Patterns
+1. **Compound Components**: Sidebar with SidebarHeader, SidebarContent, etc.
+2. **Render Props**: Not heavily used, prefer composition
+3. **Higher-Order Components**: Not used, prefer hooks
+4. **Custom Hooks**: Extract reusable logic (useQuizKeyboard, useQuizState)
+5. **Context API**: Used for Sidebar state management
+6. **Provider Pattern**: SidebarProvider wraps children with context
 
-### 7. Arrow Functions
-```typescript
-// Concise function syntax
-const double = (x: number) => x * 2
-const isValid = (value: string) => value.length > 0
-```
-
-## Popular Annotations
-
-### 1. TypeScript Utility Types
-```typescript
-// Partial - make all properties optional
-type PartialQuiz = Partial<QuizItem>
-
-// Pick - select specific properties
-type QuizPreview = Pick<QuizItem, 'question' | 'answer'>
-
-// Omit - exclude specific properties
-type QuizWithoutHint = Omit<QuizItem, 'hint'>
-
-// Record - object with specific key-value types
-type ScoreRecord = Record<string, number>
-```
-
-### 2. React Type Annotations
-```typescript
-// Component props
-interface ComponentProps extends React.ComponentProps<'div'> {
-  customProp: string
-}
-
-// Event handlers
-const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {}
-const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {}
-const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {}
-
-// Refs
-const inputRef = React.useRef<HTMLInputElement>(null)
-```
-
-### 3. Python Type Hints
-```python
-from typing import Dict, Any, Optional, List
-
-def fetch_data(url: str, timeout: int = 10) -> Optional[Dict[str, Any]]:
-    """Fetch data from URL with timeout"""
-    pass
-
-def process_items(items: List[str]) -> Dict[str, int]:
-    """Process list of items"""
-    pass
-```
-
-### 4. JSDoc Comments (when needed)
-```typescript
-/**
- * Calculate quiz score percentage
- * @param score - Number of correct answers
- * @param total - Total number of questions
- * @returns Percentage score (0-100)
- */
-function calculatePercentage(score: number, total: number): number {
-  return Math.round((score / total) * 100)
-}
-```
-
-## Best Practices Summary
-
-### Frontend
-1. **Always use TypeScript strict mode** - No implicit any
-2. **Functional components with hooks** - No class components
-3. **Tailwind CSS for styling** - Utility-first approach
-4. **Framer Motion for animations** - Consistent transitions
-5. **Error boundaries** - Graceful error handling
-6. **Accessibility** - Use semantic HTML and ARIA labels
-7. **Korean text classes** - Apply `korean-text` for proper font rendering
-
-### Backend
-1. **Type hints in Python** - Use `typing` module
-2. **Docstrings for all functions** - Clear documentation
-3. **Constants at module level** - UPPER_CASE naming
-4. **Structured logging** - Use `logger` with appropriate levels
-5. **CORS headers** - Always include in API responses
-6. **Error handling** - Specific exceptions with fallbacks
-7. **CloudWatch metrics** - Send custom metrics for monitoring
-
-### API Integration
-1. **Cache control** - Use `no-store` for dynamic data
-2. **Type-safe responses** - Validate API response structure
-3. **Error handling** - Try-catch with user-friendly messages
-4. **Environment variables** - Use `NEXT_PUBLIC_` prefix for client-side
-5. **Timeout handling** - Set reasonable timeouts for external APIs
-
-### Testing & Debugging
-1. **Console logging** - Use for development debugging
-2. **Error messages** - Provide context and actionable information
-3. **Fallback UI** - Always have fallback for loading/error states
-4. **Local storage** - Use for client-side persistence
-5. **Browser DevTools** - Leverage React DevTools and Network tab
+### Architecture Patterns
+1. **Separation of Concerns**: Components, utilities, types in separate files
+2. **Single Responsibility**: Each function/component has one clear purpose
+3. **DRY (Don't Repeat Yourself)**: Extract common logic to utilities
+4. **Composition over Inheritance**: Build complex UIs from simple components
+5. **Declarative over Imperative**: Prefer declarative React patterns
