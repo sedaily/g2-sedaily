@@ -1,101 +1,68 @@
 # Product Overview
 
 ## Project Purpose
-서울경제 뉴스게임 플랫폼 (g2-clone) is an interactive quiz game platform that transforms economic news into engaging educational experiences. The platform leverages AI-powered RAG (Retrieval-Augmented Generation) technology to create dynamic, context-aware quiz games based on real-time economic news from BigKinds API.
+서울경제 뉴스게임 플랫폼 - 경제 뉴스를 기반으로 한 인터랙티브 퀴즈 게임 플랫폼으로, 사용자가 경제 개념을 게임을 통해 학습할 수 있도록 설계되었습니다.
 
 ## Value Proposition
-- **Educational Gaming**: Converts complex economic news into accessible, interactive quiz formats
-- **AI-Powered Intelligence**: Uses Claude 3 Sonnet (AWS Bedrock) with RAG for contextual, intelligent responses
-- **Real-time Content**: Integrates latest economic news (30-day window) from BigKinds API
-- **Multi-Game Experience**: Offers 4 distinct game types covering different economic concepts
-- **Admin-Friendly**: Comprehensive admin panel for quiz management, deployment, and monitoring
+- **교육적 게임화**: 복잡한 경제 개념을 게임 형식으로 쉽게 학습
+- **실시간 뉴스 연동**: BigKinds API를 통한 최신 경제 뉴스 기반 퀴즈
+- **AI 기반 학습 지원**: Claude 3 Sonnet을 활용한 RAG 챗봇으로 맥락 있는 설명 제공
+- **다양한 게임 형식**: 4가지 게임 타입으로 다각도 학습 경험
 
 ## Key Features
 
-### 1. Four Game Types
-- **BlackSwan (g1)**: Economic event prediction game - anticipate rare, high-impact events
-- **Prisoner's Dilemma (g2)**: Economic dilemma scenarios - strategic decision-making
-- **Signal Decoding (g3)**: Economic signal interpretation - decode market indicators
-- **Card Matching (quizlet)**: Quizlet-style economic term matching with CSV upload support
+### 1. 게임 타입 (4종)
+- **BlackSwan (g1)**: 경제 이벤트 예측 게임 - 블랙스완 이벤트 시나리오 분석
+- **Prisoner's Dilemma (g2)**: 경제 딜레마 상황 게임 - 게임 이론 기반 의사결정
+- **Signal Decoding (g3)**: 경제 신호 해석 게임 - 경제 지표 및 신호 분석
+- **Card Matching (quizlet)**: 경제 용어 매칭 게임 - 플래시카드 방식 학습
 
-### 2. RAG-Based AI Chatbot
-- **3-Layer Knowledge Integration**:
-  1. BigKinds API (latest 30-day economic news)
-  2. Quiz-related article URLs
-  3. Quiz problem context
-- **Game-Specific Expertise**: Specialized responses for each game type
-- **Intelligent Fallback**: Pure Claude responses when API fails
-- **Contextual Understanding**: Combines multiple knowledge sources for accurate answers
+### 2. 동적 퀴즈 시스템
+- **실시간 퀴즈 관리**: API Gateway + Lambda를 통한 동적 CRUD
+- **Archive 시스템**: 과거 퀴즈 날짜별 조회 및 재플레이
+- **관리자 패널**: 퀴즈 생성/수정/삭제 웹 인터페이스
+- **캐시 최적화**: no-store 정책으로 실시간 데이터 반영
 
-### 3. Real-time Quiz System
-- **Date-Based Quizzes**: Daily quiz sets with localStorage progress tracking
-- **Auto-Navigation**: "Play" button automatically routes to latest quiz
-- **Fallback System**: Test quizzes when DynamoDB is empty
-- **Progress Persistence**: Saves user progress across sessions
-- **Responsive Design**: Mobile-first, adaptive UI
+### 3. RAG 기반 AI 챗봇
+- **컨텍스트 인식**: 현재 플레이 중인 퀴즈와 관련 뉴스 기사 참조
+- **BigKinds 연동**: 최근 30일 경제 뉴스 자동 검색
+- **게임별 전문화**: 각 게임 타입에 맞춘 응답 생성
+- **Claude 3 Sonnet**: AWS Bedrock을 통한 고품질 AI 응답
 
-### 4. Comprehensive Admin Panel (`/admin/quiz`)
-- **Quiz Management**: Create/edit multiple-choice and short-answer questions
-- **Instant Sync**: Direct DynamoDB storage with real-time updates
-- **Quizlet Management**: CSV upload for bulk card creation
-- **Cache Control**: localStorage and server cache management
-- **Deployment Dashboard**:
-  - One-click CloudFront cache invalidation
-  - Real-time metrics (DynamoDB, Lambda, CloudWatch)
-  - Auto-refresh monitoring (30-second polling)
-  - AWS resource status tracking
-
-### 5. Performance Optimizations
-- **Image Optimization**: PNG → WebP conversion (90% size reduction: 8.4MB → 848KB)
-- **Code Efficiency**: Component modularization (86% reduction: 546 → 80 lines)
-- **Multi-Layer Caching**: localStorage + server + API caching
-- **Date-Based API**: Individual quiz loading instead of bulk fetching
-- **Deployment Automation**: Reduced code duplication by 70%
-
-### 6. Monitoring & Automation
-- **Auto-Redeploy System**: DynamoDB Streams trigger Lambda for automatic deployments
-- **CloudWatch Integration**: Dashboard + Alarms for performance tracking
-- **SNS Notifications**: Slack/Discord alerts for critical events
-- **Performance Dashboard**: CLI + HTML monitoring interfaces
-- **Deploy Guard**: 404 prevention with pre-deployment validation
+### 4. 관리자 기능
+- **퀴즈 에디터**: 객관식/주관식 문제 생성 UI
+- **Quizlet 업로더**: CSV 파일 업로드로 대량 카드 생성
+- **캐시 관리**: 브라우저 캐시 및 CloudFront 무효화
+- **배포 가이드**: CLI 명령어 기반 배포 안내
 
 ## Target Users
 
-### Primary Users
-- **Students & Learners**: Individuals seeking to understand economic concepts through gamification
-- **Economic News Readers**: Seoul Economic Daily readers wanting interactive content
-- **Educators**: Teachers using games for economic education
+### 1차 사용자 (일반 사용자)
+- 경제 뉴스에 관심 있는 일반인
+- 경제 개념을 학습하고자 하는 학생
+- 게임 형식의 학습을 선호하는 사용자
 
-### Secondary Users
-- **Content Administrators**: Managing quiz content and monitoring platform health
-- **Developers**: Maintaining and extending the platform capabilities
+### 2차 사용자 (관리자)
+- 서울경제 콘텐츠 편집자
+- 퀴즈 제작 담당자
+- 플랫폼 운영 관리자
 
 ## Use Cases
 
-### For Learners
-1. **Daily Economic Quiz**: Access date-specific quizzes on current economic events
-2. **Interactive Learning**: Engage with AI chatbot for explanations and context
-3. **Progress Tracking**: Monitor learning progress across multiple quiz sessions
-4. **Game Variety**: Choose from 4 different game types based on learning preference
+### 사용자 워크플로우
+1. **게임 선택**: 메인 페이지에서 4가지 게임 중 선택
+2. **퀴즈 플레이**: 오늘의 퀴즈 또는 Archive에서 과거 퀴즈 선택
+3. **AI 챗봇 활용**: 문제 풀이 중 궁금한 점 실시간 질문
+4. **결과 확인**: 점수 및 정답 해설 확인
 
-### For Administrators
-1. **Content Creation**: Create and publish quizzes instantly to DynamoDB
-2. **CSV Bulk Upload**: Upload Quizlet card sets via CSV for rapid content deployment
-3. **Cache Management**: Clear stale caches to ensure users see latest content
-4. **Deployment Control**: Invalidate CloudFront cache and monitor deployment status
-5. **Performance Monitoring**: Track real-time metrics for DynamoDB, Lambda, and CloudWatch
-
-### For Developers
-1. **API Integration**: Leverage Next.js API Routes for dynamic data fetching
-2. **AWS Infrastructure**: Utilize Lambda, DynamoDB, CloudFront, and CloudWatch
-3. **Monitoring Tools**: Use built-in scripts for performance tracking and auto-deployment
-4. **Deployment Automation**: Execute one-command deployments with validation
+### 관리자 워크플로우
+1. **퀴즈 생성**: 관리자 페이지에서 문제 작성
+2. **API 저장**: Lambda를 통해 DynamoDB에 저장
+3. **실시간 반영**: 사용자 페이지에 즉시 표시
+4. **관리**: 필요시 퀴즈 삭제 또는 수정
 
 ## Technical Highlights
-- **Version**: v2.5.0 (Dynamic Site with API Routes)
-- **Live URL**: https://g2.sedaily.ai
-- **Architecture**: Next.js 15.2.4 (App Router) + AWS Lambda (Python 3.11) + DynamoDB
-- **AI Engine**: Claude 3 Sonnet (AWS Bedrock, us-east-1)
-- **Deployment**: Vercel / AWS Amplify with CloudFront CDN
-- **Real-time Updates**: 30-second polling for admin-user synchronization
-- **Status**: Production-ready and operational ✅
+- **하이브리드 아키텍처**: 정적 사이트 (SSG) + 동적 API (Lambda)
+- **글로벌 배포**: CloudFront CDN을 통한 빠른 로딩
+- **서버리스**: AWS Lambda로 인프라 관리 최소화
+- **타입 안전성**: TypeScript 5 + React 19로 안정적인 코드베이스

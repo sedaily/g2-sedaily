@@ -275,7 +275,7 @@ export default function G2ArchivePage() {
                     date={date}
                     questionCount={questionCount}
                     isToday={isToday}
-                    href={`/games/g2/${shortDate}`}
+                    href={`/games/g2/play?date=${shortDate}`}
                     tags={dateTags[date] || []}
                   />
                 )

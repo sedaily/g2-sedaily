@@ -12,8 +12,9 @@ import { QuizEditor } from "@/components/admin/QuizEditor"
 import { CacheManager } from "@/components/admin/CacheManager"
 import { QuizPreview } from "@/components/admin/QuizPreview"
 import { QuizletUploader } from "@/components/admin/QuizletUploader"
+import { QuizList } from "@/components/admin/QuizList"
 import { DeployManager } from "@/components/admin/DeployManager"
-import { RealtimeStatus } from "@/components/admin/RealtimeStatus"
+
 import type { QuizQuestion } from "@/types/quiz"
 import { validateQuestion, saveToLambda } from "@/lib/admin-utils"
 
@@ -28,7 +29,7 @@ export default function AdminQuizPage() {
   const [saveMessage, setSaveMessage] = useState("")
   const [quizletSaveStatus, setQuizletSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
   const [quizletValidationErrors, setQuizletValidationErrors] = useState<string[]>([])
-  const [activeTab, setActiveTab] = useState<"quiz" | "quizlet" | "cache" | "deploy">("quiz")
+  const [activeTab, setActiveTab] = useState<"quiz" | "quizlet" | "delete" | "cache" | "deploy">("quiz")
 
   useEffect(() => {
     const auth = sessionStorage.getItem("admin_authenticated")
@@ -208,7 +209,7 @@ export default function AdminQuizPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold">관리자 패널</h1>
-            <RealtimeStatus />
+
             <div className="flex gap-2">
               <Button 
                 variant={activeTab === "quiz" ? "default" : "outline"}
@@ -223,6 +224,13 @@ export default function AdminQuizPage() {
                 size="sm"
               >
                 Quizlet 관리
+              </Button>
+              <Button 
+                variant={activeTab === "delete" ? "default" : "outline"}
+                onClick={() => setActiveTab("delete")}
+                size="sm"
+              >
+                퀴즈 삭제
               </Button>
               <Button 
                 variant={activeTab === "cache" ? "default" : "outline"}
@@ -300,6 +308,8 @@ export default function AdminQuizPage() {
             saveStatus={quizletSaveStatus}
             validationErrors={quizletValidationErrors}
           />
+        ) : activeTab === "delete" ? (
+          <QuizList />
         ) : activeTab === "cache" ? (
           <CacheManager />
         ) : (

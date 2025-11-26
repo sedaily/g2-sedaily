@@ -276,7 +276,7 @@ export default function G1ArchivePage() {
                 // API에서 각 날짜는 항상 4문제씩 있음
                 const questionCount = 4
 
-                // Convert YYYY-MM-DD to YYYYMMDD for routing
+                // Convert YYYY-MM-DD to YYYYMMDD for query param
                 const shortDate = date.replace(/-/g, '')
 
                 return (
@@ -286,7 +286,7 @@ export default function G1ArchivePage() {
                     date={date}
                     questionCount={questionCount}
                     isToday={isToday}
-                    href={`/games/g1/${shortDate}`}
+                    href={`/games/g1/play?date=${shortDate}`}
                     tags={dateTags[date] || []}
                   />
                 )

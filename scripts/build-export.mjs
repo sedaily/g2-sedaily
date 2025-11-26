@@ -36,11 +36,14 @@ try {
   // Use export config
   fs.copyFileSync(exportConfig, originalConfig);
 
-  // API 폴더 임시 이동 (정적 export 시 필요)
-  const apiExists = fs.existsSync('app/api');
+  // API 폴더 임시 이동 (프로젝트 밖으로)
+  const apiPath = path.join(process.cwd(), 'app', 'api');
+  const apiTempPath = path.join(process.cwd(), '..', 'api_temp_build');
+  const apiExists = fs.existsSync(apiPath);
+  
   if (apiExists) {
     console.log('🔧 Temporarily moving API routes...');
-    execSync('mv app/api app/api_temp');
+    fs.renameSync(apiPath, apiTempPath);
   }
 
   // Build
@@ -48,9 +51,9 @@ try {
   execSync('next build', { stdio: 'inherit' });
 
   // API 폴더 복원
-  if (apiExists) {
+  if (apiExists && fs.existsSync(apiTempPath)) {
     console.log('🔄 Restoring API routes...');
-    execSync('mv app/api_temp app/api');
+    fs.renameSync(apiTempPath, apiPath);
   }
 
   // Keep all RSC-related files (index.txt) and robots.txt
@@ -67,10 +70,16 @@ try {
   console.error('❌ Build failed:', error.message);
   
   // 에러 시 API 폴더 복원
-  if (fs.existsSync('app/api_temp')) {
+  const apiPath = path.join(process.cwd(), 'app', 'api');
+  const apiTempPath = path.join(process.cwd(), '..', 'api_temp_build');
+  
+  if (fs.existsSync(apiTempPath)) {
     console.log('🔄 Restoring API routes after error...');
     try {
-      execSync('mv app/api_temp app/api');
+      if (fs.existsSync(apiPath)) {
+        fs.rmSync(apiPath, { recursive: true, force: true });
+      }
+      fs.renameSync(apiTempPath, apiPath);
       console.log('✅ API routes restored');
     } catch (restoreError) {
       console.error('⚠️ Failed to restore API routes:', restoreError.message);

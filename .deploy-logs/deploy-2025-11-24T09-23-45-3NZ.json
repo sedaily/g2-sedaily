@@ -1,0 +1,11 @@
+{
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")",
+  "mode": "manual-deploy",
+  "status": "success",
+  "steps": [
+    {"step": "build", "status": "success"},
+    {"step": "s3-upload", "status": "success"},
+    {"step": "cloudfront-invalidation", "status": "success", "id": "I5NNXIT1XC8SZMYPO3BQOMYZTK"}
+  ],
+  "url": "https://g2.sedaily.ai"
+}

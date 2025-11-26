@@ -1,16 +1,10 @@
 import { Suspense } from "react"
 import DateQuizClient from "./client-page"
-import { getAvailableDates } from "@/lib/games-data"
+
+export const dynamicParams = false
 
 export async function generateStaticParams() {
-  try {
-    const dates = await getAvailableDates("BlackSwan")
-    return dates.map((date) => ({
-      date: date.replace(/-/g, ''),
-    }))
-  } catch {
-    return []
-  }
+  return [{ date: '20250101' }]
 }
 
 export default async function DateQuizPage({

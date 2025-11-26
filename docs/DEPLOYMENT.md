@@ -2,28 +2,25 @@
 
 ## 🚀 빠른 배포
 
-### 권장 배포 방법
+### 수동 배포 (현재 방식)
 
 ```bash
-# Quick Deploy (가장 빠름, 권장)
-pnpm deploy:quick
+# 1. API 폴더 임시 이동
+mv app/api ../api_backup
 
-# Ultimate Deploy (완전한 검증 포함)
-pnpm deploy                  # Frontend만
-pnpm deploy:full             # Frontend + Backend
-pnpm deploy:backend          # Backend만
+# 2. 빌드
+rm -rf .next out
+pnpm next build
+
+# 3. S3 업로드
+aws s3 sync ./out s3://g2-frontend-ver2 --delete
+
+# 4. CloudFront 무효화
+aws cloudfront create-invalidation --distribution-id E8HKFQFSQLNHZ --paths "/*"
+
+# 5. API 폴더 복원
+mv ../api_backup app/api
 ```
-
-### 배포 프로세스
-
-**Quick Deploy 실행 시**:
-1. AWS 환경 검증
-2. 빌드 (`pnpm run build:export`)
-3. Deploy Guard Pre (파일 검증)
-4. S3 업로드 (재시도 3회)
-5. CloudFront 무효화
-6. Deploy Guard Post (웹사이트 테스트)
-7. 로그 저장 (`.deploy-logs/`)
 
 ---
 
@@ -42,9 +39,9 @@ pnpm deploy:backend          # Backend만
 cat .env.local
 
 # 필수 변수
-NEXT_PUBLIC_CHATBOT_API_URL=...
-NEXT_PUBLIC_QUIZ_API_URL=...
-BIGKINDS_API_KEY=...
+NEXT_PUBLIC_CHATBOT_API_URL=...           # 챗봇 API
+NEXT_PUBLIC_QUIZ_API_URL=...              # Quiz API Gateway
+NEXT_PUBLIC_QUIZ_SAVE_URL=...             # Quiz 저장 API
 ```
 
 ---
@@ -59,7 +56,8 @@ BIGKINDS_API_KEY=...
 
 ### Backend
 - **Lambda Chatbot**: `sedaily-chatbot-dev-handler`
-- **Lambda Quiz**: `quiz-handler`
+- **Lambda Quiz API**: `sedaily-quiz-api` (새로 추가)
+- **API Gateway**: Quiz API (동적 퀴즈 데이터)
 - **Bedrock**: Claude 3 Sonnet
 - **DynamoDB**: `sedaily-quiz-data`
 - **Region**: us-east-1
@@ -176,15 +174,28 @@ aws cloudfront create-invalidation --distribution-id E8HKFQFSQLNHZ --paths "/404
 
 **해결**:
 ```bash
-# 전체 캐시 무효화
+# 코드 변경 시: CloudFront 캐시 무효화
 aws cloudfront create-invalidation \
   --distribution-id E8HKFQFSQLNHZ \
   --paths "/*"
 
-# 특정 파일만 무효화
-aws cloudfront create-invalidation \
-  --distribution-id E8HKFQFSQLNHZ \
-  --paths "/index.html" "/games/*"
+# 퀴즈 데이터 변경 시: 브라우저 강력 새로고침（Cmd+Shift+R)
+```
+
+### 7. Archive 페이지 빈 데이터 문제
+
+**증상**: "아카이브 데이터가 없습니다" 표시
+
+**해결**:
+```bash
+# 1. 환경 변수 확인
+cat .env.local | grep QUIZ_API
+
+# 2. 빌드된 파일에 API URL 포함 확인
+grep -r "u8ck54y36j" out/_next/static/chunks/*.js
+
+# 3. Archive 페이지에서 강력 새로고침
+# https://g2.sedaily.ai/games/g2/archive 접속 후 Cmd+Shift+R
 ```
 
 ### 5. Lambda 배포 실패
@@ -342,44 +353,74 @@ aws s3 ls s3://g2-frontend-ver2/
 
 ## 📚 추가 문서
 
+- **[DYNAMIC_QUIZ_SETUP.md](./DYNAMIC_QUIZ_SETUP.md)**: 동적 퀴즈 시스템 설정
 - **[DEPLOYMENT_ARCHITECTURE.md](./DEPLOYMENT_ARCHITECTURE.md)**: 배포 시스템 아키텍처
 - **[BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md)**: 백엔드 아키텍처
 - **[README.md](../README.md)**: 프로젝트 개요
-- **[config.mjs](../scripts/config.mjs)**: 배포 설정
-- **[utils.mjs](../scripts/utils.mjs)**: 유틸리티 함수
+
+---
+
+## 🎮 퀴즈 관리
+
+### 퀴즈 생성
+1. 관리자 페이지 접속: https://g2.sedaily.ai/admin/quiz
+2. "퀴즈 관리" 탭에서 퀴즈 작성
+3. "저장" 버튼 클릭 → DynamoDB에 자동 저장
+4. 사용자는 브라우저 새로고침만 하면 퀴즈 표시
+
+### 퀴즈 삭제
+1. 관리자 페이지 "퀴즈 삭제" 탭
+2. 게임 타입 선택 (BlackSwan, PrisonersDilemma, SignalDecoding)
+3. 날짜 선택
+4. "삭제" 버튼 클릭 → DynamoDB에서 삭제
+
+### 중요 사항
+- **퀴즈 데이터**: DynamoDB에 저장, API로 동적 로드 (`cache: "no-store"`)
+- **CloudFront 캐시**: 퀴즈 데이터는 캐시되지 않음
+- **사용자 화면**: Archive 페이지에서 강력 새로고침 (Cmd+Shift+R)
+- **환경 변수**: `.env.local` 파일에 설정 (빌드 시 포함됨)
+
+### API 엔드포인트
+```bash
+# 퀴즈 생성
+POST https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod/quiz
+
+# 퀴즈 조회
+GET https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod/quiz/{gameType}/{date}
+
+# 날짜 목록
+GET https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod/quiz/{gameType}/dates
+
+# 퀴즈 삭제
+DELETE https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod/quiz/{gameType}/{date}
+```
 
 ---
 
 ## 💡 배포 팁
 
-### 빠른 배포
-```bash
-# 가장 빠른 방법
-pnpm deploy:quick
-```
-
-### 안전한 배포
-```bash
-# 완전한 검증 포함
-pnpm deploy
-```
-
-### 테스트 없이 배포
-```bash
-# 테스트 스킵 (비권장)
-node scripts/ultimate-deploy.mjs frontend --skip-tests
-```
-
 ### 배포 전 로컬 테스트
 ```bash
-# 빌드 테스트
-pnpm build:export
+# 개발 서버 테스트
+pnpm dev
+
+# 빌드 테스트 (API 폴더 제외)
+mv app/api ../api_backup
+pnpm next build
+mv ../api_backup app/api
 
 # 결과 확인
 ls -la out/
+ls out/index.html out/404.html
+```
+
+### 빠른 배포
+```bash
+# 위 수동 배포 명령어 사용
+# 또는 scripts/deploy.sh 스크립트 사용
 ```
 
 ---
 
-**마지막 업데이트**: 2025-11-24  
-**문서 버전**: 2.3
+**마지막 업데이트**: 2025-11-26  
+**문서 버전**: 2.5

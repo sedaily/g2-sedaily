@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // CloudFront 정적 배포 설정
-  output: 'export',
+  // 개발 환경 설정 (API Routes 활성화)
   trailingSlash: true,
-  distDir: 'out',
+  
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   
   eslint: {
     ignoreDuringBuilds: true,

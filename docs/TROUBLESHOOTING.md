@@ -1,108 +1,92 @@
-# 문제 해결 가이드
+# 트러블슈팅 가이드
 
-## 빠른 해결
+## 퀴즈 관련 문제
 
-### 404 에러
-```bash
-pnpm guard:emergency
+### Archive 페이지에 퀴즈가 표시되지 않음
+
+**증상**:
+- 관리자 페이지에서 퀴즈 저장 완료
+- Archive 페이지에서 "아카이브 데이터가 없습니다" 표시
+
+**원인**:
+1. 브라우저 캐시 문제
+2. 환경 변수 누락
+3. API 호출 실패
+
+**해결 방법**:
+
+#### 1단계: 브라우저 강력 새로고침
+```
+Archive 페이지에서 직접:
+- Mac: Cmd + Shift + R
+- Windows: Ctrl + Shift + R
 ```
 
-### 빌드 실패
-```bash
-rm -rf .next out node_modules
-pnpm install
-pnpm build:export
+#### 2단계: 브라우저 콘솔 확인
+```
+F12 → Console 탭
+
+정상:
+[v0] Found 1 dates for PrisonersDilemma
+
+비정상:
+[v0] Found 0 dates for PrisonersDilemma
 ```
 
-### 배포 실패
+#### 3단계: API 직접 테스트
 ```bash
-pnpm deploy:quick
+curl https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod/quiz/PrisonersDilemma/dates
+
+# 정상 응답:
+{"dates": ["2025-11-26"]}
+```
+
+#### 4단계: 환경 변수 확인
+```bash
+cat .env.local | grep QUIZ_API
+
+# 있어야 함:
+NEXT_PUBLIC_QUIZ_API_URL=https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod
+```
+
+#### 5단계: 빌드 파일 확인
+```bash
+grep -r "u8ck54y36j" out/_next/static/chunks/*.js
+
+# API URL이 포함된 파일이 있어야 함
 ```
 
 ---
 
-## 빌드 문제
+## 관리자 페이지 문제
 
-### API 폴더 에러
+### 저장 버튼 502 에러
 
-**증상**: `Error: Page "/api/..." is incompatible with "output: export"`
-
-**원인**: API 폴더가 정적 export와 충돌
-
-**해결**:
-```bash
-# 자동 해결 (권장)
-pnpm build:export
-
-# 수동 해결
-mv app/api app/api_temp
-pnpm next build
-mv app/api_temp app/api
+**증상**:
+```
+POST https://g2.sedaily.ai/api/admin/quizzes 502 (Bad Gateway)
 ```
 
-### 의존성 에러
-
-**증상**: `Module not found` 또는 `Cannot find package`
-
-**해결**:
-```bash
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
-```
-
-### TypeScript 에러
-
-**증상**: 타입 에러로 빌드 실패
+**원인**:
+- 정적 사이트에 `/api/admin/*` 라우트 없음
 
 **해결**:
-```bash
-# 타입 체크 스킵 (임시)
-pnpm build:export
-
-# 타입 수정 (권장)
-pnpm tsc --noEmit
-```
+- 이미 수정됨 (v2.8.0)
+- Lambda API Gateway로 직접 호출
 
 ---
 
 ## 배포 문제
 
-### AWS 자격증명 에러
+### CloudFront 캐시 무효화
 
-**증상**: `Unable to locate credentials`
-
-**해결**:
+**퀴즈 데이터 변경 시**:
 ```bash
-# 자격증명 확인
-aws configure list
-
-# 재설정
-aws configure
+# 불필요 - 브라우저 새로고침만 하면 됨
 ```
 
-### S3 업로드 실패
-
-**증상**: `Access Denied` 또는 `Bucket not found`
-
-**해결**:
+**코드 변경 시**:
 ```bash
-# 버킷 접근 확인
-aws s3 ls s3://g2-frontend-ver2
-
-# IAM 권한 확인
-aws iam get-user
-```
-
-### CloudFront 무효화 실패
-
-**증상**: `InvalidDistributionId` 또는 `AccessDenied`
-
-**해결**:
-```bash
-# 배포 ID 확인
-aws cloudfront list-distributions
-
-# 수동 무효화
 aws cloudfront create-invalidation \
   --distribution-id E8HKFQFSQLNHZ \
   --paths "/*"
@@ -110,166 +94,115 @@ aws cloudfront create-invalidation \
 
 ---
 
-## 런타임 문제
+## API 문제
 
-### 페이지 로딩 실패
+### CORS 에러
 
-**증상**: 빈 화면 또는 무한 로딩
-
-**해결**:
-1. 브라우저 콘솔 확인 (F12)
-2. 네트워크 탭에서 실패한 요청 확인
-3. CloudFront 캐시 무효화
-
-### API 호출 실패
-
-**증상**: `Failed to fetch` 또는 `Network error`
-
-**해결**:
-```bash
-# Lambda 함수 확인
-aws lambda get-function \
-  --function-name sedaily-chatbot-dev-handler
-
-# CloudWatch 로그 확인
-aws logs tail /aws/lambda/sedaily-chatbot-dev-handler --follow
+**증상**:
+```
+Access to fetch has been blocked by CORS policy
 ```
 
-### 챗봇 응답 없음
-
-**증상**: 챗봇 메시지 전송 후 응답 없음
-
 **해결**:
-1. 브라우저 콘솔에서 에러 확인
-2. Lambda 함수 로그 확인
-3. BigKinds API 키 확인
+- 이미 수정됨 (v2.8.0)
+- API Gateway에 OPTIONS 메서드 및 CORS 헤더 추가
 
 ---
 
-## 데이터 문제
+## 환경 변수 문제
 
-### 퀴즈 데이터 없음
+### 빌드 시 환경 변수 누락
 
-**증상**: "퀴즈를 불러오는 중..." 무한 표시
+**증상**:
+- 빌드된 JavaScript에 API URL 없음
+
+**원인**:
+- `.env` 파일만 있고 `.env.local` 없음
 
 **해결**:
 ```bash
-# DynamoDB 테이블 확인
-aws dynamodb describe-table \
-  --table-name sedaily-quiz-data
+cp .env .env.local
+pnpm build
+```
 
-# 데이터 확인
+---
+
+## 브라우저 캐시 문제
+
+### 완전 캐시 삭제
+
+**Chrome**:
+1. 설정 → 개인정보 및 보안
+2. 인터넷 사용 기록 삭제
+3. 시간 범위: 전체 기간
+4. 캐시된 이미지 및 파일 체크
+5. 데이터 삭제
+
+**Safari**:
+1. 개발자 → 캐시 비우기
+2. 또는 Cmd + Option + E
+
+---
+
+## Lambda 문제
+
+### Lambda 로그 확인
+
+```bash
+# 최근 로그
+aws logs tail /aws/lambda/sedaily-quiz-api --follow --region us-east-1
+
+# 에러만 필터링
+aws logs filter-log-events \
+  --log-group-name /aws/lambda/sedaily-quiz-api \
+  --filter-pattern "ERROR" \
+  --region us-east-1
+```
+
+---
+
+## DynamoDB 문제
+
+### 데이터 확인
+
+```bash
+# 전체 스캔
 aws dynamodb scan \
   --table-name sedaily-quiz-data \
-  --limit 5
-```
+  --region us-east-1
 
-### 캐시 문제
-
-**증상**: 오래된 데이터 표시
-
-**해결**:
-```javascript
-// 브라우저 콘솔에서 실행
-localStorage.clear()
-location.reload()
-```
-
----
-
-## 성능 문제
-
-### 느린 로딩
-
-**원인**:
-- CloudFront 캐시 미스
-- Lambda Cold Start
-- BigKinds API 지연
-
-**해결**:
-1. CloudFront 캐시 정책 확인
-2. Lambda 메모리 증가 (1024MB → 2048MB)
-3. BigKinds API 타임아웃 조정
-
-### 높은 비용
-
-**원인**:
-- Lambda 과다 실행
-- CloudFront 데이터 전송량
-- DynamoDB 읽기/쓰기
-
-**해결**:
-1. CloudWatch 메트릭 확인
-2. 캐싱 전략 강화
-3. Lambda 동시 실행 제한
-
----
-
-## 로그 확인
-
-### 배포 로그
-```bash
-ls -la .deploy-logs/
-cat .deploy-logs/deploy-*.json | jq
-```
-
-### Lambda 로그
-```bash
-aws logs tail /aws/lambda/sedaily-chatbot-dev-handler --follow
-aws logs tail /aws/lambda/quiz-handler --follow
-```
-
-### CloudFront 로그
-```bash
-# S3 버킷에서 로그 확인 (설정된 경우)
-aws s3 ls s3://your-cloudfront-logs-bucket/
+# 특정 항목 조회
+aws dynamodb get-item \
+  --table-name sedaily-quiz-data \
+  --key '{"PK":{"S":"QUIZ#PrisonersDilemma"},"SK":{"S":"DATE#2025-11-26"}}' \
+  --region us-east-1
 ```
 
 ---
 
 ## 긴급 상황
 
-### 웹사이트 다운
+### 퀴즈가 전혀 표시되지 않음
 
-1. **즉시 확인**:
 ```bash
-curl -I https://g2.sedaily.ai
-```
+# 1. API 테스트
+curl https://u8ck54y36j.execute-api.us-east-1.amazonaws.com/prod/quiz/BlackSwan/dates
 
-2. **응급 복구**:
-```bash
-pnpm guard:emergency
-```
+# 2. DynamoDB 확인
+aws dynamodb scan --table-name sedaily-quiz-data --region us-east-1
 
-3. **재배포**:
-```bash
-pnpm deploy:quick
-```
+# 3. Lambda 로그 확인
+aws logs tail /aws/lambda/sedaily-quiz-api --region us-east-1
 
-### 데이터 손실
+# 4. 재배포
+cd /path/to/g2-clone
+bash scripts/deploy.sh
 
-1. **DynamoDB 백업 확인**:
-```bash
-aws dynamodb list-backups \
-  --table-name sedaily-quiz-data
-```
-
-2. **백업 복원**:
-```bash
-aws dynamodb restore-table-from-backup \
-  --target-table-name sedaily-quiz-data \
-  --backup-arn arn:aws:dynamodb:...
+# 5. CloudFront 무효화
+aws cloudfront create-invalidation --distribution-id E8HKFQFSQLNHZ --paths "/*"
 ```
 
 ---
 
-## 연락처
-
-**긴급 상황**: GitHub Issues  
-**일반 문의**: Repository Discussions  
-**버그 리포트**: `.github/ISSUE_TEMPLATE/bug_report.md`
-
----
-
-*마지막 업데이트: 2025-11-24*  
-*문서 버전: 2.0*
+**마지막 업데이트**: 2025-11-26  
+**문서 버전**: 1.0

@@ -5,13 +5,12 @@
 
 import type { Question } from "./games-data"
 
-// CloudFront + API Gateway 사용
-// ========================================
-// CloudFront가 /api/quiz/* 요청을 API Gateway로 라우팅
-// ========================================
-const API_ENDPOINT = typeof window === 'undefined' 
-  ? null // 빌드 타임에는 API 호출 안함
-  : '/api/quiz/quizzes/all' // CloudFront → API Gateway
+// API Gateway 직접 호출
+const API_BASE = typeof window !== 'undefined' 
+  ? process.env.NEXT_PUBLIC_QUIZ_API_URL || 'https://YOUR_API_GATEWAY_URL'
+  : null
+
+const API_ENDPOINT = API_BASE ? `${API_BASE}/quiz/all` : null
 
 export interface QuizDataStructure {
   BlackSwan?: Record<string, Question[]>
@@ -159,8 +158,12 @@ export async function fetchQuizDataByDate(
   }
 
   try {
-    // 날짜별 API 엔드포인트 구성
-    const dateApiUrl = `/api/quiz/quizzes/${gameType}/${date}`
+    if (!API_BASE) {
+      const fullData = await fetchQuizData()
+      return fullData[gameType]?.[date] || []
+    }
+    
+    const dateApiUrl = `${API_BASE}/quiz/${gameType}/${date}`
     console.log(`[v0] Fetching ${gameType} data for ${date} from:`, dateApiUrl)
     
     const response = await fetch(dateApiUrl, {
@@ -188,15 +191,18 @@ export async function fetchQuizDataByDate(
     const data = await response.json()
     
     // API Gateway 응답 파싱
-    let questions: Question[]
+    let rawQuestions: any[]
     if (typeof data.body === "string") {
       const parsed = JSON.parse(data.body)
-      questions = parsed.questions || parsed.data?.questions || []
+      rawQuestions = parsed.questions || parsed.data?.questions || []
     } else if (data.body) {
-      questions = data.body.questions || data.body.data?.questions || []
+      rawQuestions = data.body.questions || data.body.data?.questions || []
     } else {
-      questions = data.questions || data.data?.questions || []
+      rawQuestions = data.questions || data.data?.questions || []
     }
+
+    // Lambda 형식이 이미 Question 타입과 일치하므로 그대로 사용
+    const questions: Question[] = rawQuestions
 
     // 캐시 저장
     dateCache.set(cacheKey, { data: questions, timestamp: Date.now() })
@@ -225,8 +231,13 @@ export async function fetchAvailableDates(
   gameType: 'BlackSwan' | 'PrisonersDilemma' | 'SignalDecoding'
 ): Promise<string[]> {
   try {
-    // 메타데이터 API 엔드포인트
-    const metaApiUrl = `/api/quiz/quizzes/meta/${gameType}`
+    if (!API_BASE) {
+      const fullData = await fetchQuizData()
+      const dates = Object.keys(fullData[gameType] || {})
+      return dates.sort((a, b) => b.localeCompare(a))
+    }
+    
+    const metaApiUrl = `${API_BASE}/quiz/${gameType}/dates`
     console.log(`[v0] Fetching available dates for ${gameType} from:`, metaApiUrl)
     
     const response = await fetch(metaApiUrl, {
@@ -234,7 +245,7 @@ export async function fetchAvailableDates(
       headers: {
         "Content-Type": "application/json",
       },
-      cache: "force-cache", // 날짜 목록은 캐시 허용
+      cache: "no-store",
     })
 
     if (!response.ok) {

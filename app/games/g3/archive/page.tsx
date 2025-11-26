@@ -276,7 +276,7 @@ export default function G3ArchivePage() {
                     questionCount={questionCount}
                     tags={dateTags[date] || []}
                     isToday={isToday}
-                    href={`/games/g3/${shortDate}`}
+                    href={`/games/g3/play?date=${shortDate}`}
                   />
                 )
               })
