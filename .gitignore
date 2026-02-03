@@ -101,6 +101,10 @@ Thumbs.db
 .aws/
 *.pem
 
+# Lambda packages (dependencies)
+aws/quiz-generator-lambda/package/
+aws/quiz-generator-lambda/*.zip
+
 # Backend deployment artifacts
 backend/enhanced-chatbot.zip
 backend/.serverless/

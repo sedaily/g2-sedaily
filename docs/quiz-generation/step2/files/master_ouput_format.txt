@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 마스터 출력 형식 (최우선 적용) -->
+
+<master_output_format>
+  <title>서울경제 AI GAMES</title>
+  <subtitle>경제 뉴스로 배우는 논리적 사고</subtitle>
+  
+  <!-- ===== 입력 처리 규칙 ===== -->
+<input_processing>
+<absolute_rule>
+    【번호】는 완전 무시 - 오직 입력 순서만 인식
+    예시: 【9번】【1번】【5번】 = 1세트 1,2,3번
+    해설 출력 시 라벨([정답 설명] 등) 제거
+</absolute_rule>
+</input_processing>
+
+<output_sets>
+  <set_count>2</set_count>
+  <problems_per_set>3</problems_per_set>
+  <total_problems>6</total_problems>
+</output_sets>
+
+  <!-- ===== 게임별 형식 ===== -->
+  <game_1>
+    <name>🌊 블랙스완 - 연쇄반응 분석</name>
+    <line1>상황 설명 (25-30자)</line1>
+    <line2>인과관계 질문 (25-30자)</line2>
+    <options>서술식 완전 문장 (15-20자)</options>
+    <answer_format>②③④ 우선</answer_format>
+  </game_1>
+  
+  <game_2>
+    <name>⚖️ 죄수의 딜레마 - 균형적 판단</name>
+    <line1>대립 구조 설명 (25-30자)</line1>
+    <line2>판단 근거 질문 (25-30자)</line2>
+    <options>~하기 위해서다 형식 (15-20자)</options>
+    <answer_format>②③④ 우선</answer_format>
+  </game_2>
+  
+  <game_3>
+    <name>🔍 시그널 디코딩 - 데이터 해석</name>
+    <line1>배경 지식 (25-30자)</line1>
+    <line2>"빈칸 문장" (25-30자)</line2>
+    <line3>빈칸에 들어갈 가장 적절한 것은?</line3>
+    <options>단답형 용어 (5-10자)</options>
+    <answer_format>①②③④ 균등</answer_format>
+  </game_3>
+  
+  <!-- ===== 기사 정보 ===== -->
+  <article_info>
+    <title>📰 관련 기사: [원제목]</title>
+    <summary>📝 "[핵심 1문장. 영향/전망 1문장.]" (100자)</summary>
+  </article_info>
+  
+  <!-- ===== 해설 형식 ===== -->
+  <explanation>
+    <length>200-250자 (3단락)</length>
+
+
+<explanation>
+  <format>라벨 없는 서술식 3문장</format>
+  <length>200-250자</length>
+  <structure>
+    <black_swan>
+      <sentence1>정답의 직접적 인과관계 설명</sentence1>
+      <sentence2>경제 원리와 이론적 배경</sentence2>
+      <sentence3>향후 영향과 시사점</sentence3>
+    </black_swan>
+    <dilemma>
+      <sentence1>선택 이유와 핵심 근거</sentence1>
+      <sentence2>갈등 구조와 딜레마 분석</sentence2>
+      <sentence3>현실적 함의와 시사점</sentence3>
+    </dilemma>
+    <signal>
+      <sentence1>용어 정의와 개념 설명</sentence1>
+      <sentence2>작동 원리와 메커니즘</sentence2>
+      <sentence3>실무적 의미와 시사점</sentence3>
+    </signal>
+  </structure>
+  <note>출력 시 라벨 없이 자연스러운 문장으로 연결</note>
+</explanation>
+  
+  <!-- ===== 출력 구조 ===== -->
+  <output_structure>
+서울경제 AI GAMES
+경제 뉴스로 배우는 논리적 사고
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【1세트】
+
+🌊 블랙스완 - 연쇄반응 분석
+[문제 2줄]
+① ② ③ ④ [선택지]
+📰 관련 기사: [제목]
+📝 "[요약]"
+
+⚖️ 죄수의 딜레마 - 균형적 판단
+[문제 2줄]
+① ② ③ ④ [선택지]
+📰 관련 기사: [제목]
+📝 "[요약]"
+
+🔍 시그널 디코딩 - 데이터 해석
+[문제 3줄]
+① ② ③ ④ [선택지]
+📰 관련 기사: [제목]
+📝 "[요약]"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【2세트】
+[1세트와 동일 구조]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 정답 및 해설
+
+【1세트】
+**블랙스완: [정답]**
+[3단락 해설]
+
+**죄수의 딜레마: [정답]**
+[3단락 해설]
+
+**시그널 디코딩: [정답]**
+[3단락 해설]
+
+【2세트】
+[동일 구조]
+  </output_structure>
+  
+  <!-- ===== 맞춤법 규칙 ===== -->
+  <grammar_rules>
+    <rule>6분기 만에 (O) / 6개 분기만에 (X)</rule>
+    <rule>전년 대비 or 전년비 (둘 다 가능)</rule>
+    <rule>기준금리 (O) / 기준 금리 (X)</rule>
+  </grammar_rules>
+  
+  <final_note>
+    이 형식이 모든 다른 지침보다 우선합니다.
+  </final_note>
+</master_output_format>

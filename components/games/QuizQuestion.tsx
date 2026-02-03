@@ -48,8 +48,6 @@ export function QuizQuestion({
       {/* 관련 기사 헤더 */}
       {question.relatedArticle && (
         <NewsHeaderBlock
-          logoSrc="/images/sedaily_logo.webp"
-          siteUrl="https://www.sedaily.com"
           headline={question.relatedArticle.title}
           lede={question.relatedArticle.excerpt}
           themeStyles={themeStyles}
@@ -66,7 +64,8 @@ export function QuizQuestion({
         >
           <span className="text-xs uppercase tracking-widest">{question.questionType}</span>
         </div>
-        {question.newsLink && (
+        {/* 관련 뉴스 링크 - 테스트용으로 숨김 */}
+        {/* {question.newsLink && (
           <a
             href={question.newsLink}
             target="_blank"
@@ -76,7 +75,7 @@ export function QuizQuestion({
             <ExternalLink className="h-3.5 w-3.5" />
             <span>관련 뉴스</span>
           </a>
-        )}
+        )} */}
       </header>
 
       {/* 질문 제목 */}

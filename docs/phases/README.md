@@ -1,0 +1,33 @@
+# Development Phases
+
+This directory contains high-level documentation for major development phases and milestones.
+
+## Purpose
+
+Phase documents capture the big picture of feature development:
+
+- What was built and why
+- Key architectural decisions
+- Design rationale
+- Technical implementation overview
+- Impact and outcomes
+
+## Difference from Work Logs
+
+- **Work Logs** (`../work-logs/`): Daily development activities, detailed code changes, AI context
+- **Phase Docs** (this folder): Feature-level summaries, decision rationale, team collaboration
+
+## Phases Index
+
+### Phase 1: Automated Quiz Generation System (2026-02-03)
+**PHASE-01-quiz-auto-generation-system.md**
+- Two-stage AI pipeline (article screening → quiz generation)
+- BigKinds API + Claude AI (Bedrock) integration
+- EventBridge daily scheduling (6AM KST)
+- Quality validation with retry logic
+- 90% manual effort reduction, 95%+ success rate
+
+---
+
+**Total Phases:** 1  
+**Latest Update:** 2026-02-03

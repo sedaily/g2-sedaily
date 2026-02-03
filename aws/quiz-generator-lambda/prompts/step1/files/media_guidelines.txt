@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 서울경제 AI GAMES - 언론사 품격 가이드라인 -->
+<!-- 파일명: media_guidelines.xml -->
+<!-- 작성일: 2025년 10월 -->
+
+<media_guidelines>
+
+<!-- ===== 언론사 기본 원칙 ===== -->
+<journalistic_principles>
+  
+  <objectivity>
+    <principle>사실과 의견의 명확한 구분</principle>
+    <implementation>
+      <do>
+        - "기사에 따르면" 등 출처 명시
+        - "~로 나타났다" 등 사실 기반 표현
+        - 구체적 수치와 데이터 제시
+      </do>
+      <dont>
+        - "~해야 한다" 등 단정적 주장
+        - "반드시 ~될 것" 등 예측 단언
+        - 개인적 견해나 추측 포함
+      </dont>
+    </implementation>
+  </objectivity>
+  
+  <accuracy>
+    <principle>정확하고 검증된 정보만 제공</principle>
+    <implementation>
+      <do>
+        - 공식 발표 자료 기반
+        - 확인 가능한 경제 지표 사용
+        - 표준 경제 용어 사용
+      </do>
+      <dont>
+        - 미확인 정보나 루머
+        - 과장된 수치나 효과
+        - 오해 소지 있는 표현
+      </dont>
+    </implementation>
+  </accuracy>
+  
+  <fairness>
+    <principle>균형잡힌 시각 유지</principle>
+    <implementation>
+      <do>
+        - 다양한 관점 인정
+        - 양면성 있는 이슈 균형적 제시
+        - 특정 기업/상품 중립적 언급
+      </do>
+      <dont>
+        - 특정 기업 편향
+        - 일방적 옹호나 비판
+        - 이해관계 반영
+      </dont>
+    </implementation>
+  </fairness>
+</journalistic_principles>
+
+<!-- ===== 언론사 품격 기준 ===== -->
+<journalistic_standards>
+  <objectivity>
+    <required>
+      - 출처 명시 ("~에 따르면", "~가 발표한")
+      - 수치 정확성 (소수점 첫째 자리까지)
+      - 중립적 어조 유지
+    </required>
+    <avoid>
+      - 주관적 형용사 ("놀라운", "충격적인")
+      - 과장된 표현 ("폭등", "폭락" → "급등", "급락")
+      - 단정적 미래 예측 ("~할 것이다" → "~할 전망이다")
+    </avoid>
+  </objectivity>
+  
+  <credibility>
+    <must_have>
+      - 검증 가능한 데이터 사용
+      - 공식 발표 기준 인용
+      - 전문가 의견은 출처 포함
+    </must_have>
+  </credibility>
+</journalistic_standards>
+
+<!-- ===== 표현 스타일 가이드 ===== -->
+<expression_style>
+  
+  <tone_guidelines>
+    <professional>
+      <description>전문적이면서도 접근 가능한 톤</description>
+      <examples>
+        <good>경제 원리를 이해하는 데 도움이 됩니다</good>
+        <good>논리적 사고력을 기를 수 있습니다</good>
+        <bad>이 문제로 취업 성공!</bad>
+        <bad>인적성 정복의 지름길!</bad>
+      </examples>
+    </professional>
+    
+    <educational>
+      <description>교육적 가치 중심, 과장 없이</description>
+      <examples>
+        <good>통화정책의 파급 경로를 학습</good>
+        <good>경제 지표의 의미 이해</good>
+        <bad>완벽 마스터 보장</bad>
+        <bad>합격률 90% 상승</bad>
+      </examples>
+    </educational>
+    
+    <modest>
+      <description>겸손하고 절제된 표현</description>
+      <examples>
+        <good>참고할 수 있습니다</good>
+        <good>도움이 될 수 있습니다</good>
+        <bad>반드시 출제됩니다</bad>
+        <bad>필수 학습 내용입니다</bad>
+      </examples>
+    </modest>
+  </tone_guidelines>
+  
+  <vocabulary_standards>
+    <preferred_terms>
+      <term>
+        <avoid>인적성 직결</avoid>
+        <use>논리적 사고 훈련</use>
+      </term>
+      <term>
+        <avoid>취업 필수</avoid>
+        <use>경제 이해 도움</use>
+      </term>
+      <term>
+        <avoid>합격 보장</avoid>
+        <use>학습 효과</use>
+      </term>
+      <term>
+        <avoid>마스터하기</avoid>
+        <use>이해하기</use>
+      </term>
+      <term>
+        <avoid>정복</avoid>
+        <use>학습</use>
+      </term>
+    </preferred_terms>
+    
+    <sentence_patterns>
+      <pattern type="설명">
+        <template>~은/는 ~을/를 의미합니다</template>
+        <template>~으로 인해 ~가 발생할 수 있습니다</template>
+        <template>~의 관점에서 보면</template>
+      </pattern>
+      
+      <pattern type="분석">
+        <template>기사에 따르면 ~로 나타났습니다</template>
+        <template>~은/는 ~와 연관되어 있습니다</template>
+        <template>이는 ~을/를 시사합니다</template>
+      </pattern>
+    </sentence_patterns>
+  </vocabulary_standards>
+  
+<!-- ===== 문체 및 톤 ===== -->
+<writing_style>
+  <question_style>
+    - 종결: "~은/는 무엇인가?" (O)
+    - 종결: "~은/는?" (X)
+    - 길이: 35-45자 완전한 문장
+  </question_style>
+  
+  <explanation_style>
+    - 서술식 2-3문장
+    - 첫 문장: 사실 기반 설명
+    - 둘째 문장: 원리나 배경 설명
+    - 간결하되 충분한 정보 제공
+  </explanation_style>
+</writing_style>
+
+<!-- ===== 엄격 금지 사항 ===== -->
+<strictly_forbidden>
+  <career_related>
+    - "취업 성공"
+    - "합격 보장"
+    - "인적성 대비"
+    - "GSAT/SKCT/HMAT" 등 특정 시험명
+    - "대기업 입사"
+  </career_related>
+  
+  <exaggeration>
+    - "완벽한 준비"
+    - "필수 문제"
+    - "출제 예상"
+    - "적중률"
+  </exaggeration>
+  
+  <difficulty_marking>
+    - 난이도 별표 (★★★)
+    - "상/중/하" 표기
+    - "Level" 표기
+  </difficulty_marking>
+</strictly_forbidden>
+
+</expression_style>
+
+<!-- ===== 콘텐츠 품질 기준 ===== -->
+<content_quality_standards>
+  
+  <educational_value>
+    <criteria>
+      <item>실제 경제 현상 이해에 도움</item>
+      <item>논리적 사고력 개발 기여</item>
+      <item>시사 상식 확장</item>
+      <item>분석 능력 향상</item>
+    </criteria>
+    
+    <avoid>
+      <item>단순 암기 유도</item>
+      <item>특정 시험 대비만 강조</item>
+      <item>즉각적 효과 보장</item>
+      <item>과도한 기대 조성</item>
+    </avoid>
+  </educational_value>
+  
+  <credibility>
+    <requirements>
+      <item>출처가 명확한 정보만 사용</item>
+      <item>검증 가능한 사실 기반</item>
+      <item>표준 경제 이론 준수</item>
+      <item>전문가 수준의 정확성</item>
+    </requirements>
+    
+    <verification_checklist>
+      <check>경제 지표가 정확한가?</check>
+      <check>인과관계가 논리적인가?</check>
+      <check>용어 사용이 적절한가?</check>
+      <check>해설이 오해 소지 없는가?</check>
+    </verification_checklist>
+  </credibility>
+  <!-- ===== 최종 품질 체크 ===== -->
+<quality_checklist>
+  <language_check>
+    □ 맞춤법 검증 완료
+    □ 조사 사용 정확성
+    □ 띄어쓰기 일관성
+    □ 외래어 표기 통일
+  </language_check>
+  
+  <content_check>
+    □ 사실 관계 정확성
+    □ 출처 명시 여부
+    □ 중립적 톤 유지
+    □ 교육적 가치 확보
+  </content_check>
+  
+  <format_check>
+    □ 게임명 혼합 방식 사용
+    □ 글자 수 규정 준수
+    □ 정답 번호 분산
+    □ 해설 서술식 작성
+  </format_check>
+</quality_checklist>
+</content_quality_standards>
+
+<!-- ===== 금지 표현 목록 ===== -->
+<prohibited_expressions>
+  
+  <marketing_language>
+    <prohibited>최강, 최고, 완벽, 필수</prohibited>
+    <prohibited>보장, 확실, 무조건</prohibited>
+    <prohibited>비법, 족보, 적중</prohibited>
+    <prohibited>합격, 취업, 성공</prohibited>
+    <reason>과대 광고성 표현</reason>
+  </marketing_language>
+  
+  <specific_references>
+    <prohibited>GSAT, SKCT, HMAT 등 특정 시험명</prohibited>
+    <prohibited>삼성, SK, LG 등 특정 기업 채용</prohibited>
+    <prohibited>인적성 점수, 합격선</prohibited>
+    <prohibited>출제 예상, 적중률</prohibited>
+    <reason>검증 불가능한 주장</reason>
+  </specific_references>
+  
+  <exaggerations>
+    <prohibited>~만 하면 된다</prohibited>
+    <prohibited>이것만 알면 충분</prohibited>
+    <prohibited>핵심 중의 핵심</prohibited>
+    <prohibited>출제자의 의도</prohibited>
+    <reason>단순화 및 과장</reason>
+  </exaggerations>
+  
+</prohibited_expressions>
+
+<!-- ===== 권장 표현 패턴 ===== -->
+<recommended_expressions>
+  
+  <learning_benefits>
+    <template>경제 원리를 이해하는 데 도움이 됩니다</template>
+    <template>논리적 사고 과정을 연습할 수 있습니다</template>
+    <template>시사 경제 지식을 넓힐 수 있습니다</template>
+    <template>분석적 관점을 기를 수 있습니다</template>
+  </learning_benefits>
+  
+  <objective_descriptions>
+    <template>이 문제는 ~을/를 다룹니다</template>
+    <template>~에 대한 이해를 확인합니다</template>
+    <template>~의 관계를 분석합니다</template>
+    <template>~을/를 종합적으로 살펴봅니다</template>
+  </objective_descriptions>
+  
+  <neutral_evaluations>
+    <template>참고할 수 있습니다</template>
+    <template>고려해볼 만합니다</template>
+    <template>도움이 될 수 있습니다</template>
+    <template>활용 가능합니다</template>
+  </neutral_evaluations>
+  
+<game_name_expressions>
+  <template>블랙스완 게임을 통해 연쇄반응을 학습</template>
+  <template>죄수의 딜레마로 균형적 판단 연습</template>
+  <template>시그널 디코딩으로 데이터 해석 능력 향상</template>
+</game_name_expressions>
+
+</recommended_expressions>
+
+<!-- ===== 법적/윤리적 고려사항 ===== -->
+<legal_ethical_considerations>
+  
+  <copyright>
+    <rule>기사 전문 인용 금지</rule>
+    <rule>핵심 내용만 요약하여 활용</rule>
+    <rule>출처 명시 원칙</rule>
+    <rule>2차 저작물로서 독창성 확보</rule>
+  </copyright>
+  
+  <disclaimer_requirements>
+    <item>특정 시험과 무관함을 암시적 표현</item>
+    <item>학습 도구일 뿐임을 간접 명시</item>
+    <item>결과 보장하지 않음을 함축</item>
+  </disclaimer_requirements>
+  
+  <ethical_boundaries>
+    <item>허위/과장 광고 금지</item>
+    <item>오해 유발 표현 회피</item>
+    <item>공정한 정보 제공</item>
+    <item>교육적 목적 우선</item>
+  </ethical_boundaries>
+  
+</legal_ethical_considerations>
+
+<!-- ===== 대상별 톤 조정 ===== -->
+<audience_tone_adjustment>
+  
+  <general_public>
+    <characteristics>다양한 배경의 독자</characteristics>
+    <tone>중립적, 교육적</tone>
+    <focus>경제 상식과 논리력</focus>
+    <avoid>전문 용어 남용</avoid>
+  </general_public>
+  
+  <students>
+    <characteristics>20-30대 학습자</characteristics>
+    <tone>친근하되 전문적</tone>
+    <focus>실용적 지식</focus>
+    <avoid>교훈적 어조</avoid>
+  </students>
+  
+  <professionals>
+    <characteristics>직장인, 투자자</characteristics>
+    <tone>간결하고 정확</tone>
+    <focus>실무 연계성</focus>
+    <avoid>기초적 설명</avoid>
+  </professionals>
+  
+</audience_tone_adjustment>
+
+<!-- ===== 품질 검증 체크리스트 ===== -->
+<final_quality_checklist>
+  
+  <mandatory_checks>
+    <check id="1">과장된 표현이 없는가?</check>
+    <check id="2">특정 기업/시험 언급이 없는가?</check>
+    <check id="3">객관적 톤을 유지하는가?</check>
+    <check id="4">교육적 가치가 명확한가?</check>
+    <check id="5">오해 소지가 없는가?</check>
+  </mandatory_checks>
+  
+  <quality_indicators>
+    <indicator>정보의 정확성</indicator>
+    <indicator>표현의 적절성</indicator>
+    <indicator>논리의 일관성</indicator>
+    <indicator>톤의 일관성</indicator>
+    <indicator>가독성</indicator>
+  </quality_indicators>
+  
+  <revision_triggers>
+    <trigger>마케팅 언어 감지</trigger>
+    <trigger>과도한 약속/보장</trigger>
+    <trigger>검증 불가 주장</trigger>
+    <trigger>편향된 관점</trigger>
+    <trigger>부적절한 비유</trigger>
+  </revision_triggers>
+  
+</final_quality_checklist>
+
+<!-- ===== 예시 문구 변환 ===== -->
+<expression_examples>
+  
+  <before_after>
+    <example>
+      <before>이 문제만 풀면 인적성 합격!</before>
+      <after>경제 원리 이해에 도움이 되는 문제입니다</after>
+    </example>
+    
+    <example>
+      <before>GSAT 필수 문제 유형</before>
+      <after>논리적 사고력을 기르는 연습 문제</after>
+    </example>
+    
+    <example>
+      <before>취업 성공의 지름길</before>
+      <after>경제 지식을 넓히는 학습 도구</after>
+    </example>
+    
+    <example>
+      <before>출제 예상 90%</before>
+      <after>중요한 경제 개념을 다룹니다</after>
+    </example>
+    
+    <example>
+      <before>인적성 직결도 95%</before>
+      <after>실용적인 경제 분석 연습</after>
+    </example>
+  </before_after>
+</expression_examples>
+
+<!-- ===== 게임명 표기 규칙 ===== -->
+<game_name_guidelines>
+  <official_format>
+    <black_swan>🌊 블랙스완 - 연쇄반응 분석</black_swan>
+    <dilemma>⚖️ 죄수의 딜레마 - 균형적 판단</dilemma>
+    <signal>🔍 시그널 디코딩 - 데이터 해석</signal>
+  </official_format>
+  
+  <usage_examples>
+    <good>블랙스완 게임을 통해 연쇄반응 원리를 학습</good>
+    <good>죄수의 딜레마로 균형적 사고 연습</good>
+    <bad>GSAT 대비 블랙스완 문제</bad>
+    <bad>인적성 직결 문제</bad>
+  </usage_examples>
+</game_name_guidelines>
+
+<!-- ===== 2세트 제작 가이드라인 ===== -->
+<two_set_production>
+  
+  <quality_consistency>
+    <rule>1세트와 2세트 품질 동일 유지</rule>
+    <rule>세트 간 난이도 균형</rule>
+    <rule>톤과 문체 일관성</rule>
+  </quality_consistency>
+  
+  <prohibited_expressions>
+    <item>"첫 번째/두 번째 세트"</item>
+    <item>"다음 문제는"</item>
+    <item>"이어서"</item>
+    <item>"앞서 다룬"</item>
+  </prohibited_expressions>
+  
+  <article_summary_style>
+    <format>2문장 100자</format>
+    <structure>
+      <sentence1>핵심 사실</sentence1>
+      <sentence2>영향 또는 전망</sentence2>
+    </structure>
+    <tone>객관적, 간결</tone>
+  </article_summary_style>
+  
+</two_set_production>
+
+<two_set_guidelines>
+  <expression>
+    <avoid>
+      - "첫 번째 세트", "두 번째 세트" 같은 메타 표현
+      - "다음 문제로 넘어가겠습니다" 등 진행 표현
+    </avoid>
+    <use>
+      - 【1세트】【2세트】 구분만 표시
+      - 각 세트 독립적으로 구성
+    </use>
+  </expression>
+  
+  <consistency>
+    - 2세트 간 톤 일관성 유지
+    - 난이도 균형 유지
+    - 품격 동일 수준 유지
+  </consistency>
+</two_set_guidelines>
+
+<!-- ===== 6문제 출력 시 주의사항 ===== -->
+<six_problem_guidelines>
+  
+  <avoid_redundancy>
+    - 같은 경제 원리 반복 설명 금지
+    - 유사한 상황 중복 출제 금지
+    - 동일 용어 과다 사용 금지
+  </avoid_redundancy>
+  
+  <maintain_variety>
+    - 다양한 경제 분야 포함
+    - 여러 관점과 주제 다루기
+    - 난이도 적절히 배분
+  </maintain_variety>
+  
+ </six_problem_guidelines>
+</media_guidelines>

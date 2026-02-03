@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 서울경제 AI GAMES - 게임 매칭 로직 시스템 v2.0 -->
+<!-- 작성일: 2024년 12월 -->
+<!-- 목적: 기사 특성과 게임 유형 간 최적 매칭 알고리즘 -->
+
+<game_matching_logic_v2>
+
+<!-- ===== 문서 정보 ===== -->
+<document_info>
+  <purpose>경제 기사의 특성을 분석하여 최적의 게임 유형과 매칭</purpose>
+  <scope>블랙스완, 죄수의 딜레마, 시그널 디코딩 3개 게임</scope>
+  <method>패턴 인식 → 점수 산정 → 우선순위 결정 → 최종 매칭</method>
+  <priority>screening_criteria_v2.xml 다음 순위</priority>
+  <relationship>
+  본 파일은 screening_criteria_v2.xml의 보조 문서입니다.
+  - criteria: 평가 기준과 점수 산정
+  - logic: 패턴 매칭과 게임 선택 알고리즘
+  상호 보완적 관계로 둘 다 필요합니다.
+  </relationship>
+</document_info>
+
+<!-- ===== 핵심 매칭 알고리즘 ===== -->
+<core_matching_algorithm>
+
+  <matching_philosophy>
+    <principle>기사 특성과 게임 메커니즘의 최적 정합성 추구</principle>
+    <approach>다중 평가 → 종합 판단 → 제작 가능성 검증</approach>
+    <goal>70% 이상 적합도를 가진 최적 매칭 도출</goal>
+  </matching_philosophy>
+
+  <processing_flow>
+    <step_1>패턴 인식 (Pattern Recognition)</step_1>
+    <step_2>특성 추출 (Feature Extraction)</step_2>
+    <step_3>점수 계산 (Score Calculation)</step_3>
+    <step_4>우선순위 결정 (Priority Decision)</step_4>
+    <step_5>최종 매칭 (Final Matching)</step_5>
+    <step_6>제작 가능성 검증 (Feasibility Check)</step_6>
+  </processing_flow>
+
+</core_matching_algorithm>
+
+<!-- ===== 패턴 인식 시스템 ===== -->
+<pattern_recognition_system>
+
+  <!-- 블랙스완 패턴 -->
+  <black_swan_patterns>
+    
+    <pattern id="BS-P1" priority="high">
+      <name>정책 발표 패턴</name>
+      <keywords>
+        <primary>금리, 통화정책, 재정정책, 규제</primary>
+        <secondary>발표, 결정, 변경, 시행</secondary>
+      </keywords>
+      <structure>정책 변화 → 시장 반응 → 파급효과</structure>
+      <score_boost>+15</score_boost>
+      <example>기준금리 인하 → 대출금리 하락 → 소비 증가</example>
+    </pattern>
+    
+    <pattern id="BS-P2" priority="high">
+      <name>경제지표 변동 패턴</name>
+      <keywords>
+        <primary>GDP, 물가, 고용률, 무역수지</primary>
+        <secondary>상승, 하락, 개선, 악화</secondary>
+      </keywords>
+      <structure>지표 변동 → 정책 대응 → 시장 변화</structure>
+      <score_boost>+12</score_boost>
+      <example>물가 상승 → 금리 인상 → 소비 위축</example>
+    </pattern>
+    
+    <pattern id="BS-P3" priority="medium">
+      <name>기업 의사결정 패턴</name>
+      <keywords>
+        <primary>투자, M&A, 구조조정, 신사업</primary>
+        <secondary>확대, 축소, 진출, 철수</secondary>
+      </keywords>
+      <structure>기업 결정 → 산업 영향 → 경제 파급</structure>
+      <score_boost>+10</score_boost>
+      <example>대규모 투자 → 고용 증가 → 지역경제 활성화</example>
+    </pattern>
+    
+    <pattern id="BS-P4" priority="medium">
+      <name>글로벌 이벤트 패턴</name>
+      <keywords>
+        <primary>Fed, ECB, 무역전쟁, 원자재</primary>
+        <secondary>글로벌, 국제, 세계</secondary>
+      </keywords>
+      <structure>해외 사건 → 국내 영향 → 연쇄반응</structure>
+      <score_boost>+10</score_boost>
+      <example>Fed 금리인상 → 원화약세 → 수입물가 상승</example>
+    </pattern>
+    
+  </black_swan_patterns>
+
+  <!-- 딜레마 패턴 -->
+  <dilemma_patterns>
+    
+    <pattern id="DL-P1" priority="high">
+      <name>정책 갈등 패턴</name>
+      <keywords>
+        <primary>vs, 대립, 갈등, 논란</primary>
+        <secondary>찬성, 반대, 우려, 주장</secondary>
+      </keywords>
+      <structure>A입장 vs B입장 + 각각의 논리</structure>
+      <score_boost>+15</score_boost>
+      <example>성장 우선 vs 분배 우선</example>
+    </pattern>
+    
+    <pattern id="DL-P2" priority="high">
+      <name>이해관계 충돌 패턴</name>
+      <keywords>
+        <primary>주주, 경영진, 노조, 정부</primary>
+        <secondary>요구, 반발, 협상, 대치</secondary>
+      </keywords>
+      <structure>이해관계자A vs 이해관계자B</structure>
+      <score_boost>+13</score_boost>
+      <example>주주 배당 요구 vs 경영진 재투자 계획</example>
+    </pattern>
+    
+    <pattern id="DL-P3" priority="medium">
+      <name>전략 선택 패턴</name>
+      <keywords>
+        <primary>전략, 방향, 우선순위, 선택</primary>
+        <secondary>고민, 저울질, 판단, 결정</secondary>
+      </keywords>
+      <structure>옵션A의 장단점 vs 옵션B의 장단점</structure>
+      <score_boost>+11</score_boost>
+      <example>단기 수익 vs 장기 성장</example>
+    </pattern>
+    
+    <pattern id="DL-P4" priority="medium">
+      <name>가치 충돌 패턴</name>
+      <keywords>
+        <primary>효율, 공정, 혁신, 안정</primary>
+        <secondary>우선, 중시, 강조, 추구</secondary>
+      </keywords>
+      <structure>가치A 추구 vs 가치B 추구</structure>
+      <score_boost>+10</score_boost>
+      <example>시장 효율성 vs 사회적 공정성</example>
+    </pattern>
+    
+  </dilemma_patterns>
+
+  <!-- 시그널 패턴 -->
+  <signal_patterns>
+    
+    <pattern id="SD-P1" priority="high">
+      <name>지표 발표 패턴</name>
+      <keywords>
+        <primary>발표, 집계, 기록, 달성</primary>
+        <secondary>전년비, 전월비, 사상최대, 역대</secondary>
+      </keywords>
+      <structure>다수 지표 + 구체적 수치 + 의미</structure>
+      <score_boost>+15</score_boost>
+      <example>GDP 3.2%, CPI 2.5%, 실업률 3.8%</example>
+    </pattern>
+    
+    <pattern id="SD-P2" priority="high">
+      <name>실적 분석 패턴</name>
+      <keywords>
+        <primary>매출, 영업이익, 순이익, 실적</primary>
+        <secondary>증가, 감소, 개선, 악화</secondary>
+      </keywords>
+      <structure>재무지표 + 변화율 + 분석</structure>
+      <score_boost>+13</score_boost>
+      <example>매출 15% 증가, 영업이익률 개선</example>
+    </pattern>
+    
+    <pattern id="SD-P3" priority="medium">
+      <name>시장 데이터 패턴</name>
+      <keywords>
+        <primary>거래량, 시가총액, 거래대금, 수급</primary>
+        <secondary>급증, 급감, 돌파, 붕괴</secondary>
+      </keywords>
+      <structure>시장지표 + 수치 + 맥락</structure>
+      <score_boost>+11</score_boost>
+      <example>거래대금 50조, 예탁금 80조 돌파</example>
+    </pattern>
+    
+    <pattern id="SD-P4" priority="medium">
+      <name>전문용어 밀집 패턴</name>
+      <keywords>
+        <primary>비율, 지수, 스프레드, 프리미엄</primary>
+        <secondary>산정, 적용, 반영, 조정</secondary>
+      </keywords>
+      <structure>전문용어 연속 출현 + 설명</structure>
+      <score_boost>+10</score_boost>
+      <example>PER 15배, PBR 1.2배, ROE 12%</example>
+    </pattern>
+    
+  </signal_patterns>
+
+</pattern_recognition_system>
+
+<!-- ===== 특성 추출 엔진 ===== -->
+<feature_extraction_engine>
+
+  <text_features>
+    <feature id="F1">
+      <name>인과관계 밀도</name>
+      <measurement>인과 접속사 빈도 / 전체 문장 수</measurement>
+      <indicators>때문에, 따라서, 결과적으로, 이로 인해</indicators>
+      <weight_for_blackswan>HIGH</weight_for_blackswan>
+    </feature>
+    
+    <feature id="F2">
+      <name>대립 표현 빈도</name>
+      <measurement>대립 표현 수 / 전체 단락 수</measurement>
+      <indicators>반면, 하지만, vs, 대비, 한편</indicators>
+      <weight_for_dilemma>HIGH</weight_for_dilemma>
+    </feature>
+    
+    <feature id="F3">
+      <name>수치 데이터 밀도</name>
+      <measurement>숫자 포함 문장 / 전체 문장</measurement>
+      <indicators>%, 원, 배, 포인트, 조</indicators>
+      <weight_for_signal>HIGH</weight_for_signal>
+    </feature>
+    
+    <feature id="F4">
+      <name>전문용어 출현율</name>
+      <measurement>경제용어 수 / 100자</measurement>
+      <reference>economic_terms_v2.xml</reference>
+      <weight_for_signal>HIGH</weight_for_signal>
+    </feature>
+  </text_features>
+
+  <structural_features>
+    <feature id="S1">
+      <name>단계적 구조</name>
+      <check>시간 순서가 있는가?</check>
+      <check>원인-결과 체인이 있는가?</check>
+      <check>3단계 이상 추적 가능한가?</check>
+      <relevance>블랙스완 필수</relevance>
+    </feature>
+    
+    <feature id="S2">
+      <name>균형적 서술</name>
+      <check>복수 입장이 제시되는가?</check>
+      <check>각 입장에 근거가 있는가?</check>
+      <check>편향되지 않았는가?</check>
+      <relevance>딜레마 필수</relevance>
+    </feature>
+    
+    <feature id="S3">
+      <name>정보 풍부도</name>
+      <check>구체적 데이터가 있는가?</check>
+      <check>맥락 정보가 충분한가?</check>
+      <check>용어 설명이 있는가?</check>
+      <relevance>시그널 필수</relevance>
+    </feature>
+  </structural_features>
+
+</feature_extraction_engine>
+
+<!-- ===== 점수 계산 시스템 ===== -->
+<score_calculation_system>
+
+  <base_score_formula>
+    <formula>
+      기본점수 = (패턴매칭점수 × 0.4) + (특성점수 × 0.3) + (구조점수 × 0.2) + (품질점수 × 0.1)
+    </formula>
+    <range>0-100</range>
+  </base_score_formula>
+
+  <pattern_matching_score>
+    <calculation>
+      Σ(매칭된 패턴의 boost 값) / 최대 가능 boost × 100
+    </calculation>
+    <max_boost>
+      <black_swan>50</black_swan>
+      <dilemma>49</dilemma>
+      <signal>49</signal>
+    </max_boost>
+  </pattern_matching_score>
+
+  <feature_score>
+    <calculation>
+      Σ(추출된 특성 × 가중치) / 최대 가능 점수 × 100
+    </calculation>
+    <weights>
+      <high>10점</high>
+      <medium>6점</medium>
+      <low>3점</low>
+    </weights>
+  </feature_score>
+
+  <structure_score>
+    <calculation>
+      충족된 구조 요건 수 / 전체 요건 수 × 100
+    </calculation>
+    <requirements_count>
+      <black_swan>5개</black_swan>
+      <dilemma>5개</dilemma>
+      <signal>5개</signal>
+    </requirements_count>
+  </structure_score>
+
+  <quality_score>
+    <factors>
+      <clarity>명확성 (25%)</clarity>
+      <completeness>완전성 (25%)</completeness>
+      <accuracy>정확성 (25%)</accuracy>
+      <educational>교육성 (25%)</educational>
+    </factors>
+  </quality_score>
+
+</score_calculation_system>
+
+<!-- ===== 우선순위 결정 규칙 ===== -->
+<priority_decision_rules>
+
+  <primary_rules>
+    <rule id="PR1">
+      <condition>단일 게임만 70점 이상</condition>
+      <action>해당 게임으로 확정</action>
+    </rule>
+    
+    <rule id="PR2">
+      <condition>복수 게임 70점 이상</condition>
+      <action>최고점 게임 선택</action>
+    </rule>
+    
+    <rule id="PR3">
+      <condition>모든 게임 70점 미만</condition>
+      <action>최고점이 60점 이상이면 조건부 추천</action>
+    </rule>
+  </primary_rules>
+
+  <tiebreaker_rules>
+    <rule priority="1">
+      <name>교육 가치 우선</name>
+      <criteria>더 중요한 경제 원리를 다루는가?</criteria>
+    </rule>
+    
+    <rule priority="2">
+      <name>제작 용이성</name>
+      <criteria>문제 제작이 더 명확한가?</criteria>
+    </rule>
+    
+    <rule priority="3">
+      <name>게임 균형</name>
+      <criteria>해당 게임 추천이 적은가?</criteria>
+    </rule>
+    
+    <rule priority="4">
+      <name>최신성</name>
+      <criteria>더 최신 기사인가?</criteria>
+    </rule>
+  </tiebreaker_rules>
+
+</priority_decision_rules>
+
+<!-- ===== 도메인별 특별 규칙 ===== -->
+<domain_specific_rules>
+
+  <monetary_policy_domain>
+    <keywords>중앙은행, 금리, 통화정책, 양적완화</keywords>
+    <preferred_game>블랙스완</preferred_game>
+    <score_adjustment>블랙스완 +10점</score_adjustment>
+    <reason>통화정책은 명확한 연쇄반응 구조</reason>
+  </monetary_policy_domain>
+
+  <corporate_governance_domain>
+    <keywords>주주, 이사회, 경영권, 지배구조</keywords>
+    <preferred_game>딜레마</preferred_game>
+    <score_adjustment>딜레마 +10점</score_adjustment>
+    <reason>이해관계자 간 갈등이 핵심</reason>
+  </corporate_governance_domain>
+
+  <financial_market_domain>
+    <keywords>증시, 채권, 환율, 거래량</keywords>
+    <preferred_game>시그널</preferred_game>
+    <score_adjustment>시그널 +10점</score_adjustment>
+    <reason>데이터와 지표가 풍부</reason>
+  </financial_market_domain>
+
+  <fiscal_policy_domain>
+    <keywords>예산, 세금, 재정, 추경</keywords>
+    <flexibility>모든 게임 적합</flexibility>
+    <score_adjustment>없음</score_adjustment>
+    <reason>다양한 관점 적용 가능</reason>
+  </fiscal_policy_domain>
+
+  <industry_domain>
+    <keywords>반도체, 자동차, 배터리, 바이오</keywords>
+    <case_by_case>true</case_by_case>
+    <evaluation>기사 내용에 따라 판단</evaluation>
+  </industry_domain>
+
+</domain_specific_rules>
+
+<!-- ===== 제작 가능성 검증 ===== -->
+<feasibility_verification>
+
+  <black_swan_feasibility>
+    <mandatory_checks>
+      □ 시작 이벤트가 명확한가?
+      □ 3단계 이상 연쇄반응이 있는가?
+      □ 1차 효과가 직접적인가?
+      □ 2-3차 효과로 오답 구성 가능한가?
+      □ 25-30자로 문제 작성 가능한가?
+    </mandatory_checks>
+    <pass_threshold>5개 중 4개 이상</pass_threshold>
+  </black_swan_feasibility>
+
+  <dilemma_feasibility>
+    <mandatory_checks>
+      □ 의사결정 주체가 명확한가?
+      □ 대립하는 두 입장이 있는가?
+      □ 각 입장의 논리가 타당한가?
+      □ "~하기 위해서다" 형식 가능한가?
+      □ Trade-off가 현실적인가?
+    </mandatory_checks>
+    <pass_threshold>5개 중 4개 이상</pass_threshold>
+  </dilemma_feasibility>
+
+  <signal_feasibility>
+    <mandatory_checks>
+      □ 전문용어가 3개 이상인가?
+      □ 구체적 데이터가 있는가?
+      □ 빈칸 위치가 자연스러운가?
+      □ 문맥상 유일한 답이 있는가?
+      □ 5-10자 용어로 답 가능한가?
+    </mandatory_checks>
+    <pass_threshold>5개 중 4개 이상</pass_threshold>
+  </signal_feasibility>
+
+</feasibility_verification>
+
+<!-- ===== 최종 매칭 결정 ===== -->
+<final_matching_decision>
+
+  <decision_matrix>
+    <scenario id="1">
+      <scores>블랙스완 85, 딜레마 72, 시그널 68</scores>
+      <decision>블랙스완 확정</decision>
+      <reasoning>최고점이며 70점 이상</reasoning>
+    </scenario>
+    
+    <scenario id="2">
+      <scores>블랙스완 75, 딜레마 75, 시그널 60</scores>
+      <decision>블랙스완 우선 (동점 시 우선순위)</decision>
+      <reasoning>인과관계 학습 중요성</reasoning>
+    </scenario>
+    
+    <scenario id="3">
+      <scores>블랙스완 65, 딜레마 68, 시그널 69</scores>
+      <decision>시그널 조건부 추천</decision>
+      <reasoning>70점 미만이나 제작 가능</reasoning>
+    </scenario>
+    
+    <scenario id="4">
+      <scores>블랙스완 45, 딜레마 48, 시그널 43</scores>
+      <decision>추천 불가</decision>
+      <reasoning>모두 50점 미만</reasoning>
+    </scenario>
+  </decision_matrix>
+
+  <output_generation>
+    <selected_game>확정된 게임명</selected_game>
+    <score>최종 적합도 점수</score>
+    <key_features>매칭 근거가 된 핵심 특징</key_features>
+    <production_guide>2단계 제작 가이드</production_guide>
+    <confidence_level>
+      <high>85점 이상 - 확신</high>
+      <medium>70-84점 - 적합</medium>
+      <low>60-69점 - 조건부</low>
+    </confidence_level>
+  </output_generation>
+
+</final_matching_decision>
+
+<!-- ===== 예외 처리 및 특수 케이스 ===== -->
+<exception_handling>
+
+  <edge_cases>
+    <case id="E1">
+      <situation>모든 게임에 동일하게 적합</situation>
+      <solution>블랙스완 > 딜레마 > 시그널 순 우선</solution>
+    </case>
+    
+    <case id="E2">
+      <situation>패턴은 맞지만 내용 부실</situation>
+      <solution>품질 점수 반영하여 하향 조정</solution>
+    </case>
+    
+    <case id="E3">
+      <situation>신종 패턴 발견</situation>
+      <solution>기본 평가 후 수동 검토 표시</solution>
+    </case>
+    
+    <case id="E4">
+      <situation>복합 주제 기사</situation>
+      <solution>주요 주제 기준 평가</solution>
+    </case>
+  </edge_cases>
+
+  <fallback_strategy>
+    <step_1>패턴 매칭 실패 시 특성 기반 평가</step_1>
+    <step_2>특성 추출 실패 시 키워드 기반 평가</step_2>
+    <step_3>모든 방법 실패 시 수동 검토 요청</step_3>
+  </fallback_strategy>
+
+</exception_handling>
+
+<!-- ===== 성능 최적화 규칙 ===== -->
+<performance_optimization>
+
+  <caching_strategy>
+    <cache>자주 사용되는 패턴 매칭 결과</cache>
+    <cache>도메인별 가중치 계산 결과</cache>
+    <cache>반복되는 용어 검색 결과</cache>
+  </caching_strategy>
+
+  <early_termination>
+    <condition>한 게임이 95점 이상</condition>
+    <action>즉시 해당 게임 확정</action>
+  </early_termination>
+
+  <batch_processing>
+    <recommendation>5-10개 기사 동시 처리</recommendation>
+    <benefit>패턴 학습 효과 증대</benefit>
+  </batch_processing>
+
+</performance_optimization>
+
+<!-- ===== 품질 모니터링 ===== -->
+<quality_monitoring>
+
+  <metrics>
+    <metric id="M1">
+      <name>매칭 정확도</name>
+      <measurement>2단계 제작 성공률</measurement>
+      <target>90% 이상</target>
+    </metric>
+    
+    <metric id="M2">
+      <name>평균 적합도</name>
+      <measurement>추천 기사 평균 점수</measurement>
+      <target>75점 이상</target>
+    </metric>
+    
+    <metric id="M3">
+      <name>게임 균형도</name>
+      <measurement>게임별 추천 비율 편차</measurement>
+      <target>20% 이내</target>
+    </metric>
+  </metrics>
+
+  <feedback_loop>
+    <source>2단계 시스템</source>
+    <data>제작 실패 사례</data>
+    <action>패턴 및 가중치 조정</action>
+    <frequency>주 1회</frequency>
+  </feedback_loop>
+
+</quality_monitoring>
+
+<!-- ===== 버전 정보 ===== -->
+<version_info>
+  <version>2.0</version>
+  <last_updated>2024-12-XX</last_updated>
+  <major_updates>
+    - 패턴 인식 시스템 강화
+    - 도메인별 규칙 세분화
+    - 제작 가능성 검증 추가
+    - 예외 처리 체계화
+  </major_updates>
+  <compatibility>
+    - screening_criteria_v2.xml v2.0
+    - production_preview.xml v2.0
+    - 2단계 시스템 v2.0
+  </compatibility>
+</version_info>
+
+</game_matching_logic_v2>

@@ -8,6 +8,7 @@
 - 정적 사이트 (S3 + CloudFront) - 변경 없음
 - API Gateway → Lambda → DynamoDB (퀴즈 CRUD)
 - Archive 페이지에서 동적으로 퀴즈 목록 로드
+- EventBridge → Lambda (매일 자동 퀴즈 생성)
 
 ## 1. Lambda 함수 배포
 
@@ -336,3 +337,58 @@ mv ../api_backup app/api
 | DELETE | /quiz/{gameType}/{date} | 퀴즈 삭제 |
 
 **gameType**: `BlackSwan`, `PrisonersDilemma`, `SignalDecoding`
+
+## 7. 자동 퀴즈 생성 스케줄 설정 (EventBridge)
+
+매일 오전 6시 (KST)에 자동으로 퀴즈를 생성하도록 EventBridge 규칙을 설정합니다.
+
+### 7.1 EventBridge 규칙 생성
+
+```bash
+# 매일 오전 6시 (KST) = 전날 21시 (UTC) 실행
+aws events put-rule \
+  --name sedaily-quiz-daily \
+  --schedule-expression "cron(0 21 * * ? *)" \
+  --state ENABLED \
+  --region us-east-1
+```
+
+### 7.2 Lambda 함수에 권한 부여
+
+```bash
+aws lambda add-permission \
+  --function-name sedaily-quiz-generator \
+  --statement-id sedaily-quiz-daily-event \
+  --action lambda:InvokeFunction \
+  --principal events.amazonaws.com \
+  --source-arn arn:aws:events:us-east-1:887078546492:rule/sedaily-quiz-daily \
+  --region us-east-1
+```
+
+### 7.3 EventBridge 규칙에 Lambda 타겟 추가
+
+```bash
+aws events put-targets \
+  --rule sedaily-quiz-daily \
+  --targets "Id"="1","Arn"="arn:aws:lambda:us-east-1:887078546492:function:sedaily-quiz-generator" \
+  --region us-east-1
+```
+
+### 7.4 스케줄 확인
+
+```bash
+# 규칙 상태 확인
+aws events describe-rule \
+  --name sedaily-quiz-daily \
+  --region us-east-1
+
+# 타겟 확인
+aws events list-targets-by-rule \
+  --rule sedaily-quiz-daily \
+  --region us-east-1
+```
+
+**스케줄 설명:**
+- `cron(0 21 * * ? *)`: 매일 UTC 21:00 (KST 다음날 06:00)
+- 한국 시간 기준 매일 오전 6시에 자동 실행
+- Lambda 함수가 BigKinds API에서 뉴스를 가져와 퀴즈 생성

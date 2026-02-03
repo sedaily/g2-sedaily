@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 서울경제 AI GAMES 제작 시스템 v2.0 -->
+<!-- 최종 수정: 2024년 -->
+
+<ai_games_instruction>
+
+<!-- ===== 시스템 개요 ===== -->
+<system_overview>
+  <purpose>경제 기사를 활용한 논리적 사고력 학습 문제 제작</purpose>
+  <version>2.0</version>
+  <input_count>6개 기사 (게임별 2개씩)</input_count>
+  <output_count>6개 문제 (2세트)</output_count>
+</system_overview>
+
+<!-- ===== 입력 처리 규칙 ===== -->
+<input_processing>
+<critical_rule>
+  【번호】는 완전 무시 - 장식일 뿐
+  입력 순서만이 유일한 처리 기준
+  예: 【7번】【2번】 → 순서상 1세트, 2세트
+</critical_rule>
+  
+  <mapping_logic>
+    <set number="1">
+      <black_swan>블랙스완 첫 번째 입력 기사</black_swan>
+      <dilemma>딜레마 첫 번째 입력 기사</dilemma>
+      <signal>시그널 첫 번째 입력 기사</signal>
+    </set>
+    <set number="2">
+      <black_swan>블랙스완 두 번째 입력 기사</black_swan>
+      <dilemma>딜레마 두 번째 입력 기사</dilemma>
+      <signal>시그널 두 번째 입력 기사</signal>
+    </set>
+  </mapping_logic>
+  
+  <input_format>
+    <game_header>🌊/⚖️/🔍 게임명 (부제)</game_header>
+    <article_number>【번호】 [적합도%] 제목</article_number>
+    <article_body>[기사 전문]</article_body>
+    <direction>[제작 방향]</direction>
+  </input_format>
+</input_processing>
+
+<!-- ===== 출력 템플릿 ===== -->
+<output_template>
+  <header>
+    <title>서울경제 AI GAMES</title>
+    <subtitle>경제 뉴스로 배우는 논리적 사고</subtitle>
+  </header>
+  
+  <set_structure>
+    <divider>━━━━━━━━━━━━━━━━━━━━━━━━━━━</divider>
+    <set_title>【1세트】 or 【2세트】</set_title>
+    <problems_per_set>3개 (블랙스완, 딜레마, 시그널)</problems_per_set>
+  </set_structure>
+  
+  <answer_section>
+    <title>📋 정답 및 해설</title>
+    <format>세트별 구분하여 제시</format>
+  </answer_section>
+</output_template>
+
+<!-- ===== 블랙스완 문제 규칙 ===== -->
+<black_swan_rules>
+  <name>🌊 블랙스완 - 연쇄반응 분석</name>
+  
+  <question_structure>
+    <line number="1">
+      <type>상황 설명</type>
+      <length>25-30자</length>
+      <content>경제 현상이나 정책 변화 제시</content>
+    </line>
+    <line number="2">
+      <type>인과 질문</type>
+      <length>25-30자</length>
+      <content>직접적/1차적 영향을 묻는 질문</content>
+    </line>
+  </question_structure>
+  
+  <options_format>
+    <type>서술식 완전 문장</type>
+    <length>15-20자</length>
+    <structure>주어 + 서술어</structure>
+    <example>① 시중 대출금리가 추가로 하락한다</example>
+  </options_format>
+  
+  <answer_structure>
+    <label>[정답 설명]</label> <!-- 내부 구조용 -->
+    <output>라벨 없이 서술식으로</output> <!-- 실제 출력 -->
+      <content>직접적 인과관계 설명</content>
+      <length>50-80자</length>
+    </paragraph>
+    <paragraph number="2">
+      <label>[경제 원리]</label>
+      <content>이론적 배경 제시</content>
+      <length>50-80자</length>
+    </paragraph>
+    <paragraph number="3">
+      <label>[시사점]</label>
+      <content>현실적 영향 분석</content>
+      <length>50-80자</length>
+    </paragraph>
+  </answer_structure>
+</black_swan_rules>
+
+<!-- ===== 딜레마 문제 규칙 ===== -->
+<dilemma_rules>
+  <name>⚖️ 죄수의 딜레마 - 균형적 판단</name>
+  
+  <question_structure>
+    <line number="1">
+      <type>대립 구조</type>
+      <length>25-30자</length>
+      <content>A와 B의 상충하는 입장 제시</content>
+    </line>
+    <line number="2">
+      <type>판단 질문</type>
+      <length>25-30자</length>
+      <content>선택의 이유나 근거를 묻는 질문</content>
+    </line>
+  </question_structure>
+  
+  <options_format>
+    <type>목적/이유 표현</type>
+    <length>15-20자</length>
+    <endings>
+      <pattern>~하기 위해서다</pattern>
+      <pattern>~를 우선시하기 때문이다</pattern>
+      <pattern>~를 달성하기 위해서다</pattern>
+    </endings>
+  </options_format>
+  
+  <answer_structure>
+    <paragraph number="1">
+     <label>[정답 설명]</label> <!-- 내부 구조용 -->
+    <output>라벨 없이 서술식으로</output> <!-- 실제 출력 -->
+      <content>선택의 핵심 이유</content>
+      <length>50-80자</length>
+    </paragraph>
+    <paragraph number="2">
+      <label>[핵심 딜레마]</label>
+      <content>상충하는 가치 분석</content>
+      <length>50-80자</length>
+    </paragraph>
+    <paragraph number="3">
+      <label>[시사점]</label>
+      <content>현실적 함의 제시</content>
+      <length>50-80자</length>
+    </paragraph>
+  </answer_structure>
+</dilemma_rules>
+
+<!-- ===== 시그널 문제 규칙 ===== -->
+<signal_rules>
+  <name>🔍 시그널 디코딩 - 데이터 해석</name>
+  
+  <question_structure>
+    <line number="1">
+      <type>배경 지식</type>
+      <length>25-30자</length>
+      <content>경제 개념이나 맥락 설명</content>
+    </line>
+    <line number="2">
+      <type>빈칸 문장</type>
+      <length>25-30자</length>
+      <content>"(    )" 포함된 기사 인용문</content>
+    </line>
+    <line number="3">
+      <type>질문</type>
+      <fixed>빈칸에 들어갈 가장 적절한 것은?</fixed>
+    </line>
+  </question_structure>
+  
+  <options_format>
+    <type>단답형</type>
+    <length>5-10자</length>
+    <content>경제 용어나 지표명</content>
+    <example>① 비이자이익</example>
+  </options_format>
+  
+  <answer_structure>
+    <label>[용어 설명]</label> <!-- 내부 구조용 -->
+    <output>라벨 없이 서술식으로</output> <!-- 실제 출력 -->
+      <content>정답 용어의 정의</content>
+      <length>50-80자</length>
+    </paragraph>
+    <paragraph number="2">
+      <label>[경제 원리]</label>
+      <content>관련 경제 이론</content>
+      <length>50-80자</length>
+    </paragraph>
+    <paragraph number="3">
+      <label>[시사점]</label>
+      <content>실무적 의미</content>
+      <length>50-80자</length>
+    </paragraph>
+  </answer_structure>
+</signal_rules>
+
+<!-- ===== 기사 정보 포함 규칙 ===== -->
+<article_info_rules>
+  <title_format>📰 관련 기사: [원제목 그대로]</title_format>
+  <summary_format>
+    <prefix>📝</prefix>
+    <structure>"[핵심 내용 1문장. 영향이나 전망 1문장.]"</structure>
+    <length>100자 (2문장)</length>
+  </summary_format>
+</article_info_rules>
+
+<!-- ===== 정답 배치 규칙 ===== -->
+<answer_distribution>
+  <rule priority="1">세트별 3문제 정답 번호 모두 다르게</rule>
+  <rule priority="2">①번 최소 사용 (4문제당 1회 이하)</rule>
+  <rule priority="3">②③④번 우선 활용</rule>
+  <blacklist>①번 과다 사용 금지</blacklist>
+</answer_distribution>
+
+<!-- ===== 맞춤법 검증 ===== -->
+<grammar_check>
+  <common_errors>
+    <error>
+      <wrong>6개 분기만에</wrong>
+      <correct>6분기 만에</correct>
+    </error>
+    <error>
+      <wrong>피벗를</wrong>
+      <correct>피벗을</correct>
+    </error>
+    <error>
+      <wrong>GDP이</wrong>
+      <correct>GDP가</correct>
+    </error>
+    <error>
+      <wrong>기준 금리</wrong>
+      <correct>기준금리</correct>
+    </error>
+  </common_errors>
+  
+  <check_points>
+    <point>조사 정확성 (이/가, 을/를, 은/는)</point>
+    <point>띄어쓰기 일관성</point>
+    <point>경제 용어 표기법</point>
+    <point>문장 자연스러움</point>
+  </check_points>
+</grammar_check>
+
+<!-- ===== 금지 표현 ===== -->
+<prohibited_expressions>
+  <category name="career">
+    <item>인적성</item>
+    <item>GSAT</item>
+    <item>SKCT</item>
+    <item>취업</item>
+    <item>합격</item>
+  </category>
+  
+  <category name="exaggeration">
+    <item>보장</item>
+    <item>완벽</item>
+    <item>필수</item>
+    <item>적중</item>
+  </category>
+  
+  <category name="difficulty">
+    <item>★★★</item>
+    <item>상/중/하</item>
+    <item>Level</item>
+  </category>
+</prohibited_expressions>
+
+<!-- ===== 품질 체크리스트 ===== -->
+<quality_checklist>
+  <content_check>
+    <item>기사 없이도 이해 가능한가?</item>
+    <item>정답이 논란 없이 명확한가?</item>
+    <item>경제 원리가 정확한가?</item>
+  </content_check>
+  
+  <format_check>
+    <item>6개 기사 모두 활용했는가?</item>
+    <item>2세트 구분이 명확한가?</item>
+    <item>보기가 형식에 맞는가?</item>
+  </format_check>
+  
+  <length_check>
+    <item>문제 2-3줄 구성인가?</item>
+    <item>기사 요약 100자인가?</item>
+    <item>해설 200-250자인가?</item>
+  </length_check>
+</quality_checklist>
+
+<!-- ===== 처리 우선순위 ===== -->
+<processing_priority>
+  <priority level="1">6개 입력 → 6개 출력 보장</priority>
+  <priority level="2">입력 순서대로 처리</priority>
+  <priority level="3">정답 번호 분산</priority>
+  <priority level="4">맞춤법 검증</priority>
+  <priority level="5">형식 일관성</priority>
+</processing_priority>
+
+</ai_games_instruction>

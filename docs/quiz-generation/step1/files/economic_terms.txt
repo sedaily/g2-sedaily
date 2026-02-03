@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 핵심 경제 용어 데이터베이스 -->
+
+<economic_terms>
+
+<!-- ===== 필수 경제지표 ===== -->
+<essential_indicators>
+  <term id="CPI">
+    <name>소비자물가지수</name>
+    <abbr>CPI</abbr>
+    <definition>일반 가구가 소비하는 상품과 서비스의 가격 변동</definition>
+    <usage>인플레이션 측정의 핵심 지표</usage>
+    <normal_range>한국 목표: 2%</normal_range>
+  </term>
+  
+  <term id="GDP">
+    <name>국내총생산</name>
+    <abbr>GDP</abbr>
+    <definition>한 나라에서 일정 기간 생산된 재화와 서비스의 총 가치</definition>
+    <usage>경제 규모와 성장률 측정</usage>
+    <normal_range>한국: 2-3% 성장</normal_range>
+  </term>
+  
+  <term id="PMI">
+    <name>구매관리자지수</name>
+    <abbr>PMI</abbr>
+    <definition>제조업 경기를 나타내는 선행지표</definition>
+    <usage>50 이상 확장, 50 미만 수축</usage>
+  </term>
+</essential_indicators>
+
+<!-- ===== 금융시장 용어 ===== -->
+<financial_terms>
+  <term id="PER">
+    <name>주가수익비율</name>
+    <calculation>주가 ÷ 주당순이익</calculation>
+    <interpretation>낮을수록 저평가</interpretation>
+    <industry_avg>IT: 20-30, 제조: 10-15</industry_avg>
+  </term>
+  
+  <term id="ROE">
+    <name>자기자본이익률</name>
+    <calculation>순이익 ÷ 자기자본</calculation>
+    <interpretation>15% 이상 우량</interpretation>
+  </term>
+</financial_terms>
+
+<!-- ===== 정책 용어 ===== -->
+<policy_terms>
+  <term id="QE">
+    <name>양적완화</name>
+    <definition>중앙은행이 국채 매입으로 유동성 공급</definition>
+    <when>경기 침체, 디플레이션 우려</when>
+  </term>
+  
+  <term id="DTI">
+    <name>총부채상환비율</name>
+    <definition>연소득 대비 연간 대출상환액 비율</definition>
+    <regulation>수도권 40%, 지방 50%</regulation>
+  </term>
+</policy_terms>
+
+<!-- ===== 최신 트렌드 용어 ===== -->
+<trending_terms>
+  <term id="ESG">
+    <name>ESG</name>
+    <definition>환경, 사회, 지배구조</definition>
+    <importance>기업 평가의 새로운 기준</importance>
+  </term>
+  
+  <term id="CBDC">
+    <name>중앙은행 디지털화폐</name>
+    <definition>중앙은행이 발행하는 디지털 법정화폐</definition>
+  </term>
+</trending_terms>
+
+<!-- ===== 자주 틀리는 표기 ===== -->
+<common_mistakes>
+  <category name="조사_오류">
+    <term>
+      <wrong>피벗를</wrong>
+      <correct>피벗을</correct>
+      <rule>받침 없는 외래어 + 을</rule>
+    </term>
+    <term>
+      <wrong>GDP이</wrong>
+      <correct>GDP가</correct>
+      <rule>영문약자는 발음 기준 (지디피가)</rule>
+    </term>
+    <term>
+      <wrong>HBM가</wrong>
+      <correct>HBM이</correct>
+      <rule>에이치비엠 + 이</rule>
+    </term>
+    <term>
+      <wrong>FOMC가</wrong>
+      <correct>FOMC가</correct>
+      <rule>에프오엠씨 + 가</rule>
+    </term>
+  </category>
+  
+  <category name="띄어쓰기_오류">
+    <term>
+      <wrong>기준 금리</wrong>
+      <correct>기준금리</correct>
+    </term>
+    <term>
+      <wrong>소비자 물가 지수</wrong>
+      <correct>소비자물가지수</correct>
+    </term>
+    <term>
+      <wrong>고대역폭메모리</wrong>
+      <correct>고대역폭 메모리</correct>
+    </term>
+    <term>
+      <wrong>양적 완화</wrong>
+      <correct>양적완화</correct>
+    </term>
+  </category>
+  
+  <category name="외래어_표기">
+    <term>
+      <wrong>피봇/피보트</wrong>
+      <correct>피벗</correct>
+    </term>
+    <term>
+      <wrong>테이퍼링/타퍼링</wrong>
+      <correct>테이퍼링</correct>
+    </term>
+    <term>
+      <wrong>밸류에이션</wrong>
+      <correct>밸류에이션</correct>
+    </term>
+  </category>
+</common_mistakes>
+
+<!-- ===== 단위 표기 규칙 ===== -->
+<unit_notation>
+  <percentage>
+    <wrong>5 퍼센트</wrong>
+    <wrong>5퍼센트</wrong>
+    <correct>5%</correct>
+  </percentage>
+  
+  <percentage_point>
+    <wrong>0.25% 포인트</wrong>
+    <wrong>0.25퍼센트포인트</wrong>
+    <correct>0.25%p</correct>
+  </percentage_point>
+  
+  <currency>
+    <wrong>1천500원</wrong>
+    <wrong>1,500 원</wrong>
+    <wrong>1,500원</wrong>
+    <correct>1500원</correct>
+ 
+  </currency>
+  
+  <large_numbers>
+    <wrong>24조원</wrong>
+    <correct>24조 원</correct>
+    <wrong>3천억원</wrong>
+    <correct>3000억 원</correct>
+  </large_numbers>
+</unit_notation>
+
+<!-- ===== 문제 제작 필수 용어 ===== -->
+<problem_essential_terms>
+  <monetary_policy>
+    <term>기준금리</term>
+    <term>피벗</term>
+    <term>양적완화</term>
+    <term>테이퍼링</term>
+    <term>금통위</term>
+    <term>역레포</term>
+  </monetary_policy>
+  
+  <market_indicators>
+    <term>코스피</term>
+    <term>코스닥</term>
+    <term>PER</term>
+    <term>PBR</term>
+    <term>ROE</term>
+    <term>EPS</term>
+  </market_indicators>
+  
+  <real_estate>
+    <term>DTI</term>
+    <term>DSR</term>
+    <term>LTV</term>
+    <term>전세가율</term>
+  </real_estate>
+  
+  <semiconductor>
+    <term>HBM</term>
+    <term>DDR4</term>
+    <term>DDR5</term>
+    <term>NAND</term>
+    <term>파운드리</term>
+  </semiconductor>
+</problem_essential_terms>
+
+<!-- ===== 헷갈리는 유사 용어 ===== -->
+<similar_terms>
+  <pair>
+    <term1>금리 인상 (기준금리 올림)</term1>
+    <term2>금리 상승 (시장금리 오름)</term2>
+  </pair>
+  
+  <pair>
+    <term1>환율 상승 (원화 약세)</term1>
+    <term2>환율 하락 (원화 강세)</term2>
+  </pair>
+  
+  <pair>
+    <term1>증가율 (전년 대비 %)</term1>
+    <term2>증가폭 (실제 증가 수치)</term2>
+  </pair>
+  
+  <pair>
+    <term1>전월비 (지난달 대비)</term1>
+    <term2>전년비 (작년 동기 대비)</term2>
+  </pair>
+</similar_terms>
+
+<frequent_errors_in_problems>
+  <error>
+    <wrong>6개 분기만에</wrong>
+    <correct>6분기 만에</correct>
+  </error>
+  <error>
+    <wrong>전년대비</wrong>
+    <correct>전년 대비</correct>
+  </error>
+</frequent_errors_in_problems>
+
+</economic_terms>

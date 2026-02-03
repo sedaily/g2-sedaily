@@ -1,8 +1,4 @@
-import Image from "next/image"
-
 type NewsHeaderBlockProps = {
-  logoSrc: string
-  siteUrl: string
   headline: string
   lede: string
   themeStyles: {
@@ -14,30 +10,9 @@ type NewsHeaderBlockProps = {
   }
 }
 
-export function NewsHeaderBlock({ logoSrc, siteUrl, headline, lede, themeStyles }: NewsHeaderBlockProps) {
+export function NewsHeaderBlock({ headline, lede, themeStyles }: NewsHeaderBlockProps) {
   return (
     <div className="space-y-4">
-      <div className="mb-5 flex justify-center">
-        <Image
-          src={logoSrc || "/placeholder.svg"}
-          alt="서울경제 로고"
-          width={480}
-          height={120}
-          className="h-24 w-auto"
-          loading="lazy"
-        />
-      </div>
-
-      <div
-        className="w-full py-2.5 text-white text-center font-bold tracking-wide"
-        style={{
-          backgroundColor: themeStyles.accentColor,
-          fontFamily: "var(--font-news-meta)",
-        }}
-      >
-        {siteUrl}
-      </div>
-
       <div className="h-px w-full border-t-2 border-dotted" style={{ borderColor: themeStyles.accentColor }} />
 
       <h2

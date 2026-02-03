@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 서울경제 AI GAMES - 1단계 스크리닝 마스터 출력 형식 v2.0 -->
+<!-- 최우선 적용: 이 파일이 모든 형식 결정의 최종 권한 -->
+<!-- 작성일: 2024년 12월 -->
+
+<master_screening_format>
+
+<!-- ===== 문서 권한 ===== -->
+<document_authority>
+  <priority>최우선 (이 문서가 다른 모든 지침보다 우선)</priority>
+  <scope>1단계 기사 스크리닝 출력 형식 전체</scope>
+  <override>충돌 시 이 문서의 규정 적용</override>
+</document_authority>
+
+<!-- ===== 전체 출력 구조 ===== -->
+<complete_output_structure>
+
+<!-- 헤더 섹션 -->
+<header_section>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 기사 스크리닝 완료
+총 [X]개 기사 분석 → [Y]개 추천 (적합도 70% 이상)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</header_section>
+
+<!-- 2단계 연계 안내 추가 -->
+<stage2_guidance_section>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 2단계 문제 제작 안내
+- 아래 9개 추천 중 6개 선택 (게임별 2개씩)
+- 【번호】는 무시하고 입력 순서로 세트 구분
+  - 1-3번째 → 1세트
+  - 4-6번째 → 2세트
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</stage2_guidance_section>
+
+<!-- 게임별 추천 섹션 -->
+<game_sections>
+
+<!-- 블랙스완 섹션 -->
+<black_swan_section>
+🌊 블랙스완 게임 추천 (연쇄반응 분석)
+
+<recommendation_template>
+【[번호]】 [[적합도]%] [기사 제목]
+
+[기사 전문]
+(전체 내용 그대로 포함, 생략 없이)
+
+【제작 방향】
+- 연쇄 단계: [초기 사건] → [1차 효과] → [2차 효과] → [3차 효과]
+- 1차 효과: "[구체적 현상]" (정답 예정)
+- 2-3차 효과: "[후속 현상1]", "[후속 현상2]" (오답 예정)
+- 무관 요소: "[논리적 연결 없는 내용]" (오답 예정)
+- 예상 질문: "[주체]이/가 [행동]할 때 나타나는 가장 직접적인 영향은?"
+
+【예상 문제 미리보기】
+"[상황 설명 - 사실 기반, 25-30자]
+[인과관계 질문 - 1차 효과 중심, 25-30자]"
+
+【활용 팁】
+- 정답 배치: ②③④번 우선 (①번 최소화)
+- 보기 형식: 서술식 완전 문장 (15-20자)
+- 시제 통일: 현재형 또는 미래형
+- 난이도 조절: 2-3차 효과 매력도로 조정
+</recommendation_template>
+
+(최대 3개 반복, 적합도 내림차순)
+</black_swan_section>
+
+<!-- 죄수의 딜레마 섹션 -->
+<dilemma_section>
+⚖️ 죄수의 딜레마 게임 추천 (균형적 판단)
+
+<recommendation_template>
+【[번호]】 [[적합도]%] [기사 제목]
+
+[기사 전문]
+(전체 내용 그대로 포함, 생략 없이)
+
+【제작 방향】
+- 대립 구조: [A 주체]는 [A 입장] vs [B 주체]는 [B 입장]
+- A의 논리: "[구체적 이유/목적]하기 위해서"
+- B의 논리: "[구체적 이유/목적]하기 위해서"
+- 핵심 쟁점: [양측이 대립하는 근본 가치]
+- 예상 질문: "[주체]가 [선택/입장]을 취하는 가장 주요한 이유는?"
+
+【예상 문제 미리보기】
+"[대립 구조 설명 - A vs B, 25-30자]
+[판단 근거 질문 - 선택 이유 중심, 25-30자]"
+
+【활용 팁】
+- 정답 배치: ②③④번 우선 (①번 최소화)
+- 보기 형식: "~하기 위해서다" (15-20자)
+- 균형 유지: 양쪽 모두 타당한 논리
+- 함정 구성: 반대 입장, 부차적 이유, 감정적 판단
+</recommendation_template>
+
+(최대 3개 반복, 적합도 내림차순)
+</dilemma_section>
+
+<!-- 시그널 디코딩 섹션 -->
+<signal_section>
+🔍 시그널 디코딩 게임 추천 (데이터 해석)
+
+<recommendation_template>
+【[번호]】 [[적합도]%] [기사 제목]
+
+[기사 전문]
+(전체 내용 그대로 포함, 생략 없이)
+
+【제작 방향】
+- 핵심 용어: [용어1], [용어2], [용어3] (최소 3개)
+- 빈칸 위치: "[앞부분] (    ) [뒷부분]"
+- 정답 용어: "[경제 용어/지표]" - [간단한 설명]
+- 오답 구성: 
+  - 유사 용어: [비슷하지만 다른 개념]
+  - 단위 오류: [%와 %p 혼동 등]
+  - 범위 오류: [부분과 전체 혼동]
+- 예상 질문: 빈칸에 들어갈 가장 적절한 것은?
+
+【예상 문제 미리보기】
+"[배경 지식 제공 - 맥락 설명, 25-30자]
+'[빈칸 포함 인용문 - (    ) 포함, 25-30자]'
+빈칸에 들어갈 가장 적절한 것은?"
+
+【활용 팁】
+- 정답 배치: ①②③④ 균등 분포
+- 보기 형식: 단답형 경제 용어 (5-10자)
+- 문맥 단서: 앞뒤 문장에서 힌트 제공
+- 용어 선정: 필수 경제 지식 위주
+</recommendation_template>
+
+(최대 3개 반복, 적합도 내림차순)
+</signal_section>
+
+</game_sections>
+
+<!-- 푸터 섹션 -->
+<footer_section>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 사용 안내
+1. 위 추천에서 총 6개를 선택 (게임별 2개씩 권장)
+2. 선택한 내용 전체를 복사
+3. '2단계 문제 제작 프로젝트'에 붙여넣기
+4. 2단계에서 자동으로 6개 문제 생성
+
+💡 선택 기준
+- 적합도 높은 순
+- 주제 다양성 고려
+- 난이도 균형 고려
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</footer_section>
+
+</complete_output_structure>
+
+<!-- ===== 세부 형식 규정 ===== -->
+<detailed_format_rules>
+
+<!-- 번호 표기 -->
+<numbering_rules>
+  <format>【번호】</format>
+  <sequence>1번부터 순차 부여</sequence>
+  <note>2단계에서 이 번호는 무시됨 (입력 순서만 인식)</note>
+</numbering_rules>
+
+<!-- 적합도 표기 -->
+<score_display>
+  <format>[XX%]</format>
+  <precision>정수 표기 (소수점 없음)</precision>
+  <range>70-100% (70% 미만은 출력하지 않음)</range>
+  <order>내림차순 정렬</order>
+</score_display>
+
+<!-- 기사 제목 -->
+<article_title>
+  <rule>원문 그대로 표기</rule>
+  <exception>너무 긴 경우 핵심만 추출 (50자 이내)</exception>
+  <encoding>특수문자 정확히 보존</encoding>
+</article_title>
+
+<!-- 기사 전문 -->
+<article_content>
+  <rule>전체 내용 포함</rule>
+  <format>문단 구분 유지</format>
+  <preservation>
+    <keep>모든 수치와 데이터</keep>
+    <keep>인용문</keep>
+    <keep>고유명사</keep>
+    <remove>광고, 관련기사 링크</remove>
+  </preservation>
+</article_content>
+
+</detailed_format_rules>
+
+<!-- ===== 제작 방향 상세 규격 ===== -->
+<production_direction_specifications>
+
+<!-- 공통 규칙 -->
+<common_rules>
+  <bullet_points>• 사용 (불릿 포인트)</bullet_points>
+  <line_length>각 항목 50자 이내</line_length>
+  <specificity>구체적 내용 > 추상적 설명</specificity>
+  <practicality>실제 제작 가능한 내용만</practicality>
+</common_rules>
+
+<!-- 블랙스완 특화 -->
+<black_swan_specifics>
+  <chain_description>
+    <format>A → B → C → D (화살표 사용)</format>
+    <stages>최소 3단계, 최대 5단계</stages>
+    <clarity>각 단계 10자 이내로 명확히</clarity>
+  </chain_description>
+  
+  <effect_classification>
+    <primary>즉시~1주 내 발생</primary>
+    <secondary>1주~1개월 내 발생</secondary>
+    <tertiary>1개월 이후 발생</tertiary>
+  </effect_classification>
+  
+  <question_patterns>
+    <pattern1>"~의 가장 직접적인 영향은?"</pattern1>
+    <pattern2>"~로 인한 1차적 변화는?"</pattern2>
+    <pattern3>"~의 즉각적인 결과는?"</pattern3>
+  </question_patterns>
+</black_swan_specifics>
+
+<!-- 딜레마 특화 -->
+<dilemma_specifics>
+  <conflict_description>
+    <format>[주체A] vs [주체B]</format>
+    <balance>양측 입장 균등하게</balance>
+    <objectivity>편향 없이 중립적으로</objectivity>
+  </conflict_description>
+  
+  <reasoning_format>
+    <structure>"[목적/가치]하기 위해서"</structure>
+    <length>15-20자</length>
+    <logic>감정 배제, 논리 중심</logic>
+  </reasoning_format>
+  
+  <question_patterns>
+    <pattern1>"~의 가장 주요한 이유는?"</pattern1>
+    <pattern2>"~을 선택한 핵심 근거는?"</pattern2>
+    <pattern3>"~보다 ~을 우선시한 이유는?"</pattern3>
+  </question_patterns>
+</dilemma_specifics>
+
+<!-- 시그널 특화 -->
+<signal_specifics>
+  <term_selection>
+    <priority_1>필수 경제 지표 (GDP, CPI, PER 등)</priority_1>
+    <priority_2>최신 트렌드 용어 (ESG, CBDC 등)</priority_2>
+    <priority_3>산업별 전문 용어</priority_3>
+    <minimum>3개 이상</minimum>
+  </term_selection>
+  
+  <blank_positioning>
+    <good_positions>
+      <pos>주어 위치</pos>
+      <pos>목적어 위치</pos>
+      <pos>보어 위치</pos>
+    </good_positions>
+    <bad_positions>
+      <pos>조사</pos>
+      <pos>부사</pos>
+      <pos>접속사</pos>
+    </bad_positions>
+  </blank_positioning>
+  
+  <context_hints>
+    <before>빈칸 앞 10자에 단서</before>
+    <after>빈칸 뒤 10자에 확인</after>
+    <unique>문맥상 유일한 답</unique>
+  </context_hints>
+</signal_specifics>
+
+</production_direction_specifications>
+
+<!-- ===== 예상 문제 미리보기 규격 ===== -->
+<preview_specifications>
+
+<purpose>2단계에서 실제 제작될 문제 형태 미리 제시</purpose>
+
+<formatting>
+  <quotation_marks>큰따옴표로 묶기</quotation_marks>
+  <line_breaks>줄바꿈으로 구분</line_breaks>
+  <character_count>각 줄 25-30자 엄격 준수</character_count>
+</formatting>
+
+<quality_criteria>
+  <independence>기사 없이도 이해 가능</independence>
+  <clarity>모호함 없는 명확한 표현</clarity>
+  <testability>정답 논란 없음</testability>
+</quality_criteria>
+
+</preview_specifications>
+
+<!-- ===== 활용 팁 규격 ===== -->
+<usage_tips_specifications>
+
+<mandatory_tips>
+  <tip_1>정답 번호 분산 가이드</tip_1>
+  <tip_2>보기 형식 및 글자 수</tip_2>
+  <tip_3>문제별 특화 포인트</tip_3>
+</mandatory_tips>
+
+<optional_tips>
+  <tip>난이도 조절 방법</tip>
+  <tip>시제 통일 규칙</tip>
+  <tip>함정 구성 패턴</tip>
+</optional_tips>
+
+</usage_tips_specifications>
+
+<!-- ===== 조건부 처리 규칙 ===== -->
+<conditional_processing>
+
+<!-- 추천 개수 부족 시 -->
+<insufficient_recommendations>
+  <condition>특정 게임 추천이 3개 미만</condition>
+  <action>있는 개수만큼만 출력</action>
+<message>
+  "※ [게임명]은 적합한 기사가 [N]개만 발견되었습니다.
+  
+  📊 부족 이유:
+  - [구체적 이유: 예) 연쇄반응 3단계 미만]
+  - [평균 점수: XX점]
+  
+  💡 추천 기사 특징:
+  - [이런 특징의 기사를 추가로 입력해주세요]"
+</message>
+</insufficient_recommendations>
+
+<!-- 전체 추천 부족 시 -->
+<total_insufficient>
+  <condition>전체 추천이 6개 미만</condition>
+  <action>경고 메시지 추가</action>
+  <message>
+    "⚠️ 주의: 2단계 제작을 위해서는 6개 기사가 필요합니다.
+    현재 [N]개만 추천되어 추가 기사 입력이 필요합니다."
+  </message>
+</total_insufficient>
+
+<!-- 경계선 점수 -->
+<borderline_scores>
+  <range>65-69%</range>
+  <marking>📌 조건부 추천</marking>
+  <note>"※ 보완 후 사용 권장"</note>
+</borderline_scores>
+
+</conditional_processing>
+
+<!-- ===== 출력 검증 체크리스트 ===== -->
+<output_validation_checklist>
+
+<structure_check>
+  □ 헤더 구분선 포함
+  □ 3개 게임 섹션 구분
+  □ 푸터 사용 안내 포함
+  □ 전체 구조 일관성
+</structure_check>
+
+<content_check>
+  □ 각 추천에 기사 전문 포함
+  □ 제작 방향 4개 항목 이상
+  □ 예상 문제 미리보기 제공
+  □ 활용 팁 3개 이상
+</content_check>
+
+<format_check>
+  □ 번호 형식 【】 사용
+  □ 적합도 [%] 표기
+  □ 불릿 포인트 • 사용
+  □ 구분선 ━ 사용
+</format_check>
+
+<quality_check>
+  □ 70% 이상만 포함
+  □ 적합도 내림차순 정렬
+  □ 게임당 최대 3개
+  □ 중복 기사 없음
+</quality_check>
+
+</output_validation_checklist>
+
+
+<!-- ===== 우선순위 명시 ===== -->
+<priority_declaration>
+  <absolute>
+    이 master_screening_format.xml이 최우선
+    충돌 시 이 문서 규정 적용
+    예외 없음
+  </absolute>
+  
+  <hierarchy>
+    1. master_screening_format.xml (현재 문서)
+    2. instruction_screening.xml
+    3. screening_criteria_v2.xml
+    4. 기타 참조 파일
+  </hierarchy>
+</priority_declaration>
+
+<!-- ===== 버전 정보 ===== -->
+<version_info>
+  <version>2.0</version>
+  <last_updated>2024-12-XX</last_updated>
+  <compatibility>
+    <with>2단계 시스템 v2.0</with>
+    <format>【번호】 구조 호환</format>
+    <content>기사 전문 전달 호환</content>
+  </compatibility>
+</version_info>
+
+</master_screening_format>

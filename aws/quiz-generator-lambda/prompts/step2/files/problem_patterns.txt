@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 문제 유형별 패턴 데이터베이스 v2.0 -->
+
+<problem_patterns>
+
+<!-- ===== 2세트 제작 규칙 ===== -->
+<two_set_rules>
+  <input_processing>
+    <critical>【번호】 절대 무시 - 순서만 인식</critical>
+    <rule>입력 순서 1,2,3 → 1세트</rule>
+    <rule>입력 순서 4,5,6 → 2세트</rule>
+    <example>【9번】【1번】 = 1세트 1,2번</example>
+  </input_processing>
+  
+  <question_format_v2>
+    <black_swan>2줄 (상황+질문)</black_swan>
+    <dilemma>2줄 (대립+판단)</dilemma>
+    <signal>3줄 (배경+빈칸+질문)</signal>
+  </question_format_v2>
+</two_set_rules>
+
+
+<!-- ===== 블랙스완 패턴 ===== -->
+<black_swan_patterns>
+  
+  <question_format>
+    <line1>상황 설명 (사실 기반, 25-30자)</line1>
+    <line2>인과관계 질문 (1차 효과, 25-30자)</line2>
+  </question_format>
+  
+  <option_format>
+    <style>서술식 완전 문장</style>
+    <length>15-20자</length>
+    <structure>주어 + 서술어</structure>
+    <examples>
+      <ex>시중 대출금리가 하락한다</ex>
+      <ex>금리인하 사이클이 종료된다</ex>
+      <ex>부동산 가격이 상승한다</ex>
+    </examples>
+  </option_format>
+  
+  <chain_patterns>
+    <pattern_1>
+      <trigger>금리 변동</trigger>
+      <chain>금리→대출→소비→경기→고용</chain>
+      <questions>
+        <q>~에 미치는 가장 직접적인 영향은?</q>
+        <q>~의 즉각적인 변화는?</q>
+        <q>1차적으로 나타나는 현상은?</q>
+      </questions>
+    </pattern_1>
+    
+    <pattern_2>
+      <trigger>환율 변동</trigger>
+      <chain>환율→수출입→무역수지→경상수지</chain>
+      <questions>
+        <q>수출기업에 미치는 첫 번째 영향은?</q>
+        <q>무역수지 변화의 직접 원인은?</q>
+      </questions>
+    </pattern_2>
+    
+    <pattern_3>
+      <trigger>재정 정책</trigger>
+      <chain>재정지출→소비→성장→통화정책</chain>
+      <questions>
+        <q>통화정책에 미치는 직접적 영향은?</q>
+        <q>시중 유동성의 즉각적 변화는?</q>
+      </questions>
+    </pattern_3>
+  </chain_patterns>
+  
+</black_swan_patterns>
+
+<!-- ===== 딜레마 패턴 ===== -->
+<dilemma_patterns>
+  
+  <question_format>
+    <line1>대립 구조 제시 (25-30자)</line1>
+    <line2>판단 근거 질문 (25-30자)</line2>
+  </question_format>
+  
+  <option_format>
+    <style>목적 표현</style>
+    <length>15-20자</length>
+    <structure>~하기 위해서다</structure>
+    <examples>
+      <ex>주주가치를 제고하기 위해서다</ex>
+      <ex>경영권을 방어하기 위해서다</ex>
+      <ex>M&A 재원을 확보하기 위해서다</ex>
+    </examples>
+  </option_format>
+  
+  <conflict_patterns>
+    <pattern_1>
+      <situation>기업 지배구조</situation>
+      <conflict>주주 이익 vs 경영진 판단</conflict>
+      <questions>
+        <q>~을 요구하는 가장 주요한 이유는?</q>
+        <q>~보다 ~을 선택한 근거는?</q>
+      </questions>
+    </pattern_1>
+    
+    <pattern_2>
+      <situation>정책 선택</situation>
+      <conflict>성장 vs 안정</conflict>
+      <questions>
+        <q>~에 신중한 가장 주요한 이유는?</q>
+        <q>~을 우선시하는 핵심 근거는?</q>
+      </questions>
+    </pattern_2>
+  </conflict_patterns>
+  
+</dilemma_patterns>
+
+<!-- ===== 시그널 패턴 ===== -->
+<signal_patterns>
+  
+  <question_format>
+    <line1>배경 지식 (25-30자)</line1>
+    <line2>"빈칸 문장" (25-30자)</line2>
+    <line3>빈칸에 들어갈 가장 적절한 것은?</line3>
+  </question_format>
+  
+  <option_format>
+    <style>단답형</style>
+    <length>5-10자</length>
+    <structure>경제 용어/지표명</structure>
+    <examples>
+      <ex>비이자이익</ex>
+      <ex>투자자 예탁금</ex>
+      <ex>순이자마진</ex>
+    </examples>
+  </option_format>
+  
+  <blank_patterns>
+    <pattern_1>
+      <type>경제지표</type>
+      <structure>"(빈칸)이/가 X% 상승/하락"</structure>
+      <options>GDP, CPI, PPI, PMI</options>
+    </pattern_1>
+    
+    <pattern_2>
+      <type>금융지표</type>
+      <structure>"기업의 (빈칸)이/가 개선"</structure>
+      <options>ROE, PER, PBR, BIS비율</options>
+    </pattern_2>
+    
+    <pattern_3>
+      <type>시장지표</type>
+      <structure>"증시의 (빈칸)이/가 사상 최대"</structure>
+      <options>거래대금, 예탁금, 시가총액</options>
+    </pattern_3>
+  </blank_patterns>
+  
+</signal_patterns>
+
+<!-- ===== 오답 생성 패턴 ===== -->
+<wrong_answer_patterns>
+  
+  <black_swan_wrong>
+    <type1>시간차 오답 - 2차, 3차 효과</type1>
+    <type2>인과 역전 - 원인과 결과 뒤바꿈</type2>
+    <type3>무관한 요소 - 논리적 연결 없음</type3>
+  </black_swan_wrong>
+  
+  <dilemma_wrong>
+    <type1>반대 입장 - 상대방 논리</type1>
+    <type2>부차적 이유 - 핵심 아닌 요인</type2>
+    <type3>감정적 판단 - 논리 대신 감정</type3>
+  </dilemma_wrong>
+  
+  <signal_wrong>
+    <type1>유사 용어 - 비슷하지만 다른 개념</type1>
+    <type2>단위 오류 - %, %p 혼동</type2>
+    <type3>범위 오류 - 부분과 전체 혼동</type3>
+  </signal_wrong>
+  
+</wrong_answer_patterns>
+
+<!-- ===== 정답 분포 규칙 ===== -->
+<answer_distribution>
+  <mandatory>
+    <rule>세트당 3문제 정답 모두 다르게</rule>
+    <rule>①번 사용 최소화 (4문제당 1회)</rule>
+    <rule>②③④번 우선 활용</rule>
+  </mandatory>
+  
+  <example>
+    <set1>블랙스완②, 딜레마④, 시그널①</set1>
+    <set2>블랙스완③, 딜레마②, 시그널④</set2>
+  </example>
+</answer_distribution>
+
+<!-- ===== 기사 정보 패턴 ===== -->
+<article_info_pattern>
+  <title>📰 관련 기사: [원제목 그대로]</title>
+  <summary>📝 "[핵심 사실 1문장. 영향/전망 1문장.]"</summary>
+  <length>100자, 2문장</length>
+  
+  <summary_examples>
+    <black_swan>"3분기 GDP가 1.2% 성장하며 6분기 만에 0%대를 벗어났다. 저성장 위험 완화로 한은의 금리인하 사이클이 조기 종료될 전망이다."</black_swan>
+    <dilemma>"행동주의 펀드가 스틱인베에 자사주 소각을 요구하고 있다. 펀드는 주주환원을, 경영진은 성장 재원 확보를 우선시하며 대립 중이다."</dilemma>
+    <signal>"신한금융이 3분기 1조 4235억 원의 순이익을 기록했다. 비이자이익이 6.4% 늘어나며 수익 다각화가 성공적으로 진행되고 있다."</signal>
+  </summary_examples>
+</article_info_pattern>
+
+<!-- ===== 해설 작성 패턴 ===== -->
+<explanation_pattern>
+  <total_length>200-250자</total_length>
+  <paragraph_length>50-80자</paragraph_length>
+  
+<black_swan_template>
+    <para1>사실 기반 직접 효과 설명</para1>
+    <para2>이론적 배경과 메커니즘</para2>
+    <para3>향후 영향과 전망</para3>
+</black_swan_template>
+
+<dilemma_template>
+    <para1>선택 이유와 근거</para1>
+    <para2>갈등 구조와 트레이드오프</para2>  <!-- 핵심 딜레마 -->
+    <para3>의미와 향후 전망</para3>
+</dilemma_template>
+
+<signal_template>
+    <para1>개념 정의와 의미</para1>  <!-- 용어 설명 -->
+    <para2>작동 메커니즘</para2>
+    <para3>현실적 함의</para3>
+</signal_template>
+
+</explanation_pattern>
+
+</problem_patterns>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 서울경제 AI GAMES - 1단계 스크리닝 최종 검증 체크리스트 v2.0 -->
+<!-- 작성일: 2024년 12월 -->
+<!-- 목적: 스크리닝 결과의 품질 검증 및 2단계 연계 확인 -->
+
+<validation_checklist_v2_simplified>
+
+<!-- ===== 문서 정보 ===== -->
+<document_info>
+  <purpose>1단계 스크리닝 출력물의 완성도 및 2단계 호환성 검증</purpose>
+  <scope>입력 처리부터 최종 출력까지 전 과정</scope>
+  <method>체크리스트 기반 단계별 검증</method>
+  <priority>모든 검증의 최종 관문</priority>
+</document_info>
+
+<!-- Phase 1: 입력 검증 (간소화) -->
+<input_validation>
+  <checklist>
+    □ 기사 개수 자동 카운팅 및 안내
+    □ 최소/권장 개수 안내 (3개/6-9개)
+    □ "분석 시작" 신호 대기
+  </checklist>
+</input_validation>
+
+<!-- Phase 2: 처리 검증 -->
+<processing_validation>
+  <checklist>
+    □ 각 기사별 3개 게임 평가 완료
+    □ 점수 산정 정확성 (가중치 합 100%)
+    □ 70점 이상만 추천 대상 선정
+    □ 게임당 최대 3개 제한 준수
+  </checklist>
+</processing_validation>
+
+<!-- Phase 3: 출력 검증 -->
+<output_validation>
+  <essential_checks>
+    □ 목표: 9개 추천 (실제: [N]개)
+    □ 미달 시 구체적 이유와 가이드 제공
+    □ 기사 전문 완전 포함 (생략 금지)
+    □ 제작 방향 구체적 (4개 항목 이상)
+    □ 2단계 연계 안내 포함
+  </essential_checks>
+  
+  <stage2_readiness>
+    □ 복사-붙여넣기 가능한 형식
+    □ 【번호】 무시 규칙 안내
+    □ 6개 선택 프로세스 설명
+  </stage2_readiness>
+</output_validation>
+
+</validation_checklist_v2_simplified>
+<!-- ===== 최종 종합 체크리스트 ===== -->
+<final_comprehensive_checklist>
+
+  <quantitative_check>
+    <title>정량적 검증</title>
+    <metrics>
+      □ 입력 기사 수: [ ]개
+      □ 분석 기사 수: [ ]개
+      □ 추천 기사 수: [ ]개 (목표 9)
+      □ 블랙스완: [ ]개 (최대 3)
+      □ 딜레마: [ ]개 (최대 3)
+      □ 시그널: [ ]개 (최대 3)
+      □ 70점 이상: [ ]개
+      □ 평균 적합도: [ ]%
+    </metrics>
+  </quantitative_check>
+
+  <qualitative_check>
+    <title>정성적 검증</title>
+    <criteria>
+      □ 전체적 완성도 (상/중/하)
+      □ 2단계 연계성 (상/중/하)
+      □ 교육적 가치 (상/중/하)
+      □ 실용성 (상/중/하)
+      □ 품격 유지 (상/중/하)
+    </criteria>
+  </qualitative_check>
+
+  <final_approval>
+    <title>최종 승인</title>
+    <checklist>
+      □ 모든 필수 항목 충족
+      □ 중대 오류 없음
+      □ 2단계 활용 가능
+      □ 품질 기준 달성
+    </checklist>
+    <decision>
+      <pass>✅ 검증 통과 - 출력 승인</pass>
+      <conditional>⚠️ 조건부 통과 - 일부 수정 필요</conditional>
+      <fail>❌ 검증 실패 - 전면 재작업</fail>
+    </decision>
+  </final_approval>
+
+</final_comprehensive_checklist>
+
+<!-- ===== 오류 시 조치 사항 ===== -->
+<error_handling_procedures>
+
+  <common_errors>
+    <error id="E1">
+      <description>추천 수 부족 (9개 미만)</description>
+      <action>추가 기사 입력 요청 또는 기준 완화 검토</action>
+    </error>
+    
+    <error id="E2">
+      <description>형식 불일치</description>
+      <action>master_screening_format.xml 재확인 후 수정</action>
+    </error>
+    
+    <error id="E3">
+      <description>2단계 연계 정보 누락</description>
+      <action>production_preview.xml 참조하여 보완</action>
+    </error>
+    
+    <error id="E4">
+      <description>금지 표현 포함</description>
+      <action>media_guidelines_v2.xml 확인 후 즉시 제거</action>
+    </error>
+    
+    <error id="E5">
+      <description>기사 전문 누락</description>
+      <action>완전한 기사 내용 복원 필수</action>
+    </error>
+  </common_errors>
+
+  <correction_priority>
+    <priority_1>금지 표현 제거</priority_1>
+    <priority_2>형식 오류 수정</priority_2>
+    <priority_3>내용 보완</priority_3>
+    <priority_4>품질 개선</priority_4>
+  </correction_priority>
+
+</error_handling_procedures>
+
+<!-- ===== 품질 등급 기준 ===== -->
+<quality_grading_criteria>
+
+  <grade_A>
+    <score>95-100%</score>
+    <criteria>
+      - 모든 체크리스트 완벽 충족
+      - 9개 추천 완성
+      - 평균 적합도 85% 이상
+      - 2단계 즉시 활용 가능
+    </criteria>
+    <label>최우수 - 모범 사례</label>
+  </grade_A>
+  
+  <grade_B>
+    <score>85-94%</score>
+    <criteria>
+      - 필수 항목 모두 충족
+      - 7-9개 추천
+      - 평균 적합도 75% 이상
+      - 미미한 수정으로 활용 가능
+    </criteria>
+    <label>우수 - 표준 달성</label>
+  </grade_B>
+  
+  <grade_C>
+    <score>70-84%</score>
+    <criteria>
+      - 기본 요건 충족
+      - 6개 이상 추천
+      - 평균 적합도 70% 이상
+      - 일부 보완 필요
+    </criteria>
+    <label>양호 - 조건부 통과</label>
+  </grade_C>
+  
+  <grade_D>
+    <score>70% 미만</score>
+    <criteria>
+      - 필수 요건 미달
+      - 6개 미만 추천
+      - 중대 오류 존재
+      - 대폭 수정 필요
+    </criteria>
+    <label>미흡 - 재작업 필요</label>
+  </grade_D>
+
+</quality_grading_criteria>
+
+<!-- ===== 지속적 개선 체계 ===== -->
+<continuous_improvement>
+
+  <feedback_collection>
+    <source>2단계 시스템 피드백</source>
+    <frequency>매 스크리닝 후</frequency>
+    <categories>
+      - 제작 불가 사례
+      - 형식 불일치 사례
+      - 품질 미달 사례
+      - 개선 제안 사항
+    </categories>
+  </feedback_collection>
+
+  <periodic_review>
+    <interval>월 1회</interval>
+    <review_items>
+      - 평가 기준 적절성
+      - 점수 산정 정확성
+      - 2단계 연계 효율성
+      - 전체 프로세스 개선점
+    </review_items>
+  </periodic_review>
+
+  <version_update>
+    <trigger>중대 개선 사항 발견 시</trigger>
+    <process>
+      1. 개선 사항 문서화
+      2. 영향 범위 분석
+      3. 테스트 실행
+      4. 버전 업데이트
+      5. 전체 시스템 동기화
+    </process>
+  </version_update>
+
+</continuous_improvement>
+
+<!-- ===== 버전 정보 ===== -->
+<version_info>
+  <version>2.0</version>
+  <last_updated>2024-12-XX</last_updated>
+  <major_changes>
+    - 6단계 검증 프로세스 확립
+    - 2단계 연계 검증 강화
+    - 품질 등급 기준 신설
+    - 오류 처리 체계화
+  </major_changes>
+  <compatibility>
+    - master_screening_format.xml v2.0
+    - screening_criteria_v2.xml v2.0
+    - production_preview.xml v2.0
+    - 2단계 시스템 v2.0
+  </compatibility>
+</version_info>
+
+<validation_checklist_v2_simplified>

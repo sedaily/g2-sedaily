@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 서울경제 AI GAMES - 기사 스크리닝 상세 평가 기준 v2.0 -->
+<!-- 작성일: 2024년 12월 -->
+<!-- 목적: 게임별 적합도 평가의 구체적 기준과 채점 체계 -->
+
+<screening_criteria_v2>
+
+<!-- ===== 문서 정보 ===== -->
+<document_info>
+  <purpose>경제 기사의 게임별 적합도를 객관적으로 평가</purpose>
+  <scope>블랙스완, 죄수의 딜레마, 시그널 디코딩 3개 게임</scope>
+  <scoring_system>0-100점 구간, 70점 이상 추천 대상</scoring_system>
+  <priority>master_screening_format.xml 다음 순위</priority>
+</document_info>
+
+<!-- ===== 공통 평가 기준 ===== -->
+<common_evaluation_criteria>
+
+  <!-- 기본 자격 요건 -->
+  <basic_requirements>
+    <requirement id="COM-R1">
+      <name>경제 관련성</name>
+      <check>경제/금융/산업/기업 주제인가?</check>
+      <disqualify_if>정치, 사회, 문화 중심 기사</disqualify_if>
+    </requirement>
+    
+    <requirement id="COM-R2">
+      <name>최소 정보량</name>
+      <check>500자 이상의 실질 내용</check>
+      <disqualify_if>단신, 속보, 제목만 있는 기사</disqualify_if>
+    </requirement>
+    
+    <requirement id="COM-R3">
+      <name>객관성</name>
+      <check>사실 기반 보도인가?</check>
+      <disqualify_if>의견, 칼럼, 광고성 기사</disqualify_if>
+    </requirement>
+  </basic_requirements>
+
+  <!-- 2단계 제작 가능성 -->
+  <production_feasibility>
+    <criterion id="COM-P1">
+      <name>문제 독립성</name>
+      <question>기사 없이도 문제 이해 가능한가?</question>
+      <verification>
+        - 지시대명사 없이 재구성 가능
+        - 모든 고유명사 명시 가능
+        - 배경 설명 자체 포함 가능
+      </verification>
+    </criterion>
+    
+    <criterion id="COM-P2">
+      <name>정답 명확성</name>
+      <question>논란 없는 정답 도출 가능한가?</question>
+      <verification>
+        - 복수 정답 가능성 없음
+        - 주관적 해석 여지 없음
+        - 기사에 명시적 근거 존재
+      </verification>
+    </criterion>
+    
+    <criterion id="COM-P3">
+      <name>오답 생성력</name>
+      <question>적절한 오답 3개 제작 가능한가?</question>
+      <verification>
+        - 그럴듯하지만 틀린 내용
+        - 정답과 명확히 구분
+        - 교육적 가치 있는 함정
+      </verification>
+    </criterion>
+  </production_feasibility>
+
+</common_evaluation_criteria>
+
+<!-- ===== 블랙스완 게임 평가 기준 ===== -->
+<black_swan_criteria>
+
+  <game_definition>
+    <concept>경제 현상의 연쇄반응과 파급효과 분석</concept>
+    <focus>인과관계의 단계별 추적</focus>
+    <question_type>직접적/1차적 영향 식별</question_type>
+  </game_definition>
+
+  <!-- 필수 요건 (Pass/Fail) -->
+  <essential_requirements>
+    <requirement id="BS-E1" mandatory="true">
+      <name>초기 사건 명확성</name>
+      <description>구체적이고 식별 가능한 trigger event</description>
+      <checklist>
+        □ 주체(누가)가 명확한가?
+        □ 행동(무엇을)이 구체적인가?
+        □ 시점(언제)이 특정되는가?
+      </checklist>
+      <good_examples>
+        - 한국은행 기준금리 0.25%p 인하
+        - 정부의 부동산 LTV 규제 완화
+        - 미 연준의 양적긴축 종료 선언
+      </good_examples>
+      <bad_examples>
+        - 경제가 어려워짐
+        - 시장 분위기 변화
+        - 투자 심리 개선
+      </bad_examples>
+    </requirement>
+    
+    <requirement id="BS-E2" mandatory="true">
+      <name>연쇄반응 추적 가능성</name>
+      <description>최소 3단계 이상의 인과관계 연결</description>
+      <minimum_stages>3</minimum_stages>
+      <optimal_stages>4-5</optimal_stages>
+      <verification>
+        □ 각 단계가 논리적으로 연결되는가?
+        □ 시간 순서가 자연스러운가?
+        □ 중간 단계 생략 없는가?
+      </verification>
+    </requirement>
+    
+    <requirement id="BS-E3" mandatory="true">
+      <name>직접성 구분 가능</name>
+      <description>1차, 2차, 3차 효과의 명확한 구분</description>
+      <time_frames>
+        <immediate>24시간~1주: 1차 효과</immediate>
+        <short_term>1주~1개월: 2차 효과</short_term>
+        <medium_term>1~3개월: 3차 효과</medium_term>
+        <long_term>3개월 이후: 장기 효과</long_term>
+      </time_frames>
+    </requirement>
+  </essential_requirements>
+
+  <!-- 점수 산정 체계 -->
+  <scoring_system>
+    
+    <factor id="BS-S1" weight="40%">
+      <name>연쇄반응 단계 수</name>
+      <scoring_table>
+        <score stages="5+" points="40"/>
+        <score stages="4" points="35"/>
+        <score stages="3" points="25"/>
+        <score stages="2" points="15"/>
+        <score stages="1" points="5"/>
+      </scoring_table>
+    </factor>
+    
+    <factor id="BS-S2" weight="30%">
+      <name>인과관계 명확성</name>
+      <evaluation_criteria>
+        <excellent points="26-30">필연적 인과관계, 예외 없음</excellent>
+        <good points="20-25">높은 개연성, 일반적 패턴</good>
+        <fair points="10-19">가능성 있음, 조건부</fair>
+        <poor points="0-9">약한 연결, 추측 필요</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="BS-S3" weight="20%">
+      <name>시간 순서 논리성</name>
+      <evaluation_criteria>
+        <excellent points="18-20">완벽한 시간 흐름</excellent>
+        <good points="13-17">대체로 순차적</good>
+        <fair points="7-12">일부 모호함</fair>
+        <poor points="0-6">시간 순서 불명확</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="BS-S4" weight="10%">
+      <name>교육적 가치</name>
+      <evaluation_criteria>
+        <excellent points="9-10">핵심 경제 원리 학습</excellent>
+        <good points="6-8">유용한 사례</good>
+        <fair points="3-5">기본적 학습</fair>
+        <poor points="0-2">학습 가치 미미</poor>
+      </evaluation_criteria>
+    </factor>
+    
+<score_transparency>
+  <display_format>
+    <!-- 점수 공개 형식 -->
+    <template>
+      "블랙스완 평가:
+       연쇄반응: [X/40] - [N]단계 확인
+       인과관계: [Y/30] - [명확성 수준]
+       시간순서: [Z/20] - [논리적/보통/약함]
+       교육가치: [W/10] - [높음/보통/낮음]
+       = 총 [합계]/100점"
+    </template>
+  </display_format>
+  
+  <failure_explanation>
+    <!-- 70점 미만 시 설명 -->
+    <template>
+      "※ 추천 기준(70점) 미달 사유:
+       주요 문제: [가장 큰 감점 요인]
+       보완 필요: [어떤 요소가 있으면 추천 가능]"
+    </template>
+  </failure_explanation>
+</score_transparency>
+
+  </scoring_system>
+
+  <!-- 2단계 연계 체크 -->
+  <stage2_connection_check>
+    <question_formulation>
+      □ "~의 가장 직접적인 영향은?" 형식 가능
+      □ 25-30자로 상황 설명 가능
+      □ 25-30자로 질문 구성 가능
+    </question_formulation>
+    
+    <answer_options>
+      □ 1차 효과로 정답 설정 가능
+      □ 2차 효과로 매력적 오답 가능
+      □ 3차 효과로 시간차 오답 가능
+      □ 무관 요소로 함정 오답 가능
+    </answer_options>
+    
+    <format_compatibility>
+      □ 서술식 15-20자 보기 작성 가능
+      □ 주어+서술어 완전 문장 구성 가능
+      □ 현재/미래 시제 통일 가능
+    </format_compatibility>
+  </stage2_connection_check>
+
+</black_swan_criteria>
+
+<!-- ===== 죄수의 딜레마 게임 평가 기준 ===== -->
+<dilemma_criteria>
+
+  <game_definition>
+    <concept>상충하는 이해관계와 가치 판단</concept>
+    <focus>trade-off 상황에서의 의사결정</focus>
+    <question_type>선택의 이유와 근거</question_type>
+  </game_definition>
+
+  <!-- 필수 요건 (Pass/Fail) -->
+  <essential_requirements>
+    <requirement id="DL-E1" mandatory="true">
+      <name>의사결정 주체 명확성</name>
+      <description>구체적인 결정권자/이해관계자</description>
+      <valid_subjects>
+        <government>정부, 중앙은행, 금융당국, 공정위</government>
+        <corporate>CEO, 이사회, 주주총회, 경영진</corporate>
+        <investor>기관투자자, 외국인, 개인투자자, 펀드</investor>
+        <stakeholder>노동조합, 소비자단체, 시민단체</stakeholder>
+      </valid_subjects>
+      <checklist>
+        □ 결정 권한이 있는 주체인가?
+        □ 이름/직책이 구체적인가?
+        □ 실제 선택 상황에 있는가?
+      </checklist>
+    </requirement>
+    
+    <requirement id="DL-E2" mandatory="true">
+      <name>대립 구조 존재</name>
+      <description>서로 다른 입장과 논리</description>
+      <types>
+        <type>이익 충돌: 단기 수익 vs 장기 성장</type>
+        <type>가치 충돌: 효율성 vs 공정성</type>
+        <type>시점 충돌: 즉각 실행 vs 신중 검토</type>
+        <type>방법 충돌: 규제 vs 자율</type>
+      </types>
+      <verification>
+        □ 최소 2개 입장이 명확한가?
+        □ 각 입장에 논리적 근거가 있는가?
+        □ 실제 갈등 상황인가?
+      </verification>
+    </requirement>
+    
+    <requirement id="DL-E3" mandatory="true">
+      <name>Trade-off 명확성</name>
+      <description>각 선택의 기회비용</description>
+      <examples>
+        <example>
+          <choice>금리 인상</choice>
+          <gain>물가 안정</gain>
+          <loss>경기 둔화</loss>
+        </example>
+        <example>
+          <choice>규제 강화</choice>
+          <gain>시장 안정</gain>
+          <loss>기업 부담</loss>
+        </example>
+      </examples>
+    </requirement>
+  </essential_requirements>
+
+  <!-- 점수 산정 체계 -->
+  <scoring_system>
+    
+    <factor id="DL-S1" weight="35%">
+      <name>대립 구조 명확성</name>
+      <evaluation_criteria>
+        <excellent points="32-35">완벽한 대립, 균형적</excellent>
+        <good points="25-31">명확한 대립, 약간 불균형</good>
+        <fair points="15-24">대립 존재, 한쪽 약함</fair>
+        <poor points="0-14">대립 모호, 일방적</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="DL-S2" weight="35%">
+      <name>Trade-off 현실성</name>
+      <evaluation_criteria>
+        <excellent points="32-35">실제적 딜레마, 해결 어려움</excellent>
+        <good points="25-31">현실적 갈등, 복잡성 있음</good>
+        <fair points="15-24">갈등 존재, 단순함</fair>
+        <poor points="0-14">인위적, 쉬운 선택</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="DL-S3" weight="20%">
+      <name>논리적 균형</name>
+      <evaluation_criteria>
+        <excellent points="18-20">모든 입장 타당</excellent>
+        <good points="13-17">대부분 논리적</good>
+        <fair points="7-12">일부 논리 약함</fair>
+        <poor points="0-6">편향적, 불균형</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="DL-S4" weight="10%">
+      <name>시의성과 중요도</name>
+      <evaluation_criteria>
+        <excellent points="9-10">현재 핵심 이슈</excellent>
+        <good points="6-8">중요한 주제</good>
+        <fair points="3-5">일반적 관심사</fair>
+        <poor points="0-2">부차적 문제</poor>
+      </evaluation_criteria>
+    </factor>
+
+<score_transparency>
+  <display_format>
+    <template>
+      "죄수의 딜레마 평가:
+       대립 구조 명확성: [X/35] - [완벽한 대립/명확/존재/모호]
+       Trade-off 현실성: [Y/35] - [실제적 딜레마/현실적/단순/인위적]
+       논리적 균형: [Z/20] - [모든 입장 타당/대부분/일부/편향]
+       시의성/중요도: [W/10] - [핵심이슈/중요/일반/부차적]
+       = 총 [합계]/100점"
+    </template>
+  </display_format>
+  
+  <failure_explanation>
+    <template>
+      "※ 추천 기준(70점) 미달 사유:
+       주요 문제: [예: 한쪽 입장만 명확하고 다른 쪽 논리 약함]
+       보완 필요: [예: 양측 모두 타당한 근거가 있는 균형적 갈등 필요]"
+    </template>
+  </failure_explanation>
+</score_transparency>
+
+  </scoring_system>
+
+  <!-- 전형적 패턴과 사례 -->
+  <typical_patterns>
+    <pattern type="정책 딜레마">
+      <keywords>vs, 대비, 우선, 선택, 갈등</keywords>
+      <examples>
+        - 성장 vs 분배
+        - 규제 vs 혁신
+        - 안정 vs 효율
+      </examples>
+      <question_focus>정책 선택의 근거</question_focus>
+    </pattern>
+    
+    <pattern type="경영 딜레마">
+      <keywords>주주, 이해관계자, 경영진, 투자자</keywords>
+      <examples>
+        - 주주환원 vs 재투자
+        - 단기실적 vs 장기전략
+        - 비용절감 vs 품질유지
+      </examples>
+      <question_focus>경영 판단의 우선순위</question_focus>
+    </pattern>
+    
+    <pattern type="투자 딜레마">
+      <keywords>수익률, 리스크, 포트폴리오, 전략</keywords>
+      <examples>
+        - 안정성 vs 수익성
+        - 국내 vs 해외
+        - 성장주 vs 가치주
+      </examples>
+      <question_focus>투자 결정의 기준</question_focus>
+    </pattern>
+  </typical_patterns>
+
+  <!-- 2단계 연계 체크 -->
+  <stage2_connection_check>
+    <question_formulation>
+      □ 대립 구조 25-30자 설명 가능
+      □ "~의 가장 주요한 이유는?" 형식 가능
+      □ 선택 근거를 묻는 질문 구성 가능
+    </question_formulation>
+    
+    <answer_options>
+      □ "~하기 위해서다" 형식 답변 가능
+      □ 15-20자 목적 표현 가능
+      □ 반대 입장으로 오답 구성 가능
+      □ 부차적 이유로 오답 구성 가능
+    </answer_options>
+    
+    <balance_check>
+      □ 양쪽 입장 모두 설득력 있는가?
+      □ 정답이 너무 명백하지 않은가?
+      □ 감정이 아닌 논리 중심인가?
+    </balance_check>
+  </stage2_connection_check>
+
+</dilemma_criteria>
+
+<!-- ===== 시그널 디코딩 게임 평가 기준 ===== -->
+<signal_criteria>
+
+  <game_definition>
+    <concept>경제 데이터와 전문용어 해석</concept>
+    <focus>맥락 기반 용어 추론</focus>
+    <question_type>빈칸 채우기</question_type>
+  </game_definition>
+
+  <!-- 필수 요건 (Pass/Fail) -->
+  <essential_requirements>
+    <requirement id="SD-E1" mandatory="true">
+      <name>핵심 용어 밀도</name>
+      <description>경제 전문용어/지표 포함도</description>
+      <minimum_terms>3개</minimum_terms>
+      <optimal_terms>5개 이상</optimal_terms>
+      <term_categories>
+        <indicators>GDP, CPI, PPI, PMI, BSI</indicators>
+        <ratios>PER, PBR, ROE, ROA, BIS</ratios>
+        <policy>기준금리, DTI, DSR, LTV</policy>
+        <market>KOSPI, 환율, 국채금리, 스프레드</market>
+        <trending>ESG, CBDC, RE100, 탄소중립</trending>
+      </term_categories>
+      <density_check>
+        □ 200자당 최소 2개 용어
+        □ 핵심 용어가 문맥상 중요한가?
+        □ 빈칸 처리 가능한 위치인가?
+      </density_check>
+    </requirement>
+    
+    <requirement id="SD-E2" mandatory="true">
+      <name>데이터 구체성</name>
+      <description>수치, 비율, 변화율 포함</description>
+      <data_types>
+        <absolute>금액, 수량, 비율</absolute>
+        <relative>전년대비, 전월비, 전분기비</relative>
+        <comparative>업계 순위, 역대 최고/최저</comparative>
+      </data_types>
+      <context_requirements>
+        □ 수치의 의미가 명확한가?
+        □ 비교 기준이 제시되는가?
+        □ 정상 범위를 알 수 있는가?
+      </context_requirements>
+    </requirement>
+    
+    <requirement id="SD-E3" mandatory="true">
+      <name>빈칸 추론 자연스러움</name>
+      <description>문맥상 유일한 답 도출</description>
+      <good_positions>
+        - 주어 위치의 경제 지표
+        - 목적어 위치의 전문 용어
+        - 수치 앞의 지표명
+      </good_positions>
+      <bad_positions>
+        - 조사, 부사, 형용사
+        - 여러 답이 가능한 위치
+        - 일반 명사
+      </bad_positions>
+    </requirement>
+  </essential_requirements>
+
+  <!-- 점수 산정 체계 -->
+  <scoring_system>
+    
+    <factor id="SD-S1" weight="40%">
+      <name>전문용어 밀도</name>
+      <scoring_table>
+        <score terms="7+" points="40"/>
+        <score terms="5-6" points="35"/>
+        <score terms="3-4" points="25"/>
+        <score terms="2" points="15"/>
+        <score terms="1" points="5"/>
+      </scoring_table>
+    </factor>
+    
+    <factor id="SD-S2" weight="30%">
+      <name>데이터 풍부성</name>
+      <evaluation_criteria>
+        <excellent points="27-30">다양한 수치와 완벽한 맥락</excellent>
+        <good points="20-26">충분한 데이터와 설명</good>
+        <fair points="10-19">기본 데이터 포함</fair>
+        <poor points="0-9">데이터 부족</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="SD-S3" weight="20%">
+      <name>빈칸 적합성</name>
+      <evaluation_criteria>
+        <excellent points="18-20">완벽한 위치, 유일한 답</excellent>
+        <good points="13-17">적절한 위치, 명확한 답</good>
+        <fair points="7-12">가능한 위치, 추론 가능</fair>
+        <poor points="0-6">부적절, 모호함</poor>
+      </evaluation_criteria>
+    </factor>
+    
+    <factor id="SD-S4" weight="10%">
+      <name>용어 학습 가치</name>
+      <evaluation_criteria>
+        <excellent points="9-10">필수 경제 지식</excellent>
+        <good points="6-8">중요 용어</good>
+        <fair points="3-5">일반 지식</fair>
+        <poor points="0-2">부차적 용어</poor>
+      </evaluation_criteria>
+    </factor>
+    
+<score_transparency>
+  <display_format>
+    <template>
+      "시그널 디코딩 평가:
+       전문용어 밀도: [X/40] - [N]개 용어 확인
+       데이터 구체성: [Y/30] - [다양하고 완벽/충분/기본/부족]
+       빈칸 적합성: [Z/20] - [완벽한 위치/적절/가능/부적절]
+       용어 학습 가치: [W/10] - [필수지식/중요/일반/부차적]
+       = 총 [합계]/100점"
+    </template>
+  </display_format>
+  
+  <failure_explanation>
+    <template>
+      "※ 추천 기준(70점) 미달 사유:
+       주요 문제: [예: 전문용어가 2개뿐, 최소 3개 필요]
+       보완 필요: [예: 더 많은 경제 지표와 구체적 데이터 필요]"
+    </template>
+  </failure_explanation>
+</score_transparency>
+
+  </scoring_system>
+
+  <!-- 고가치 용어 목록 -->
+  <high_value_terms>
+    <must_know priority="1">
+      <term>GDP/GNP</term>
+      <term>CPI/PPI</term>
+      <term>기준금리</term>
+      <term>환율</term>
+      <term>PER/PBR/ROE</term>
+      <term>DTI/DSR/LTV</term>
+    </must_know>
+    
+    <trending priority="2">
+      <term>ESG</term>
+      <term>CBDC</term>
+      <term>RE100</term>
+      <term>탄소중립</term>
+      <term>디지털 전환</term>
+      <term>리쇼어링</term>
+    </trending>
+    
+    <specialized priority="3">
+      <term>비이자이익</term>
+      <term>순이자마진</term>
+      <term>BIS비율</term>
+      <term>NCR</term>
+      <term>예대율</term>
+    </specialized>
+  </high_value_terms>
+
+  <!-- 2단계 연계 체크 -->
+  <stage2_connection_check>
+    <question_formulation>
+      □ 배경 지식 25-30자 제공 가능
+      □ 빈칸 문장 25-30자 구성 가능
+      □ "빈칸에 들어갈 가장 적절한 것은?" 사용 가능
+    </question_formulation>
+    
+    <answer_options>
+      □ 5-10자 경제 용어 존재
+      □ 유사 용어로 오답 구성 가능
+      □ 단위 오류로 함정 구성 가능
+      □ 문맥상 유일한 정답 확보
+    </answer_options>
+    
+    <context_provision>
+      □ 빈칸 앞뒤 10자에 힌트 존재
+      □ 배경 설명으로 맥락 제공 가능
+      □ 용어 학습 가치 있음
+    </context_provision>
+  </stage2_connection_check>
+
+</signal_criteria>
+
+<!-- ===== 종합 평가 매트릭스 ===== -->
+<comprehensive_evaluation_matrix>
+
+  <!-- 점수 구간별 판정 -->
+  <score_ranges>
+    <range score="90-100">
+      <grade>최우수</grade>
+      <recommendation>즉시 추천, 교과서적 사례</recommendation>
+      <production>바로 문제 제작 가능</production>
+    </range>
+    
+    <range score="80-89">
+      <grade>우수</grade>
+      <recommendation>적극 추천</recommendation>
+      <production>표준 문제 제작 적합</production>
+    </range>
+    
+    <range score="70-79">
+      <grade>양호</grade>
+      <recommendation>추천</recommendation>
+      <production>기본 문제 제작 가능</production>
+    </range>
+    
+    <range score="60-69">
+      <grade>보통</grade>
+      <recommendation>조건부 추천</recommendation>
+      <production>보완 후 사용</production>
+    </range>
+    
+    <range score="50-59">
+      <grade>미흡</grade>
+      <recommendation>추천 보류</recommendation>
+      <production>대폭 보완 필요</production>
+    </range>
+    
+    <range score="0-49">
+      <grade>부적합</grade>
+      <recommendation>추천 불가</recommendation>
+      <production>제작 불가</production>
+    </range>
+  </score_ranges>
+
+  <!-- 게임 간 우선순위 -->
+  <inter_game_priority>
+    <rule>동일 점수 시 블랙스완 > 딜레마 > 시그널</rule>
+    <reason>인과관계 학습의 중요성</reason>
+  </inter_game_priority>
+
+  <!-- 최종 선정 규칙 -->
+  <final_selection_rules>
+    <rule id="1">70점 이상만 추천 대상</rule>
+    <rule id="2">게임당 최대 3개 선정</rule>
+    <rule id="3">점수 높은 순 우선</rule>
+    <rule id="4">동점 시 최신 기사 우선</rule>
+    <rule id="5">중복 기사 제거</rule>
+  </final_selection_rules>
+
+</comprehensive_evaluation_matrix>
+
+<!-- ===== 품질 검증 체크리스트 ===== -->
+<quality_verification_checklist>
+
+  <evaluation_accuracy>
+    □ 모든 필수 요건 체크했는가?
+    □ 점수 산정이 정확한가?
+    □ 가중치 적용이 올바른가?
+    □ 게임 특성을 반영했는가?
+  </evaluation_accuracy>
+  
+  <production_feasibility>
+    □ 2단계 제작 가능성 검증했는가?
+    □ 문제 형식 호환성 확인했는가?
+    □ 정답 명확성 검증했는가?
+    □ 오답 생성 가능성 확인했는가?
+  </production_feasibility>
+  
+  <consistency>
+    □ 평가 기준 일관성 유지했는가?
+    □ 게임 간 형평성 확보했는가?
+    □ 점수와 추천 일치하는가?
+    □ 이전 평가와 일관성 있는가?
+  </consistency>
+
+</quality_verification_checklist>
+
+<!-- ===== 버전 정보 ===== -->
+<version_info>
+  <version>2.0</version>
+  <last_updated>2024-12-XX</last_updated>
+  <major_updates>
+    - 2단계 연계 체크 항목 추가
+    - 점수 산정 체계 세분화
+    - 전형적 패턴 확대
+    - 용어 목록 업데이트
+  </major_updates>
+  <compatibility>
+    - instruction_screening.xml v2.0
+    - master_screening_format.xml v2.0
+    - 2단계 시스템 v2.0
+  </compatibility>
+</version_info>
+
+</screening_criteria_v2>
