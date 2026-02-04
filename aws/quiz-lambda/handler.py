@@ -20,6 +20,26 @@ def cors_headers():
         'Content-Type': 'application/json'
     }
 
+def transform_question(q, index):
+    """DynamoDB 퀴즈 데이터를 웹사이트 Question 타입으로 변환"""
+    correct_index = int(q.get('correctAnswer', 0))
+    options = q.get('options', [])
+    
+    return {
+        'id': f"q{index + 1}",
+        'questionType': '객관식',
+        'question': q.get('question', ''),
+        'options': options,
+        'answer': options[correct_index] if correct_index < len(options) else '',
+        'explanation': q.get('explanation', ''),
+        'newsLink': '#',  # 기사 링크는 나중에 추가
+        'tags': '경제·금융',  # 기본 태그
+        'relatedArticle': {
+            'title': q.get('articleTitle', ''),
+            'excerpt': q.get('articleSummary', '')
+        }
+    }
+
 def lambda_handler(event, context):
     method = event.get('httpMethod')
     path = event.get('path', '').replace('/prod', '')
@@ -64,10 +84,21 @@ def lambda_handler(event, context):
                     'body': json.dumps({'error': 'Quiz not found'})
                 }
             
+            # 데이터 변환
+            item = result['Item']
+            raw_questions = item.get('questions', [])
+            transformed_questions = [transform_question(q, i) for i, q in enumerate(raw_questions)]
+            
+            response_data = {
+                'gameType': item.get('gameType'),
+                'date': item.get('date'),
+                'questions': transformed_questions
+            }
+            
             return {
                 'statusCode': 200,
                 'headers': cors_headers(),
-                'body': json.dumps(result['Item'], default=decimal_default)
+                'body': json.dumps(response_data, default=decimal_default)
             }
         
         # POST /quiz/{gameType}
