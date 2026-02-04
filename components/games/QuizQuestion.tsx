@@ -38,8 +38,8 @@ export function QuizQuestion({
 }: QuizQuestionProps) {
   return (
     <article
-      className={`${themeStyles.paperBg} border ${themeStyles.hairline} rounded-2xl shadow-sm p-6 md:p-8 space-y-4 ${
-        questionIndex > 0 ? "border-t-2 border-dashed pt-8" : ""
+      className={`${themeStyles.paperBg} border ${themeStyles.hairline} rounded-2xl shadow-sm p-4 md:p-5 space-y-2 ${
+        questionIndex > 0 ? "border-t-2 border-dashed pt-6" : ""
       }`}
       style={{
         backgroundColor: gameType === "PrisonersDilemma" ? "#F0E7D8" : undefined,
@@ -56,32 +56,31 @@ export function QuizQuestion({
 
       {/* 질문 헤더 */}
       <header
-        className="flex items-center justify-between border-b pb-3"
+        className="flex items-center justify-between border-b pb-2"
         style={{ borderColor: themeStyles.accentColor }}
       >
         <div
-          className={`inline-flex items-center gap-2 px-3 py-1 border ${themeStyles.badgeBg} ${themeStyles.badgeText}`}
+          className={`inline-flex items-center gap-2 px-2 py-1 border ${themeStyles.badgeBg} ${themeStyles.badgeText}`}
         >
           <span className="text-xs uppercase tracking-widest">{question.questionType}</span>
         </div>
-        {/* 관련 뉴스 링크 - 테스트용으로 숨김 */}
-        {/* {question.newsLink && (
+        {question.newsLink && (
           <a
             href={question.newsLink}
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-1.5 text-sm ${themeStyles.inkColor} hover:${themeStyles.accentText} transition-colors uppercase tracking-wide`}
+            className={`inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium ${themeStyles.inkColor} hover:${themeStyles.accentText} transition-colors`}
           >
             <ExternalLink className="h-3.5 w-3.5" />
-            <span>관련 뉴스</span>
+            <span>원문 기사</span>
           </a>
-        )} */}
+        )}
       </header>
 
       {/* 질문 제목 */}
       <div>
         <h3
-          className={`text-[22px] md:text-2xl font-bold leading-tight ${themeStyles.inkColor}`}
+          className={`text-base md:text-lg font-bold leading-tight ${themeStyles.inkColor}`}
           style={{ lineHeight: "1.4", letterSpacing: "-0.2px", fontWeight: 700 }}
         >
           {questionIndex + 1}. {question.question}
@@ -90,13 +89,13 @@ export function QuizQuestion({
 
       {/* 구분선 */}
       <div
-        className="border-t-2 border-dotted my-4"
+        className="border-t-2 border-dotted my-2"
         style={{ borderColor: themeStyles.accentColor, opacity: 0.3 }}
       />
 
       {/* 객관식 선택지 */}
       {question.questionType === "객관식" && question.options && (
-        <div className="space-y-5">
+        <div className="space-y-2">
           {question.options.map((option, idx) => {
             const isSelected = state.userAnswer === option
             const isCorrectOption = option === question.answer
@@ -107,7 +106,7 @@ export function QuizQuestion({
                 key={idx}
                 onClick={() => onMultipleChoiceAnswer(questionIndex, option)}
                 disabled={state.isAnswered}
-                className={`w-full p-4 text-left border-2 transition-all choice-card newspaper-focus rounded-xl ${
+                className={`w-full p-3 text-left border-2 transition-all choice-card newspaper-focus rounded-xl ${
                   showResult && isCorrectOption
                     ? `${themeStyles.correctBorder} border-4 bg-[#F5F1E6]`
                     : showResult && isSelected && !isCorrectOption
@@ -118,9 +117,9 @@ export function QuizQuestion({
                 } ${state.isAnswered ? "cursor-default" : "cursor-pointer"}`}
                 style={{ fontFamily: "var(--font-news-body)" }}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-2">
                   <span
-                    className="flex-shrink-0 w-7 h-7 border-2 flex items-center justify-center text-sm font-bold rounded-sm"
+                    className="flex-shrink-0 w-6 h-6 border-2 flex items-center justify-center text-xs font-bold rounded-sm"
                     style={{
                       color: showResult && isCorrectOption ? "#FFFFFF" : accent.hex,
                       borderColor: accent.hex,
@@ -130,18 +129,18 @@ export function QuizQuestion({
                     {isSelected && showResult ? (isCorrectOption ? "●" : "○") : String.fromCharCode(65 + idx)}
                   </span>
                   <span
-                    className={`flex-1 text-[15px] md:text-base ${themeStyles.inkColor}`}
-                    style={{ lineHeight: "1.6", fontWeight: 500 }}
+                    className={`flex-1 text-sm md:text-base ${themeStyles.inkColor}`}
+                    style={{ lineHeight: "1.5", fontWeight: 500 }}
                   >
                     {option}
                   </span>
                   {showResult && isCorrectOption && (
                     <CheckCircle2
-                      className="flex-shrink-0 h-5 w-5"
+                      className="flex-shrink-0 h-4 w-4"
                       style={{ color: themeStyles.accentColor }}
                     />
                   )}
-                  {showResult && isSelected && !isCorrectOption && <XCircle className="h-5 w-5 text-red-600" />}
+                  {showResult && isSelected && !isCorrectOption && <XCircle className="h-4 w-4 text-red-600" />}
                 </div>
               </button>
             )

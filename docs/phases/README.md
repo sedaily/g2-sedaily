@@ -19,6 +19,14 @@ Phase documents capture the big picture of feature development:
 
 ## Phases Index
 
+### Phase 2: Quiz UI/UX Improvements (2026-02-04)
+**PHASE-02-quiz-ui-ux-improvements.md**
+- Compact layout for single-screen quiz display
+- 30-second timer per question
+- Background image removal for clean UI
+- Simplified progress bar with date display
+- AI-generated content disclaimer
+
 ### Phase 1: Automated Quiz Generation System (2026-02-03)
 **PHASE-01-quiz-auto-generation-system.md**
 - Two-stage AI pipeline (article screening → quiz generation)
@@ -29,5 +37,5 @@ Phase documents capture the big picture of feature development:
 
 ---
 
-**Total Phases:** 1  
-**Latest Update:** 2026-02-03
+**Total Phases:** 2  
+**Latest Update:** 2026-02-04

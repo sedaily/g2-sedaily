@@ -101,13 +101,8 @@ export default function G2PlayPage() {
 
   if (error || !normalizedDate) {
     return (
-      <div className="min-h-screen relative">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')" }}
-        />
-        <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
-        <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="min-h-screen bg-white">
+        <div className="container mx-auto px-4 py-8">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error || "퀴즈를 찾을 수 없습니다."}</AlertDescription>
@@ -119,13 +114,8 @@ export default function G2PlayPage() {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen relative">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')" }}
-        />
-        <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
-        <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="min-h-screen bg-white">
+        <div className="container mx-auto px-4 py-8">
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>이 날짜에 대한 퀴즈가 없습니다.</AlertDescription>
@@ -136,20 +126,8 @@ export default function G2PlayPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/backgrounds/g2-silhouettes-clean.webp')" }}
-      />
-      <div className="absolute inset-0 bg-linear-to-r from-[#EFECE7]/40 via-[#E7DFD3]/35 to-[#E2DAD2]/40" />
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <div
-          className="absolute inset-0 opacity-[0.06] pointer-events-none"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0,0,0,0.02) 40px, rgba(0,0,0,0.02) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.02) 40px, rgba(0,0,0,0.02) 41px)",
-          }}
-        />
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
         <UniversalQuizPlayer
           questions={questions}
           date={normalizedDate}

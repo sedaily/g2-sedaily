@@ -12,22 +12,22 @@ type NewsHeaderBlockProps = {
 
 export function NewsHeaderBlock({ headline, lede, themeStyles }: NewsHeaderBlockProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="h-px w-full border-t-2 border-dotted" style={{ borderColor: themeStyles.accentColor }} />
 
       <h2
-        className="text-3xl md:text-4xl lg:text-5xl font-black leading-snug whitespace-pre-line mt-8 mb-4"
+        className="text-lg md:text-xl font-bold leading-tight whitespace-pre-line mt-3 mb-2"
         style={{
           color: themeStyles.inkColor,
           fontFamily: "var(--font-news-headline)",
-          letterSpacing: "-0.5px",
+          letterSpacing: "-0.3px",
         }}
       >
         {headline}
       </h2>
 
       <p
-        className="text-base md:text-lg leading-relaxed whitespace-pre-line mb-8 opacity-90"
+        className="text-sm md:text-base leading-relaxed whitespace-pre-line mb-3 opacity-80"
         style={{
           color: themeStyles.inkColor,
           fontFamily: "var(--font-news-body)",

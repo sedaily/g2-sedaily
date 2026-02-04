@@ -163,6 +163,30 @@ export function useQuizState({
   const isComplete = answeredCount === questions.length
   const accuracy = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0
 
+  // 타임아웃 처리 (시간 초과 시 오답 처리)
+  const handleTimeout = useCallback((questionIndex: number) => {
+    if (!questionStates[questionIndex]) return
+
+    const currentState = questionStates[questionIndex]
+    if (currentState.isAnswered) return
+
+    const newStates = [...questionStates]
+    newStates[questionIndex] = {
+      ...currentState,
+      isAnswered: true,
+      isCorrect: false,
+      userAnswer: currentState.userAnswer || '', // 입력한 답이 있으면 유지
+    }
+    setQuestionStates(newStates)
+
+    const correctCount = newStates.filter((state) => state.isCorrect).length
+    setScore(correctCount)
+
+    if (!disableSaveProgress) {
+      saveProgress(newStates, correctCount, false)
+    }
+  }, [questionStates, disableSaveProgress, saveProgress])
+
   return {
     questionStates,
     score,
@@ -174,5 +198,6 @@ export function useQuizState({
     handleToggleHint,
     handleInputChange,
     handleRestart,
+    handleTimeout,
   }
 }
