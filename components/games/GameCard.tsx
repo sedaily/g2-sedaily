@@ -12,22 +12,30 @@ interface GameCardProps {
 }
 
 export function GameCard({ game }: GameCardProps) {
-  const [playHref, setPlayHref] = useState(`${game.slug}/play`)
+  // Use playUrl if provided, otherwise default to slug/play
+  const defaultPlayHref = game.playUrl || `${game.slug}/play`
+  const [playHref, setPlayHref] = useState(defaultPlayHref)
 
   useEffect(() => {
+    // Skip date loading for Quizlet (no date-based routing)
+    if (game.id === 'quizlet') {
+      return
+    }
+
     async function loadLatestDate() {
       try {
         const latestDate = await getMostRecentDate(game.gameType)
         if (latestDate) {
           const shortDate = latestDate.replace(/-/g, '')
-          setPlayHref(`${game.slug}/play?date=${shortDate}`)
+          const baseUrl = game.playUrl || `${game.slug}/play`
+          setPlayHref(`${baseUrl}?date=${shortDate}`)
         }
       } catch (err) {
         console.error("Error loading latest date:", err)
       }
     }
     loadLatestDate()
-  }, [game.slug, game.gameType])
+  }, [game.slug, game.gameType, game.playUrl, game.id])
 
   return (
     <article
