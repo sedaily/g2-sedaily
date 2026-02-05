@@ -262,11 +262,12 @@ export default function G3ArchivePage() {
             ) : (
               allDates.map(({ date }) => {
                 const isToday = date === today
-                // API에서 각 날짜는 항상 4문제씩 있음
-                const questionCount = 4
+                // 각 게임은 2문제씩
+                const questionCount = 2
 
                 // Convert YYYY-MM-DD to YYYYMMDD for routing
                 const shortDate = date.replace(/-/g, '')
+                const fullUrl = `https://g2.sedaily.ai/games/g3/play/?date=${shortDate}`
 
                 return (
                   <ArchiveCard
@@ -276,7 +277,7 @@ export default function G3ArchivePage() {
                     questionCount={questionCount}
                     tags={dateTags[date] || []}
                     isToday={isToday}
-                    href={`/games/g3/play?date=${shortDate}`}
+                    href={fullUrl}
                   />
                 )
               })

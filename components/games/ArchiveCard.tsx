@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { Tag } from "@/components/ui/tag"
 import Image from "next/image"
-import Link from "next/link"
 
 interface ArchiveCardProps {
   gameType: "g1" | "g2" | "g3" | "quizlet"
@@ -93,9 +92,12 @@ export function ArchiveCard({ gameType, date, questionCount, isToday, href, tags
   const hasTags = displayTags.length > 0
 
   return (
-    <Link
-      href={href}
-      className={`group block rounded-2xl border ${config.borderOpacity} ${config.listBg} backdrop-blur-[2px] ${config.shadow} ${config.hoverShadow} hover:-translate-y-0.5 transition-all focus-visible:outline-2 focus-visible:outline-offset-2`}
+    <button
+      onClick={() => {
+        console.log('[ArchiveCard] Navigating to:', href)
+        window.location.href = href
+      }}
+      className={`group block rounded-2xl border ${config.borderOpacity} ${config.listBg} backdrop-blur-[2px] ${config.shadow} ${config.hoverShadow} hover:-translate-y-0.5 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 w-full text-left cursor-pointer`}
       style={{ outlineColor: config.focusColor }}
     >
       <div className="flex items-center gap-4 md:gap-5 p-6 md:p-7 min-h-[140px] md:min-h-40">
@@ -154,6 +156,6 @@ export function ArchiveCard({ gameType, date, questionCount, isToday, href, tags
           </div>
         </div>
       </div>
-    </Link>
+    </button>
   )
 }

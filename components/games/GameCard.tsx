@@ -1,16 +1,33 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import type { GameMeta } from "@/lib/games-data"
+import { getMostRecentDate } from "@/lib/games-data"
 
 interface GameCardProps {
   game: GameMeta
 }
 
 export function GameCard({ game }: GameCardProps) {
-  const playHref = game.playUrl || `${game.slug}/2024-01-15`
+  const [playHref, setPlayHref] = useState(`${game.slug}/play`)
+
+  useEffect(() => {
+    async function loadLatestDate() {
+      try {
+        const latestDate = await getMostRecentDate(game.gameType)
+        if (latestDate) {
+          const shortDate = latestDate.replace(/-/g, '')
+          setPlayHref(`${game.slug}/play?date=${shortDate}`)
+        }
+      } catch (err) {
+        console.error("Error loading latest date:", err)
+      }
+    }
+    loadLatestDate()
+  }, [game.slug, game.gameType])
 
   return (
     <article

@@ -13,12 +13,20 @@ from pathlib import Path
 
 # 설정
 AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
-BEDROCK_MODEL_ID = 'anthropic.claude-3-sonnet-20240229-v1:0'
+BEDROCK_MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0'  # Claude 3 Haiku (빠르고 안정적)
 DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', 'sedaily-quiz-data')
 BIGKINDS_API_KEY = os.environ.get('BIGKINDS_API_KEY')
 
-# AWS 클라이언트
-bedrock = boto3.client('bedrock-runtime', region_name=AWS_REGION)
+# AWS 클라이언트 (타임아웃 설정)
+from botocore.config import Config
+
+bedrock_config = Config(
+    read_timeout=300,  # 5분
+    connect_timeout=60,
+    retries={'max_attempts': 3}
+)
+
+bedrock = boto3.client('bedrock-runtime', region_name=AWS_REGION, config=bedrock_config)
 dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
 
 
@@ -38,7 +46,8 @@ def lambda_handler(event, context):
         articles = fetch_bigkinds_news(count=12)
         
         # 2. Step 1: 기사 스크리닝
-        screening_result = step1_screen_articles(articles)
+        screening_result, article_url_maps = step1_screen_articles(articles)
+        article_url_map, article_url_map_normalized = article_url_maps
         
         # 3. Step 2: 문제 제작 (재시도 로직)
         quiz_data = None
@@ -46,7 +55,7 @@ def lambda_handler(event, context):
             quiz_output = step2_generate_quiz(screening_result, retry_count=attempt, max_retries=max_retries)
             
             # 4. JSON 파싱
-            quiz_data = parse_quiz_output(quiz_output)
+            quiz_data = parse_quiz_output(quiz_output, article_url_map, article_url_map_normalized)
             
             # 5. 품질 검증
             is_valid, errors = validate_quiz(quiz_data)
@@ -95,6 +104,52 @@ def lambda_handler(event, context):
         }
 
 
+def normalize_title(title):
+    """기사 제목 정규화 (매칭용)"""
+    import re
+    # 공백, 특수문자 제거하고 소문자로 변환
+    normalized = re.sub(r'[^\w가-힣]', '', title)
+    return normalized.lower()
+
+
+def convert_newsid_to_sedaily_url(news_id):
+    """
+    BigKinds news_id를 서울경제 원문 URL로 변환
+    BigKinds 페이지를 스크래핑하여 "언론사URL" 버튼의 링크를 추출
+    """
+    if not news_id:
+        return ''
+    
+    try:
+        # BigKinds 기사 상세 페이지 URL
+        bigkinds_url = f"https://www.bigkinds.or.kr/v2/news/newsDetailView.do?newsId={news_id}"
+        
+        # 페이지 요청
+        response = requests.get(bigkinds_url, timeout=10)
+        if response.status_code != 200:
+            print(f"   ⚠️ BigKinds 페이지 로드 실패: {news_id}")
+            return bigkinds_url
+        
+        # HTML 파싱하여 언론사URL 버튼 찾기
+        import re
+        # <button ... onclick="location.href='URL'">언론사URL</button> 패턴 찾기
+        match = re.search(r"onclick=\"location\.href='([^']+)'\"[^>]*>언론사URL", response.text)
+        if match:
+            provider_url = match.group(1)
+            # ?ref=kpf 파라미터 제거
+            provider_url = provider_url.split('?')[0]
+            print(f"   ✅ 스크래핑 성공: {provider_url}")
+            return provider_url
+        else:
+            print(f"   ⚠️ 언론사URL 버튼 못 찾음: {news_id}")
+            return bigkinds_url
+            
+    except Exception as e:
+        print(f"   ⚠️ 스크래핑 오류: {str(e)}")
+        # fallback: BigKinds URL 반환
+        return f"https://www.bigkinds.or.kr/v2/news/newsDetailView.do?newsId={news_id}"
+
+
 def load_prompt_files(step_dir):
     """프롬프트, 지침, 메모리, 파일들 로드"""
     prompt = (step_dir / 'prompt.txt').read_text(encoding='utf-8')
@@ -140,7 +195,7 @@ def fetch_bigkinds_news(count=12):
             'hilight': 200,
             'return_from': 0,
             'return_size': count,
-            'fields': ['title', 'content', 'published_at', 'provider', 'category', 'hilight']
+            'fields': ['title', 'content', 'published_at', 'provider', 'category', 'hilight', 'news_id', 'url', 'byline', 'provider_link_page']  # 추가 필드 요청
         }
     }
     
@@ -242,7 +297,40 @@ def step1_screen_articles(articles):
     response = call_claude(system_prompt, user_prompt, max_tokens=8000)
     
     print("✅ Step 1 완료: 기사 스크리닝 결과 생성")
-    return response
+    
+    # 기사 제목-URL 매핑 생성 (정규화된 제목으로)
+    article_url_map = {}
+    article_url_map_normalized = {}  # 정규화된 제목으로 검색용
+    
+    for article in articles:
+        title = article.get('title', '')
+        news_id = article.get('news_id', '')
+        published_at = article.get('published_at', '')
+        
+        # provider_link_page 필드에서 서울경제 원문 URL 가져오기 (우선순위 1)
+        url = article.get('provider_link_page', '')
+        
+        # provider_link_page가 없으면 news_id로 BigKinds URL 생성 (fallback)
+        if not url:
+            url = convert_newsid_to_sedaily_url(news_id)
+        else:
+            # ?ref=kpf 파라미터 제거 (깔끔한 URL)
+            url = url.split('?')[0]
+        
+        if title:
+            article_data = {
+                'url': url,
+                'publishedDate': published_at,
+                'originalTitle': title
+            }
+            article_url_map[title] = article_data
+            # 정규화된 제목으로도 저장
+            normalized_title = normalize_title(title)
+            article_url_map_normalized[normalized_title] = article_data
+    
+    print(f"📋 URL 매핑 생성 완료: {len(article_url_map)}개 기사")
+    
+    return response, (article_url_map, article_url_map_normalized)
 
 
 def step2_generate_quiz(selected_articles, retry_count=0, max_retries=2):
@@ -302,9 +390,53 @@ def clean_text(text):
     return text.strip()
 
 
-def parse_quiz_output(quiz_text):
+def parse_quiz_output(quiz_text, article_url_map, article_url_map_normalized):
     """퀴즈 출력 텍스트 파싱 (텍스트 형식)"""
     print("\n🔄 퀴즈 데이터 파싱 중...")
+    
+    import re
+    
+    def find_article_url(article_title):
+        """기사 제목으로 URL 찾기 (정규화 매칭 포함)"""
+        article_title_clean = clean_text(article_title.strip())
+        
+        # 1차: 정확한 제목 매칭
+        if article_title_clean in article_url_map:
+            return article_url_map[article_title_clean]
+        
+        # 2차: 정규화된 제목 매칭
+        normalized = normalize_title(article_title_clean)
+        if normalized in article_url_map_normalized:
+            return article_url_map_normalized[normalized]
+        
+        # 3차: 부분 매칭 (제목의 앞부분이 일치하는 경우)
+        for original_title, article_data in article_url_map.items():
+            if article_title_clean[:30] in original_title or original_title[:30] in article_title_clean:
+                print(f"   ⚠️ 부분 매칭: '{article_title_clean[:40]}...' ≈ '{original_title[:40]}...'")
+                return article_data
+        
+        # 4차: 더 짧은 부분 매칭 (15자)
+        for original_title, article_data in article_url_map.items():
+            if len(article_title_clean) >= 15 and len(original_title) >= 15:
+                if article_title_clean[:15] in original_title or original_title[:15] in article_title_clean:
+                    print(f"   ⚠️ 짧은 부분 매칭: '{article_title_clean[:40]}...' ≈ '{original_title[:40]}...'")
+                    return article_data
+        
+        # 5차: 키워드 매칭 (공백으로 분리된 단어 중 3개 이상 일치)
+        article_words = set(article_title_clean.split())
+        for original_title, article_data in article_url_map.items():
+            original_words = set(original_title.split())
+            common_words = article_words & original_words
+            if len(common_words) >= 3:
+                print(f"   ⚠️ 키워드 매칭 ({len(common_words)}개): '{article_title_clean[:40]}...' ≈ '{original_title[:40]}...'")
+                return article_data
+        
+        print(f"   ❌ URL 못 찾음: '{article_title_clean[:50]}...'")
+        print(f"      사용 가능한 기사 제목들:")
+        for i, title in enumerate(list(article_url_map.keys())[:3], 1):
+            print(f"      {i}. {title[:60]}...")
+        
+        return {}
     
     import re
     
@@ -359,39 +491,75 @@ def parse_quiz_output(quiz_text):
         bs_problems = re.findall(r'🌊 블랙스완.*?\n\n(.*?)\n\n①\s*(.*?)\n②\s*(.*?)\n③\s*(.*?)\n④\s*(.*?)\n\n📰 관련 기사:\s*(.*?)\n📝\s*"(.*?)"', quiz_text, re.DOTALL)
         for idx, (question, opt1, opt2, opt3, opt4, article_title, article_summary) in enumerate(bs_problems):
             if idx < len(answers_explanations['BlackSwan']):
+                article_info = find_article_url(article_title)
+                article_title_clean = article_info.get('originalTitle', clean_text(article_title.strip()))
+                url = article_info.get('url', '')
+                
+                if not url:
+                    print(f"   ⚠️ 블랙스완 문제 {idx+1} URL 못 찾음: {article_title[:50]}...")
+                else:
+                    print(f"   ✅ 블랙스완 문제 {idx+1} URL: {url}")
+                
                 quiz_data['BlackSwan'].append({
                     'question': clean_text(question.strip()),
                     'options': [clean_text(opt1.strip()), clean_text(opt2.strip()), clean_text(opt3.strip()), clean_text(opt4.strip())],
                     'correctAnswer': answers_explanations['BlackSwan'][idx]['correctAnswer'],
                     'explanation': clean_text(answers_explanations['BlackSwan'][idx]['explanation']),
-                    'articleTitle': clean_text(article_title.strip()),
-                    'articleSummary': clean_text(article_summary.strip())
+                    'newsLink': url,
+                    'relatedArticle': {
+                        'title': article_title_clean,
+                        'excerpt': clean_text(article_summary.strip())
+                    }
                 })
         
         # 문제 섹션 추출 (죄수의 딜레마)
         pd_problems = re.findall(r'⚖️ 죄수의 딜레마.*?\n\n(.*?)\n\n①\s*(.*?)\n②\s*(.*?)\n③\s*(.*?)\n④\s*(.*?)\n\n📰 관련 기사:\s*(.*?)\n📝\s*"(.*?)"', quiz_text, re.DOTALL)
         for idx, (question, opt1, opt2, opt3, opt4, article_title, article_summary) in enumerate(pd_problems):
             if idx < len(answers_explanations['PrisonersDilemma']):
+                article_info = find_article_url(article_title)
+                article_title_clean = article_info.get('originalTitle', clean_text(article_title.strip()))
+                url = article_info.get('url', '')
+                
+                if not url:
+                    print(f"   ⚠️ 죄수의 딜레마 문제 {idx+1} URL 못 찾음: {article_title[:50]}...")
+                else:
+                    print(f"   ✅ 죄수의 딜레마 문제 {idx+1} URL: {url}")
+                
                 quiz_data['PrisonersDilemma'].append({
                     'question': clean_text(question.strip()),
                     'options': [clean_text(opt1.strip()), clean_text(opt2.strip()), clean_text(opt3.strip()), clean_text(opt4.strip())],
                     'correctAnswer': answers_explanations['PrisonersDilemma'][idx]['correctAnswer'],
                     'explanation': clean_text(answers_explanations['PrisonersDilemma'][idx]['explanation']),
-                    'articleTitle': clean_text(article_title.strip()),
-                    'articleSummary': clean_text(article_summary.strip())
+                    'newsLink': url,
+                    'relatedArticle': {
+                        'title': article_title_clean,
+                        'excerpt': clean_text(article_summary.strip())
+                    }
                 })
         
         # 문제 섹션 추출 (시그널 디코딩)
         sd_problems = re.findall(r'🔍 시그널 디코딩.*?\n\n(.*?)\n\n①\s*(.*?)\n②\s*(.*?)\n③\s*(.*?)\n④\s*(.*?)\n\n📰 관련 기사:\s*(.*?)\n📝\s*"(.*?)"', quiz_text, re.DOTALL)
         for idx, (question, opt1, opt2, opt3, opt4, article_title, article_summary) in enumerate(sd_problems):
             if idx < len(answers_explanations['SignalDecoding']):
+                article_info = find_article_url(article_title)
+                article_title_clean = article_info.get('originalTitle', clean_text(article_title.strip()))
+                url = article_info.get('url', '')
+                
+                if not url:
+                    print(f"   ⚠️ 시그널 디코딩 문제 {idx+1} URL 못 찾음: {article_title[:50]}...")
+                else:
+                    print(f"   ✅ 시그널 디코딩 문제 {idx+1} URL: {url}")
+                
                 quiz_data['SignalDecoding'].append({
                     'question': clean_text(question.strip()),
                     'options': [clean_text(opt1.strip()), clean_text(opt2.strip()), clean_text(opt3.strip()), clean_text(opt4.strip())],
                     'correctAnswer': answers_explanations['SignalDecoding'][idx]['correctAnswer'],
                     'explanation': clean_text(answers_explanations['SignalDecoding'][idx]['explanation']),
-                    'articleTitle': clean_text(article_title.strip()),
-                    'articleSummary': clean_text(article_summary.strip())
+                    'newsLink': url,
+                    'relatedArticle': {
+                        'title': article_title_clean,
+                        'excerpt': clean_text(article_summary.strip())
+                    }
                 })
         
         total_questions = sum(len(quiz_data.get(game, [])) for game in ['BlackSwan', 'PrisonersDilemma', 'SignalDecoding'])
@@ -477,7 +645,7 @@ def save_to_dynamodb(quiz_data, date):
             'PK': f'QUIZ#{game_type}',
             'SK': f'DATE#{date}',
             'gameType': game_type,
-            'date': date,
+            'date': date,  # 기존 필드명 유지
             'questions': questions,
             'createdAt': datetime.now().isoformat(),
             'updatedAt': datetime.now().isoformat()

@@ -7,7 +7,7 @@ import type { Question } from "./games-data"
 
 // 캐시 설정
 const CACHE_PREFIX = 'g2-quiz-cache'
-const CACHE_VERSION = 'v1'
+const CACHE_VERSION = 'v2' // relatedArticle 필드 추가로 버전 업데이트
 const CLIENT_CACHE_DURATION = 15 * 60 * 1000 // 15분 클라이언트 캐시
 
 interface CacheItem {

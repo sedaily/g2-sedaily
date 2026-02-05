@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { DynamoDBClient, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 import { CloudWatchClient, GetMetricStatisticsCommand } from '@aws-sdk/client-cloudwatch';
 
+export const revalidate = 0;
+
 const dynamodb = new DynamoDBClient({ region: 'us-east-1' });
 const cloudwatch = new CloudWatchClient({ region: 'us-east-1' });
 

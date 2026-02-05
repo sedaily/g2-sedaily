@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { UniversalQuizPlayer } from "@/components/games/UniversalQuizPlayer"
 import { getQuestionsForDate, getMostRecentDate, type Question } from "@/lib/games-data"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -41,6 +41,7 @@ function normalizeDate(date: string): string | null {
 
 export default function G1PlayPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [normalizedDate, setNormalizedDate] = useState<string | null>(null)
@@ -50,9 +51,11 @@ export default function G1PlayPage() {
     async function loadQuiz() {
       try {
         const dateParam = searchParams.get("date")
+        console.log("[G1 Play] Date param:", dateParam)
         
         if (dateParam) {
           const normalized = normalizeDate(dateParam)
+          console.log("[G1 Play] Normalized date:", normalized)
           if (!normalized) {
             setError("잘못된 날짜 형식입니다.")
             setLoading(false)
@@ -60,10 +63,13 @@ export default function G1PlayPage() {
           }
           setNormalizedDate(normalized)
           const quizData = await getQuestionsForDate("BlackSwan", normalized)
+          console.log("[G1 Play] Loaded questions for date:", normalized, "Count:", quizData.length)
           setQuestions(quizData)
         } else {
+          console.log("[G1 Play] No date param, loading latest")
           const latestDate = await getMostRecentDate("BlackSwan")
           if (latestDate) {
+            console.log("[G1 Play] Latest date:", latestDate)
             setNormalizedDate(latestDate)
             const quizData = await getQuestionsForDate("BlackSwan", latestDate)
             setQuestions(quizData)

@@ -10,13 +10,13 @@ const TABLE_NAME = 'sedaily-quiz-data';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { gameType, quizDate, data } = body;
+    const { gameType, date, data } = body;  // quizDate → date
 
     await docClient.send(new PutCommand({
       TableName: TABLE_NAME,
       Item: {
         gameType,
-        quizDate,
+        date,  // quizDate → date
         data,
         updatedAt: new Date().toISOString()
       }
@@ -37,16 +37,19 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const gameType = searchParams.get('gameType');
-    const quizDate = searchParams.get('quizDate');
+    const date = searchParams.get('date');  // quizDate → date
 
-    if (gameType && quizDate) {
+    if (gameType && date) {
       // 특정 퀴즈 조회
       const result = await docClient.send(new ScanCommand({
         TableName: TABLE_NAME,
-        FilterExpression: 'gameType = :gt AND quizDate = :qd',
+        FilterExpression: 'gameType = :gt AND #date = :d',  // date는 예약어라서 alias 사용
+        ExpressionAttributeNames: {
+          '#date': 'date'
+        },
         ExpressionAttributeValues: {
           ':gt': gameType,
-          ':qd': quizDate
+          ':d': date
         }
       }));
 

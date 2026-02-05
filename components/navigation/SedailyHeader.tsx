@@ -55,13 +55,14 @@ export function SedailyHeader() {
         </div>
 
         <div className="flex items-center">
-          <Link
+          {/* 관리자 버튼 - 임시 주석처리 */}
+          {/* <Link
             href="/admin/quiz"
             className="text-sm text-[#111111] hover:text-[#3B82F6] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B82F6] focus-visible:rounded px-3 py-1 border border-neutral-300 rounded-md hover:border-[#3B82F6]"
             aria-label="관리자 로그인"
           >
             관리자
-          </Link>
+          </Link> */}
         </div>
       </div>
     </header>

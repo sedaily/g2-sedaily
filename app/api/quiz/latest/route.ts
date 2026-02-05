@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
+export const revalidate = 0;
+
 const client = new DynamoDBClient({ region: 'us-east-1' });
 const docClient = DynamoDBDocumentClient.from(client);
-
-export const revalidate = 0;
 
 export async function GET(request: Request) {
   try {
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
     const items = result.Items || [];
     const sorted = items.sort((a, b) => 
-      b.quizDate.localeCompare(a.quizDate)
+      b.date.localeCompare(a.date)  // quizDate → date
     );
 
     return NextResponse.json({

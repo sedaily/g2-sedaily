@@ -18,6 +18,7 @@ export default function G1ArchivePage() {
   const [archiveData, setArchiveData] = useState<ArchiveStructure>({ years: [] })
   const [loading, setLoading] = useState(true)
   const [dateTags, setDateTags] = useState<Record<string, string[]>>({})
+  const [dateQuestionCounts, setDateQuestionCounts] = useState<Record<string, number>>({})
 
   useEffect(() => {
     async function loadArchive() {
@@ -25,8 +26,9 @@ export default function G1ArchivePage() {
         const data = await getArchiveStructure("BlackSwan")
         setArchiveData(data)
         
-        // 모든 날짜의 태그를 한 번에 로드
+        // 모든 날짜의 태그와 문제 개수를 한 번에 로드
         const tagsMap: Record<string, string[]> = {}
+        const countsMap: Record<string, number> = {}
         for (const yearData of data.years) {
           for (const monthData of yearData.months) {
             for (const dateStr of monthData.dates) {
@@ -36,10 +38,12 @@ export default function G1ArchivePage() {
                 if (q.tags) uniqueTags.add(q.tags)
               })
               tagsMap[dateStr] = Array.from(uniqueTags)
+              countsMap[dateStr] = questions.length
             }
           }
         }
         setDateTags(tagsMap)
+        setDateQuestionCounts(countsMap)
       } catch (error) {
         console.error("[v0] Failed to load archive:", error)
       } finally {
@@ -273,11 +277,11 @@ export default function G1ArchivePage() {
             ) : (
               allDates.map(({ date }) => {
                 const isToday = date === today
-                // API에서 각 날짜는 항상 4문제씩 있음
-                const questionCount = 4
+                const questionCount = dateQuestionCounts[date] || 2
 
                 // Convert YYYY-MM-DD to YYYYMMDD for routing
                 const shortDate = date.replace(/-/g, '')
+                const fullUrl = `https://g2.sedaily.ai/games/g1/play/?date=${shortDate}`
 
                 return (
                   <ArchiveCard
@@ -286,7 +290,7 @@ export default function G1ArchivePage() {
                     date={date}
                     questionCount={questionCount}
                     isToday={isToday}
-                    href={`/games/g1/play?date=${shortDate}`}
+                    href={fullUrl}
                     tags={dateTags[date] || []}
                   />
                 )

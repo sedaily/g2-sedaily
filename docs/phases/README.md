@@ -19,6 +19,14 @@ Phase documents capture the big picture of feature development:
 
 ## Phases Index
 
+### Phase 3: Archive UX Improvements & Original Article Links (2026-02-05)
+**PHASE-03-archive-ux-improvements.md**
+- Original article links in quiz questions
+- Dynamic question counts in archive
+- Button-based navigation with full URLs
+- Admin button temporarily hidden
+- Enhanced content discovery and transparency
+
 ### Phase 2: Quiz UI/UX Improvements (2026-02-04)
 **PHASE-02-quiz-ui-ux-improvements.md**
 - Compact layout for single-screen quiz display
@@ -37,5 +45,5 @@ Phase documents capture the big picture of feature development:
 
 ---
 
-**Total Phases:** 2  
-**Latest Update:** 2026-02-04
+**Total Phases:** 3  
+**Latest Update:** 2026-02-05

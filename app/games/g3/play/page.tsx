@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { UniversalQuizPlayer } from "@/components/games/UniversalQuizPlayer"
 import { getQuestionsForDate, getMostRecentDate, type Question } from "@/lib/games-data"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -41,6 +41,7 @@ function normalizeDate(date: string): string | null {
 
 export default function G3PlayPage() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [normalizedDate, setNormalizedDate] = useState<string | null>(null)

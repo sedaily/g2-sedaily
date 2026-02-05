@@ -25,6 +25,15 @@ def transform_question(q, index):
     correct_index = int(q.get('correctAnswer', 0))
     options = q.get('options', [])
     
+    # relatedArticle 처리
+    related_article = q.get('relatedArticle', {})
+    if not related_article:
+        # 레거시 필드 지원
+        related_article = {
+            'title': q.get('articleTitle', ''),
+            'excerpt': q.get('articleSummary', '')
+        }
+    
     return {
         'id': f"q{index + 1}",
         'questionType': '객관식',
@@ -32,12 +41,9 @@ def transform_question(q, index):
         'options': options,
         'answer': options[correct_index] if correct_index < len(options) else '',
         'explanation': q.get('explanation', ''),
-        'newsLink': '#',  # 기사 링크는 나중에 추가
+        'newsLink': q.get('newsLink', '#'),  # newsLink 필드 사용
         'tags': '경제·금융',  # 기본 태그
-        'relatedArticle': {
-            'title': q.get('articleTitle', ''),
-            'excerpt': q.get('articleSummary', '')
-        }
+        'relatedArticle': related_article
     }
 
 def lambda_handler(event, context):
