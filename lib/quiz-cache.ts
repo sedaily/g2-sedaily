@@ -126,8 +126,9 @@ export function getCachedDates(gameType: string): string[] | null {
       return null
     }
     
-    // 만료 체크 (날짜 목록은 더 오래 캐시)
-    if (Date.now() - item.timestamp > CLIENT_CACHE_DURATION * 2) {
+    // 만료 체크 (날짜 목록은 5분 캐시)
+    const DATES_CACHE_DURATION = 5 * 60 * 1000 // 5분
+    if (Date.now() - item.timestamp > DATES_CACHE_DURATION) {
       localStorage.removeItem(cacheKey)
       return null
     }
