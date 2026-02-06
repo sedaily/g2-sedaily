@@ -70,7 +70,10 @@ def lambda_handler(event, context):
                     raise Exception(f"품질 검증 실패 (최대 재시도 초과): {errors}")
         
         # 6. DynamoDB 저장
-        today = datetime.now().strftime('%Y-%m-%d')
+        # KST 기준 날짜 사용 (UTC+9)
+        from datetime import timezone
+        kst = timezone(timedelta(hours=9))
+        today = datetime.now(kst).strftime('%Y-%m-%d')
         save_to_dynamodb(quiz_data, today)
         
         print("\n" + "=" * 60)
